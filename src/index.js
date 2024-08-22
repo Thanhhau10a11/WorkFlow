@@ -23,7 +23,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 
 app.use(session({
-    secret: 'admin',
+    secret: process.env.JWT_SECRET,
     resave: true,
     saveUninitialized: false
 }));
@@ -98,9 +98,11 @@ app.set("views", path.join(__dirname, "resources","views"));
 const router = require('./router/APIRoutes')
 const routerLoggin = require('./router/userLoggin')
 const routerRegister = require('./router/userRegister')
+const UserRouter = require('./router/UserRoutes')
 app.use('/api', router);
 app.use('/login', routerLoggin);
 app.use('/register', routerRegister);
+app.use('/',UserRouter)
 
 
 // app.get('/', function (req, res) {

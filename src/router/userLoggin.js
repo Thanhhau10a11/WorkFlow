@@ -4,7 +4,7 @@ const router = express.Router()
 const userLoggingController = require('../app/controllers/userLoggingController')
 
 router.get('/',userLoggingController.index)
-router.post('/',userLoggingController.login)
+//router.post('/',userLoggingController.login)
 
 
 module.exports = router

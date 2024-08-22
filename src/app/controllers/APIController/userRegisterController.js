@@ -21,7 +21,10 @@ class UserRegisterController {
 
             await AppUser.create({ Name: name,Username: username, Password: hashedPassword });
 
-            res.status(201).json({ message: 'Đăng ký thành công' });
+            res.status(200).json({
+                success:true,
+                message: 'Đăng ký thành công',
+            });
 
         } catch (error) {
             console.error('Error:', error);

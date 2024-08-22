@@ -19,9 +19,16 @@ class UserLoginController {
                 return res.status(400).json({ message: 'Mật khẩu không đúng' });
             }
 
+            req.session.user = {
+                id: user.IDUser,
+                username: user.Username
+            };
+
+
             const token = jwt.sign({ id: user.IDUser, username: user.UserName }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
             res.status(200).json({
+                success:true,
                 message: 'Đăng nhập thành công',
                 token: token
             });

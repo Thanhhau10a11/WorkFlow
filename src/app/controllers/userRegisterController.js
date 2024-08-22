@@ -2,6 +2,9 @@
 const axios = require('axios');
 
 class UserRegisterController {
+    index(req,res) {
+        res.render('login', { layout: 'login.hbs' });
+    }
     async register(req, res) {
         const { name, username, password, password_confirmation } = req.body;
 

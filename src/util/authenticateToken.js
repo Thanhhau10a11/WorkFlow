@@ -1,17 +1,29 @@
 const jwt = require('jsonwebtoken');
 
 function authenticateToken(req, res, next) {
+    console.log('Checking token...');
+    console.log('Request headers:', req.headers);
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
-    if (token == null) return res.status(401).json({ message: 'Không có token' });
+    console.log('Token received:', token);
 
-    jwt.verify(token, 'your_jwt_secret_key', (err, user) => {
-        if (err) return res.status(403).json({ message: 'Token không hợp lệ' });
+    if (token == null) {
+        return res.redirect('/login');
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        console.log('Verifying token...');
+        if (err) {
+            console.log("JWT Verification Error:", err);
+            return res.redirect('/login');
+        }
 
         req.user = user;
+        console.log("User authenticated:", req.user);
         next();
     });
 }
+
 
 module.exports = authenticateToken;
