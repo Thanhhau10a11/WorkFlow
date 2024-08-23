@@ -34,9 +34,13 @@
     </div>
     <div class="app-header-actions">
         <button class="user-profile">
-            <span>Matheo Peterson</span>
+            {{#if Name}}
+                <span>{{{Name}}}</span>
+            {{else}}
+                <span><a href="/login">Login</a></span>
+            {{/if}}
             <span>
-                <img src="https://assets.codepen.io/285131/almeria-avatar.jpeg" />
+                <img src="/img/user.png"/>
             </span>
         </button>
         <div class="app-header-actions-buttons">
@@ -45,6 +49,9 @@
             </button>
             <button class="icon-button large">
                 <i class="ph-bell"></i>
+            </button>
+            <button onclick="window.location.href='/login'" class="icon-button large">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
             </button>
         </div>
     </div>

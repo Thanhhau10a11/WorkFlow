@@ -1,14 +1,19 @@
 @import url("https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+.display-center {
+  display: flex;
+  justify-content: center;
+  text-align: center; }
+
 :root {
-  --c-gray-900: #000000;
-  --c-gray-800: #1f1f1f;
+  --c-gray-900: white;
+  --c-gray-800: white;
   --c-gray-700: #2e2e2e;
   --c-gray-600: #313131;
-  --c-gray-500: #969593;
+  --c-gray-500: black;
   --c-gray-400: #a6a6a6;
   --c-gray-300: #bdbbb7;
-  --c-gray-200: #f1f1f1;
-  --c-gray-100: #ffffff;
+  --c-gray-200: Black;
+  --c-gray-100: Black;
   --c-green-500: #45ffbc;
   --c-olive-500: #e3ffa8;
   --c-white: var(--c-gray-100);
@@ -219,8 +224,8 @@ a {
   transition: 0.25s ease; }
 
 .tabs a.active, .tabs a:hover, .tabs a:focus {
-  color: var(--c-text-primary);
-  border-color: var(--c-text-primary); }
+  color: #7B68EE;
+  border-color: #7B68EE; }
 
 .user-profile {
   display: flex;
@@ -738,10 +743,10 @@ a {
 .settings-button:focus, .settings-button:hover {
   color: var(--c-white); }
 
-input:focus,
-select:focus,
-a:focus,
-textarea:focus,
-button:focus {
-  outline: 0;
-  box-shadow: 0 0 0 2px var(--c-gray-800), 0 0 0 4px var(--c-gray-300); }
+.app-header {
+  background-color: #56CCF2; }
+
+.logo {
+  display: flex;
+  justify-content: center;
+  align-items: center; }

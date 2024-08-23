@@ -20,8 +20,9 @@ class UserLoginController {
             }
 
             req.session.user = {
-                id: user.IDUser,
-                username: user.Username
+                IDUser: user.IDUser,
+                Name: user.Name,
+                Username : user.Username,
             };
 
 
