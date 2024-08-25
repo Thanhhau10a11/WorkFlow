@@ -11,6 +11,7 @@ const stageRouter = require('./stage');
 const jobRouter = require('./job');
 const projectRouter = require('./project');
 const groupRouter = require('./group');
+const userWorkFlowRouter = require('./userWorkFlow');
 
 // Sử dụng các router
 
@@ -23,6 +24,7 @@ router.use('/stage',stageRouter);
 router.use('/job',jobRouter);
 router.use('/project',projectRouter);
 router.use('/group',groupRouter);
+router.use('/userWorkFlow',userWorkFlowRouter);
 
 
 module.exports = router;
