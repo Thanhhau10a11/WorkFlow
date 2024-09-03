@@ -1,0 +1,44 @@
+<div id="workflowTreeContainer"></div>
+
+<script>
+    $(document).ready(function() {
+
+        async function loadWorkflow() {
+            try {
+                const response = await fetch('/api/user');
+                const user = await response.json();
+                
+                if (user.IDUser) {
+                    try {
+                        const response = await fetch('/api/userWorkFlow/');
+                        const workflows = await response.json();
+                        
+                        // Tạo cấu trúc dữ liệu cho jsTree
+                        const treeData = workflows.map(workflow => ({
+                            text: workflow.name,
+                            children: workflow.stages.map(stage => ({
+                                text: stage.name,
+                                children: stage.jobs.map(job => ({
+                                    text: job.name
+                                }))
+                            }))
+                        }));
+
+                        $('#workflowTreeContainer').jstree({
+                            'core': {
+                                'data': treeData
+                            }
+                        });
+                    } catch (error) {
+                        alert('Có lỗi xảy ra khi tải dữ liệu.');
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+            
+        }
+
+        loadWorkflow();
+    });
+</script>

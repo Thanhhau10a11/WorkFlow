@@ -1,3 +1,4 @@
+// models/Notify.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
 
@@ -7,20 +8,11 @@ const Notify = sequelize.define('Notify', {
     autoIncrement: true,
     primaryKey: true
   },
-  NotifyMessage: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  NotifyTitle: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  NotifyCreatedAt: {
-    type: DataTypes.DATE,
-    allowNull: true
-  }
+  NotifyMessage: DataTypes.STRING,
+  NotifyTitle: DataTypes.STRING,
+  NotifyCreatedAt: DataTypes.DATE
 }, {
-  tableName: 'Notify',
+  tableName: 'notify',
   timestamps: false
 });
 

@@ -1,5 +1,6 @@
+// models/AppUser.js
 const { DataTypes } = require('sequelize');
-const sequelize = require('../../config/db'); 
+const sequelize = require('../../config/db');
 
 const AppUser = sequelize.define('AppUser', {
   IDUser: {
@@ -7,41 +8,17 @@ const AppUser = sequelize.define('AppUser', {
     autoIncrement: true,
     primaryKey: true
   },
-  Birthday: {
-    type: DataTypes.DATE,
-    allowNull: true
-  },
-  RequestCompleteTime: {
-    type: DataTypes.DATE,
-    allowNull: true
-  },
-  InfoFollower: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  RequestDescription: {
-    type: DataTypes.TEXT,
-    allowNull: true
-  },
-  Phone: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  Name: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  Username: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  Password: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
+  Birthday: DataTypes.DATE,
+  RequestCompleteTime: DataTypes.DATE,
+  InfoFollower: DataTypes.STRING,
+  RequestDescription: DataTypes.TEXT,
+  Phone: DataTypes.STRING,
+  Name: DataTypes.STRING,
+  Username: DataTypes.STRING,
+  Password: DataTypes.STRING
 }, {
-  tableName: 'AppUser',
-  timestamps: false // Tắt tự động thêm cột createdAt và updatedAt
+  tableName: 'appuser',
+  timestamps: false
 });
 
 module.exports = AppUser;

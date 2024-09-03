@@ -1,7 +1,6 @@
 // models/Project.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const Job = require('./Job_Model');
 
 const Project = sequelize.define('Project', {
   IdProject: {
@@ -9,31 +8,12 @@ const Project = sequelize.define('Project', {
     autoIncrement: true,
     primaryKey: true
   },
-  Progress: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  IDUser: {
-    type: DataTypes.INTEGER,
-    allowNull: true
-  },
-  IDJob: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: Job,
-      key: 'IDJob'
-    }
-  },
-  InfoProject: {
-    type: DataTypes.TEXT,
-    allowNull: true
-  },
-  NameProjectComment: {
-    type: DataTypes.STRING,
-    allowNull: true
-  }
+  Progress: DataTypes.STRING,
+  IDUser: DataTypes.INTEGER,
+  InfoProject: DataTypes.TEXT,
+  NameProjectComment: DataTypes.STRING
 }, {
-  tableName: 'Project',
+  tableName: 'project',
   timestamps: false
 });
 

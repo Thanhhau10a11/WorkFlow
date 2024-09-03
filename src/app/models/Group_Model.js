@@ -1,7 +1,6 @@
 // models/Group.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const AppUser = require('./User_Model');
 
 const Group = sequelize.define('Group', {
   GroupID: {
@@ -9,19 +8,10 @@ const Group = sequelize.define('Group', {
     autoIncrement: true,
     primaryKey: true
   },
-  GroupName: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  IDUser: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: AppUser,
-      key: 'IDUser'
-    }
-  }
+  GroupName: DataTypes.STRING,
+  IDUser: DataTypes.INTEGER
 }, {
-  tableName: 'Group',
+  tableName: 'group',
   timestamps: false
 });
 

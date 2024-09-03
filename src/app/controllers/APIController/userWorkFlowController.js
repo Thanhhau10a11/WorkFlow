@@ -1,12 +1,33 @@
 const WorkFlow = require('../../models/WorkFlow_Model');
+const Stage = require('../../models/Stage_Model');
+const Job = require('../../models/Job_Model');
 
 class userWorkFlowController {
-    // Get all workflows by user ID
+    // // Get all workflows by user ID
+    // async getByUserId(req, res) {
+    //     try {
+    //         const workflows = await WorkFlow.findAll({
+    //             where: { IDCreator: req.params.id }
+    //         });
+    //         res.json(workflows);
+    //     } catch (error) {
+    //         res.status(500).json({ error: error.message });
+    //     }
+    // }
     async getByUserId(req, res) {
         try {
             const workflows = await WorkFlow.findAll({
-                where: { IDUser: req.params.id }
+                where: { IDCreator: req.params.id },
+                include: [{
+                    model: Stage,
+                    as: 'Stages',
+                    include: [{
+                        model: Job,
+                        as: 'Jobs'
+                    }]
+                }]
             });
+    
             res.json(workflows);
         } catch (error) {
             res.status(500).json({ error: error.message });

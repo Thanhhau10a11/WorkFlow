@@ -1,7 +1,6 @@
 // models/Stage.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const WorkFlow = require('./WorkFlow_Model');
 
 const Stage = sequelize.define('Stage', {
   IdStage: {
@@ -9,23 +8,18 @@ const Stage = sequelize.define('Stage', {
     autoIncrement: true,
     primaryKey: true
   },
-  NameStage: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  DescriptionStatus: {
-    type: DataTypes.TEXT,
-    allowNull: true
-  },
-  IDWorkFlow: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: WorkFlow,
-      key: 'IDWorkFlow'
-    }
-  }
+  NameStage: DataTypes.STRING,
+  DescriptionStatus: DataTypes.TEXT,
+  IDWorkFlow: DataTypes.INTEGER,
+  previousStage: DataTypes.INTEGER,
+  nextStage: DataTypes.INTEGER,
+  reviewer: DataTypes.STRING,
+  statusStage: DataTypes.STRING,
+  approximateTime: DataTypes.DATE,
+  timecompletedState: DataTypes.DATE,
+  IDRecipient: DataTypes.INTEGER
 }, {
-  tableName: 'Stage',
+  tableName: 'stage',
   timestamps: false
 });
 

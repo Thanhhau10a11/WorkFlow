@@ -59,6 +59,13 @@ class UserLoginController {
             res.status(500).json({ error: error.message });
           }
     }
+    async user(req,res){
+      if (req.session.user) {
+        res.json(req.session.user);
+      } else {
+        res.status(401).json({ error: 'User not logged in' });
+      }
+    }
 }
 
 module.exports = new UserLoginController();

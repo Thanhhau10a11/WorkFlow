@@ -1,0 +1,39 @@
+<div class="app-body-main-content">
+    <div class="container">
+        <h1>Quản lý Stage</h1>
+        <div id="stageDetailsContainer"></div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Giả sử ID Stage được truyền qua query string
+        const urlParams = new URLSearchParams(window.location.search);
+        const stageId = urlParams.get('stageId');
+
+        async function loadStageDetails() {
+            try {
+                const response = await fetch(`/api/workFlow/getStageDetails/${stageId}`);
+                const stage = await response.json();
+
+                const stageHtml = `
+                    <h2>${stage.name}</h2>
+                    <p><strong>Mô tả:</strong> ${stage.description}</p>
+                    <p><strong>Người nhận:</strong> ${stage.recipient}</p>
+                    <p><strong>Thời gian dự kiến:</strong> ${stage.approxTime}</p>
+                    <p><strong>Thời gian hoàn thành:</strong> ${stage.timeCompleted}</p>
+                    <h4>Jobs</h4>
+                    <ul>
+                        ${stage.jobs.map(job => `<li>${job.name}: ${job.description}</li>`).join('')}
+                    </ul>
+                `;
+
+                $('#stageDetailsContainer').html(stageHtml);
+            } catch (error) {
+                alert('Có lỗi xảy ra khi tải dữ liệu.');
+            }
+        }
+
+        loadStageDetails();
+    });
+</script>

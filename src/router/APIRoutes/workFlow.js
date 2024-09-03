@@ -8,6 +8,7 @@ router.get('/:id',workFlowController.getById)
 router.post('/create',workFlowController.create)
 router.post('/update/:id',workFlowController.update)
 router.post('/delete/:id',workFlowController.delete)
+router.post('/saveWorkFLow',workFlowController.saveWorkFLow)
 
 
 module.exports = router

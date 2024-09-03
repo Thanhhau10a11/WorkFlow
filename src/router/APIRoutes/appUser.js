@@ -8,6 +8,7 @@ router.get('/:id',appUserController.getById)
 router.post('/create',appUserController.create)
 router.post('/update/:id',appUserController.update)
 router.post('/delete/:id',appUserController.delete)
+router.get('/',appUserController.user)
 
 
 module.exports = router

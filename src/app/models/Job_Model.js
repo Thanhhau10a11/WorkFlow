@@ -1,8 +1,6 @@
 // models/Job.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const Stage = require('./Stage_Model');
-const AppUser = require('./User_Model');
 
 const Job = sequelize.define('Job', {
   IDJob: {
@@ -10,57 +8,20 @@ const Job = sequelize.define('Job', {
     autoIncrement: true,
     primaryKey: true
   },
-  IDStage: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: Stage,
-      key: 'IdStage'
-    }
-  },
-  Status: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  IDUser: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: AppUser,
-      key: 'IDUser'
-    }
-  },
-  IDCreator: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: AppUser,
-      key: 'IDUser'
-    }
-  },
-  TimeComplete: {
-    type: DataTypes.DATE,
-    allowNull: true
-  },
-  TimeStart: {
-    type: DataTypes.DATE,
-    allowNull: true
-  },
-  DescriptionJob: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  NameJob: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  IDPriorityLevel: {
-    type: DataTypes.INTEGER,
-    allowNull: true
-  },
-  Priority: {
-    type: DataTypes.STRING,
-    allowNull: true
-  }
+  IDStage: DataTypes.INTEGER,
+  Status: DataTypes.STRING,
+  IDUserAssign: DataTypes.INTEGER,
+  IDCreator: DataTypes.INTEGER,
+  TimeComplete: DataTypes.DATE,
+  TimeStart: DataTypes.DATE,
+  DescriptionJob: DataTypes.STRING,
+  NameJob: DataTypes.STRING,
+  IDPriorityLevel: DataTypes.INTEGER,
+  Priority: DataTypes.STRING,
+  IDListFollower: DataTypes.STRING,
+  IDProject: DataTypes.INTEGER
 }, {
-  tableName: 'Job',
+  tableName: 'job',
   timestamps: false
 });
 

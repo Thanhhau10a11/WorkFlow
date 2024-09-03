@@ -12,6 +12,7 @@ const jobRouter = require('./job');
 const projectRouter = require('./project');
 const groupRouter = require('./group');
 const userWorkFlowRouter = require('./userWorkFlow');
+const emailRouter = require('./email');
 
 // Sử dụng các router
 
@@ -25,6 +26,7 @@ router.use('/job',jobRouter);
 router.use('/project',projectRouter);
 router.use('/group',groupRouter);
 router.use('/userWorkFlow',userWorkFlowRouter);
+router.use('/email',emailRouter);
 
 
 module.exports = router;
