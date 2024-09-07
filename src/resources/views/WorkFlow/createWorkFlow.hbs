@@ -1,0 +1,223 @@
+<div class="app-body-main-content">
+    <div class="container">
+        <div class="form-container">
+            <h2>Tạo mới Workflow</h2>
+            <div class="form-group">
+                <label for="workflowName" class="required">Tên Workflow <span class="required-star">*</span></label>
+                <input type="text" class="form-control" id="workflowName" placeholder="Nhập tên workflow" required>
+            </div>
+            <div class="form-group">
+                <label for="workflowDescription">Mô tả Workflow</label>
+                <input type="text" class="form-control" id="workflowDescription" placeholder="Nhập mô tả">
+            </div>
+            <h5>Stages</h5>
+            <div id="stagesContainer"></div>
+            <div class="btn-container">
+                <button class="btn btn-secondary" id="addStageBtn">Thêm Stage</button>
+                <button class="btn btn-primary" id="saveWorkflowBtn">Lưu Workflow</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0 auto;
+        }
+
+        .form-container {
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-container h2 {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .form-row .col {
+            flex: 1;
+            margin-right: 15px;
+        }
+
+        .form-row .col:last-child {
+            margin-right: 0;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .btn-primary, .btn-secondary {
+            margin-right: 10px;
+        }
+
+        .list-group-item {
+            background-color: #ffffff;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .required-star {
+            color: red;
+            font-size: 1.2rem;
+            margin-left: 5px;
+        }
+
+        .required {
+            font-weight: bold;
+        }
+
+        .stage {
+            border: 1px solid #ced4da; 
+            border-radius: 5px;
+            padding: 15px; 
+            margin-bottom: 20px; 
+            background-color: #ffffff; 
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); 
+        }
+
+        .job {
+            border: 1px solid #ced4da; 
+            border-radius: 5px; 
+            padding: 15px; 
+            margin-bottom: 10px; 
+            background-color: #f8f9fa; 
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); 
+        }
+</style>
+<script>
+    $(document).ready(function() {
+    let stageCount = 0;
+
+    $('#addStageBtn').click(function() {
+        stageCount++;
+        const stageHtml = `
+            <div class="stage" data-stage-id="${stageCount}">
+                <h6>Stage ${stageCount}</h6>
+                <div class="form-row">
+                    <div class="col">
+                        <label for="stageName${stageCount}" class="required">Tên Stage <span class="required-star">*</span></label>
+                        <input type="text" class="form-control stageName" id="stageName${stageCount}" placeholder="Nhập tên stage" required>
+                    </div>
+                    <div class="col">
+                        <label for="stageDescription${stageCount}">Mô tả Stage</label>
+                        <input type="text" class="form-control stageDescription" id="stageDescription${stageCount}" placeholder="Nhập mô tả">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col">
+                        <label for="stageRecipient${stageCount}" class="required">Người nhận <span class="required-star">*</span></label>
+                        <input type="text" class="form-control stageRecipient" id="stageRecipient${stageCount}" placeholder="Nhập người nhận" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col">
+                        <label for="stageApproxTime${stageCount}">Thời gian dự kiến</label>
+                        <input type="datetime-local" class="form-control stageApproxTime" id="stageApproxTime${stageCount}">
+                    </div>
+                    {{!-- <div class="col">
+                        <label for="stageTimeCompleted${stageCount}">Thời gian hoàn thành</label>
+                        <input type="datetime-local" class="form-control stageTimeCompleted" id="stageTimeCompleted${stageCount}">
+                    </div> --}}
+                </div>
+            </div>
+        `;
+        $('#stagesContainer').append(stageHtml);
+    });
+
+    $('#saveWorkflowBtn').click(async function() {
+        const workflowName = $('#workflowName').val();
+        const workflowDescription = $('#workflowDescription').val();
+
+        if (!workflowName) {
+            alert('Vui lòng nhập tên workflow.');
+            return;
+        }
+
+        const stages = [];
+        let valid = true;
+
+        $('.stage').each(function() {
+            const stageName = $(this).find('.stageName').val();
+            const stageRecipient = $(this).find('.stageRecipient').val();
+
+            if (!stageName || !stageRecipient) {
+                alert('Vui lòng nhập tên và người nhận cho tất cả các stage.');
+                valid = false;
+                return false; // Dừng vòng lặp
+            }
+
+            stages.push({
+                name: stageName,
+                description: $(this).find('.stageDescription').val(),
+                recipient: stageRecipient,
+                approxTime: $(this).find('.stageApproxTime').val(),
+                timeCompleted: $(this).find('.stageTimeCompleted').val()
+            });
+        });
+
+        if (!valid) return;
+
+        // Xác định mối quan hệ giữa các stage dựa trên thứ tự tạo
+        stages.forEach((stage, index) => {
+            if (index > 0) {
+                stage.previousStage = stages[index - 1].name;
+            }
+            if (index < stages.length - 1) {
+                stage.nextStage = stages[index + 1].name;
+            }
+        });
+
+        try {
+            const response = await fetch('/api/workFlow/saveWorkFLow', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: workflowName,
+                    description: workflowDescription,
+                    stages: stages
+                })
+            });
+
+            if (response.ok) {
+                alert('Workflow đã được lưu thành công!');
+                $('#workflowName').val('');
+                $('#workflowDescription').val('');
+                $('#stagesContainer').empty();
+            } else {
+                const errorData = await response.json();
+                alert(`Lỗi: ${errorData.error}`);
+            }
+        } catch (error) {
+            alert('Có lỗi xảy ra, vui lòng thử lại.');
+        }
+    });
+});
+
+</script>

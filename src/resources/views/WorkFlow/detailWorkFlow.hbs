@@ -1,0 +1,110 @@
+
+    <style>
+        * {
+            box-sizing: border-box; 
+        }
+
+        body {
+            margin: 0;
+            background-color: #f0f4f8;
+            font-family: 'Arial', sans-serif; 
+            color: #333;
+        }
+
+        .workflow-container {
+            padding: 20px; 
+            width: 100%; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff; 
+        }
+
+        .workflow-title {
+            text-align: center; 
+            margin-bottom: 20px; 
+            font-size: 2rem; 
+            color: #2980b9; 
+        }
+
+        .stage-list {
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 20px; 
+            padding: 0; 
+            margin: 0; 
+            align-items: flex-start; 
+        }
+
+        .stage-item {
+            background-color: #ecf0f1; 
+            border-radius: 8px; 
+            width: 220px; 
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+            transition: transform 0.3s; 
+            cursor: pointer; 
+        }
+
+        .stage-item:hover {
+            transform: scale(1.05); 
+        }
+
+        .stage-header {
+            padding: 10px; 
+            background-color: #2980b9; 
+            color: #ffffff; 
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px; 
+        }
+
+        .stage-name {
+            margin: 0; 
+            font-size: 1.2rem; 
+        }
+
+        .stage-content {
+            padding: 10px; 
+        }
+
+        .stage-description, .stage-recipient {
+            margin: 5px 0; 
+            font-size: 0.9rem;
+        }
+
+        .add-stage {
+            background-color: #3498db;
+            color: #ffffff; 
+            text-align: center;
+        }
+
+        .add-stage:hover {
+            background-color: #2980b9; 
+        }
+    </style>
+
+    <div class="workflow-container">
+        <h2 class="workflow-title">{{workflow.Name}}</h2>
+        <div class="stage-list">
+            {{#each workflow.Stages}}
+                <div class="stage-item">
+                    <div class="stage-header">
+                        <h3 class="stage-name">{{this.NameStage}}</h3>
+                    </div>
+                    <div class="stage-content">
+                        <p class="stage-description">{{this.DescriptionStatus}}</p>
+                        <p class="stage-recipient">Người nhận: {{this.EmailRecipient}}</p>
+                    </div>
+                </div>
+            {{/each}}
+            <div class="stage-item add-stage">
+                <div class="stage-header">
+                    <h3 class="stage-name">+</h3>
+                </div>
+                <div class="stage-content">
+                    <p class="stage-description">Thêm danh sách khác</p>
+                </div>
+            </div>
+        </div>
+    </div>
+

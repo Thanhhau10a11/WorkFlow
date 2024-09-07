@@ -90,6 +90,25 @@ class userWorkFlowController {
             res.status(500).json({ error: error.message });
         }
     }
+    async getStagesByWorkFlowID(req,res){
+        try {
+            const workflow = await WorkFlow.findOne({
+            where: { IDWorkFlow: req.params.id, },
+            include: [{
+                model: Stage,
+                as: 'Stages',
+            }]
+            });
+        
+            if (!workflow) {
+                res.status(500).json('Workflow not found');
+            }
+        
+            res.json(workflow);
+        } catch (error) {
+            res.status(500).json('Error fetching workflow:', error);
+        }
+    }
 }
 
 module.exports = new userWorkFlowController();

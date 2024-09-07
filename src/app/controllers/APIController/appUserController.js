@@ -1,5 +1,7 @@
 
 const AppUser = require('../../models/User_Model'); 
+const bcrypt = require('bcryptjs');
+
 
 class UserLoginController {
     async getALl(req, res) {
@@ -66,6 +68,34 @@ class UserLoginController {
         res.status(401).json({ error: 'User not logged in' });
       }
     }
+
+    async updateUserInfo(req, res) {
+      const { email } = req.query; 
+      const { name, birthday, phone, newPassword } = req.body;
+  
+      try {
+          let user = await AppUser.findOne({ where: { Username: email } });
+  
+          if (!user) {
+              return res.status(404).json({ message: 'User not found' });
+          }
+  
+          if (name) user.Name = name;
+          if (birthday) user.Birthday = new Date(birthday);
+          if (phone) user.Phone = phone;
+          if (newPassword) {
+              const hashedPassword = await bcrypt.hash(newPassword, 10);
+              user.Password = hashedPassword;
+          }
+  
+          await user.save();
+  
+          res.status(200).json({ message: 'User information updated successfully' });
+      } catch (error) {
+          console.error('Error updating user information:', error);
+          res.status(500).json({ message: 'Failed to update user information' });
+      }
+  }
 }
 
 module.exports = new UserLoginController();

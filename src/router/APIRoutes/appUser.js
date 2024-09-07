@@ -9,6 +9,8 @@ router.post('/create',appUserController.create)
 router.post('/update/:id',appUserController.update)
 router.post('/delete/:id',appUserController.delete)
 router.get('/',appUserController.user)
+router.post('/update-info',appUserController.updateUserInfo)
+
 
 
 module.exports = router

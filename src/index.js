@@ -7,8 +7,7 @@ require('dotenv').config();
 const app = express();  
 const port = 3000;  
 
-// Import Sequelize và các mô hình  
-const { sequelize, AppUser, Group, Job, Dates, Notify, Project, Stage, Workflow } = require('./app/models/index');  
+const { sequelize } = require('./app/models/index');  
 
 // Cài đặt session-store với connect-session-sequelize  
 const session = require('express-session');  
@@ -35,7 +34,6 @@ app.use(session({
   cookie: { maxAge: 10800000 }  // Thời gian sống của cookie session 3 giờ  
 }));  
 
-// Đồng bộ hóa các mô hình và bảng session  
 sequelize.sync()  
   .then(() => {  
     console.log('Models synchronized with the database');  
@@ -50,7 +48,6 @@ const cookieParser = require('cookie-parser');
 app.use(bodyParser.urlencoded({ extended: true }));  
 app.use(cookieParser());  
 
-// Template engine  
 app.engine("hbs", engine({  
   extname: '.hbs',  
   helpers: {  
@@ -116,7 +113,6 @@ app.use('/login', routerLoggin);
 app.use('/register', routerRegister);  
 app.use('/', UserRouter);  
 
-// Khởi động server  
 http.createServer(app).listen(port, () => {  
   console.log(`Server is running on http://localhost:${port}`);  
 });  

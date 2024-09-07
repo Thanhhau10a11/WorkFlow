@@ -17,7 +17,8 @@ const Stage = sequelize.define('Stage', {
   statusStage: DataTypes.STRING,
   approximateTime: DataTypes.DATE,
   timecompletedState: DataTypes.DATE,
-  IDRecipient: DataTypes.INTEGER
+  IDRecipient: DataTypes.INTEGER,
+  EmailRecipient:DataTypes.STRING
 }, {
   tableName: 'stage',
   timestamps: false
