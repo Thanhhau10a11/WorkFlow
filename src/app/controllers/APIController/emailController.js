@@ -1,49 +1,9 @@
-// const nodemailer = require('nodemailer');
 
-// class MailController {
-//    sendEmail(req, res) {
-//         const email = req.params.email 
-//         //const  email = req.body;
-//         const name = 'WorkFlow Company'
-//         const message = 'Bạn có lời mời tham gia'
-//         // Tạo transporter sử dụng Gmail
-//         let transporter = nodemailer.createTransport({
-//             service: 'gmail',
-//             auth: {
-//                 user: process.env.EMAIL, 
-//                 pass: process.env.EMAIL_PASSWORD
-//             }
-//         });
-
-//         // Tạo nội dung email
-//         let mailOptions = {
-//             from: process.env.EMAIL,
-//             to: email,
-//             subject: 'Thông tin liên hệ từ ' + name, 
-//             text: message + '\n\nĐược gửi bởi: ' + process.env.EMAIL
-//         };
-
-//         // Gửi email
-//         transporter.sendMail(mailOptions)
-//             .then(info => {
-//                 console.log('Email sent: ' + info.response);
-//                 res.status(200).json({message:"Success"})
-//             })
-//             .catch(error => {
-//                 console.log(error);
-//                 res.status(500).json({message:"Failed"})
-//             });
-//     }
-// }
-
-// module.exports = new MailController();
 const crypto = require('crypto');
 const { Op } = require('sequelize');
-const { Invitation, AppUser, Workflow, Stage } = require('../../models/index');
+const { Invitation, AppUser, Workflow, Stage, Group, GroupMember } = require('../../models/index');
 const bcrypt = require('bcryptjs');
-const nodemailer = require('nodemailer');
-
-const transporter = require('../../../config/nodemailer/transporter');
+const {sendEmail} = require('../../../util/emailUtils')
 
 class InvitationController {
     async inviteManager(req, res) {
@@ -54,36 +14,29 @@ class InvitationController {
         try {
             let user = await AppUser.findOne({ where: { Username: email } });
 
-            if (!user) {
-                user = await AppUser.create({
-                    email: email,
-                    role: 'pending', 
-                    password: 'password', 
-                });
-            }
-
             await Invitation.create({
                 UserID: user.IDUser,
                 WorkflowID: workflowId,
                 StageID: stageId,
-                EmailRecipient:email,
+                EmailRecipient: email,
                 Token: token,
                 TokenExpiry: tokenExpiry,
                 Status: 'pending'
             });
 
-            const mailOptions = {
-                from: process.env.EMAIL,
-                to: email,
-                subject: 'Invitation to Manage Stage',
-                text: `You have been invited to manage a stage in a workflow. Please accept or decline the invitation by clicking the link below:
+            // Gọi hàm tiện ích để gửi email
+            const emailSent = await sendEmail(
+                email,
+                'Invitation to Manage Stage',
+                `You have been invited to manage a stage in a workflow. Please accept or decline the invitation by clicking the link below:
                 http://localhost:3000/api/email/accept-invitation?token=${token}`
-            };
+            );
 
-            // Gửi email
-            await transporter.sendMail(mailOptions);
-
-            res.status(200).json({ message: 'Invitation sent successfully' });
+            if (emailSent) {
+                res.status(200).json({ message: 'Invitation sent successfully' });
+            } else {
+                res.status(500).json({ message: 'Failed to send email' });
+            }
         } catch (error) {
             console.error('Error inviting manager:', error);
             res.status(500).json({ message: 'Failed to send invitation' });
@@ -146,7 +99,53 @@ class InvitationController {
             res.status(500).json({ message: 'Failed to accept invitation' });
         }
     }
+    async inviteGroup(req,res) {
+        const { email, token } = req.body;
+        
+        try {
+            const emailSent = await sendEmail(
+                email,
+                'Invitation to Group',
+                `You have been invited to Group. Please accept or decline the invitation by clicking the link below:
+                http://localhost:3000/api/email/inviteGroup/accept-invitation?token=${token}`
+            );
+
+            if (emailSent) {
+                res.status(200).json({ message: 'Invitation sent successfully' });
+            } else {
+                res.status(500).json({ message: 'Failed to send email' });
+            }
+        } catch (error) {
+            console.error('Error inviting to group:', error);
+            res.status(500).json({ message: 'Failed to invite to group' });
+        }
+    }
+    async acceptGroup(req, res) {
+        const { token } = req.query;
     
+        try {
+            const invitation = await GroupMember.findOne({
+                where: {
+                    Token: token,
+                    TokenExpiry: { [Op.gt]: new Date() }, 
+                    //Status: 'pending'
+                }
+            });
+    
+            if (!invitation) {
+                return res.status(400).json({ message: 'Invalid or expired invitation' });
+            }
+    
+            const email = invitation.Email;
+            invitation.Status = 'accepted';
+            await invitation.save();
+    
+            res.redirect(`http://localhost:3000/appUser/update-info?email=${encodeURIComponent(email)}`);
+        } catch (error) {
+            console.error('Error accepting invitation:', error);
+            res.status(500).json({ message: 'Failed to accept invitation' });
+        }
+    }
 }
 
 module.exports = new InvitationController();

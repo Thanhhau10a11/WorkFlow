@@ -5,5 +5,6 @@ const emailController = require('../../app/controllers/APIController/emailContro
 
 router.post('/:email',emailController.inviteManager)
 router.get('/accept-invitation', emailController.acceptInvitation);
-
+router.post('/inviteGroup/:email',emailController.inviteGroup)
+router.get('/inviteGroup/accept-invitation', emailController.acceptGroup);
 module.exports = router

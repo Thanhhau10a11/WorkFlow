@@ -33,7 +33,6 @@ class workFlowController {
               attributes: ['IdStage', 'NameStage', 'DescriptionStatus', 'statusStage', 'nextStage', 'previousStage']
             }
           });
-          console.log('Workflow:', workflow); 
           if (!workflow) return res.status(404).json({ message: 'Workflow không tồn tại' });
           res.json(workflow);
         } catch (error) {

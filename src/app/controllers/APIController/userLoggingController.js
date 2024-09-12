@@ -24,7 +24,7 @@ class UserLoginController {
                 Name: user.Name,
                 Username : user.Username,
             };
-             console.log(req.session.user)
+            
 
 
             const token = jwt.sign({ id: user.IDUser, username: user.UserName }, process.env.JWT_SECRET, { expiresIn: '1h' });

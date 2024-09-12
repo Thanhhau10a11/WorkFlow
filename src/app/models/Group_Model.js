@@ -12,7 +12,7 @@ const Group = sequelize.define('Group', {
   IDUser: DataTypes.INTEGER
 }, {
   tableName: 'group',
-  timestamps: false
+  timestamps: true
 });
 
 module.exports = Group;

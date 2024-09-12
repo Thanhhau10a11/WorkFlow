@@ -1,4 +1,3 @@
-// models/AppUser.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
 
@@ -14,10 +13,14 @@ const AppUser = sequelize.define('AppUser', {
   RequestDescription: DataTypes.TEXT,
   Phone: DataTypes.STRING,
   Name: DataTypes.STRING,
-  Username: DataTypes.STRING,
+  Username: {
+    type: DataTypes.STRING(191),
+    //unique: true,
+    allowNull: false,
+  },
   Password: DataTypes.STRING
 }, {
-  tableName: 'appuser',
+  tableName: 'AppUser',
   timestamps: false
 });
 

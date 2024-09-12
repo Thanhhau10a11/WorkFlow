@@ -5,7 +5,6 @@ class UserRegisterController {
     async register(req, res) {
         const { name, username, password, password_confirmation } = req.body;
 
-        console.log(req.body)
         if (password !== password_confirmation) {
             return res.status(400).json({ message: "Mật khẩu không khớp" });
         }

@@ -1,0 +1,141 @@
+<div class="py-5 team4">  
+    <div class="container">  
+        <div class="row justify-content-center mb-4">  
+            <div class="col-md-7 text-center">  
+                <h3 class="mb-3 text-big">{{Group.GroupName}}</h3>  
+                <h6 class="subtitle">You can rely on our amazing features list and also our customer services will be a great experience for you without doubt and in no-time</h6>  
+            </div>  
+        </div>  
+        <div class="row mt-4">  
+            <div class="col-lg-3 mb-4 locShadow">  
+                <a href="/group/addMember/{{Group.GroupID}}" style="text-decoration: none;">
+                    <div class="row " >  
+                    <div class="col-md-12 display-center">  
+                        <img src="/img/plus.png" alt="wrapkit" class="img-fluid rounded-circle" style="width: 103px;height:100px"/>  
+                    </div>  
+                    <div class="col-md-12 text-center">  
+                        <div class="pt-2" >  
+                            <h5 class="mt-4 font-weight-medium mb-0" >Add</h5>  
+                            {{!-- <h6 class="subtitle mb-3">Property Specialist</h6>  
+                            <p>You can rely on our amazing features list and also our customer services will be a great experience.</p>   --}}
+                        </div>  
+                    </div>  
+                </div>
+                </a>  
+            </div>  
+        {{#each members}}
+             <div class="col-lg-3 mb-4 locShadow">  
+                <div class="row display-center">  
+                    <div class="col-md-12 display-center">  
+                        <img src="/img/user.png" alt="wrapkit" class="img-fluid rounded-circle" />  
+                    </div>  
+                    <div class="col-md-12 text-center">  
+                        <div class="pt-2">  
+                            <h5 class="mt-4 font-weight-medium mb-0">{{this.Username}}</h5>  
+                            {{!-- <h6 class="subtitle mb-3">Property Specialist</h6>  
+                            <p>You can rely on our amazing features list and also our customer services will be a great experience.</p>   --}}
+                        </div>  
+                    </div>  
+                </div>  
+            </div>  
+        {{/each}}
+        </div>  
+    </div>  
+</div>  
+
+<style>  
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    .locShadow {
+        transition: box-shadow 0.35s;
+    }
+    .locShadow img {
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    }
+    .locShadow:hover {
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    }
+    @import url(//fonts.googleapis.com/css?family=Montserrat:300,500);  
+    .team4 {  
+        font-family: "Montserrat", sans-serif;  
+        color: #8d97ad;  
+        font-weight: 300;  
+    }  
+
+    .team4 h1,  
+    .team4 h2,  
+    .team4 h3,  
+    .team4 h4,  
+    .team4 h5,  
+    .team4 h6 {  
+        color: #3e4555;  
+    }  
+
+    .team4 .font-weight-medium {  
+        font-weight: 500;  
+    }  
+
+    .team4 h5 {  
+        line-height: 22px;  
+        font-size: 18px;  
+    }  
+
+    .team4 .subtitle {  
+        color: #8d97ad;  
+        line-height: 24px;  
+        font-size: 20px;  
+    }  
+
+    .team4 ul li a {  
+        color: #8d97ad;  
+        padding-right: 15px;  
+        transition: 0.1s ease-in;  
+    }  
+
+    .team4 ul li a:hover {  
+        transform: translate3d(0px, -5px, 0px);  
+        color: #316ce8;  
+    }  
+
+    .avatar-container {  
+        width: 100%;  
+        height: 150px; 
+        background-color: #f0f0f0; 
+        border-radius: 50%;  
+        display: flex;  
+        justify-content: center;  
+        align-items: center;  
+        margin-bottom: 15px;  
+        transition: background-color 0.3s ease;  
+        cursor: pointer; 
+    }  
+
+    .avatar-container:hover {  
+        background-color: #e0e0e0; 
+    }  
+
+    .avatar-icon {  
+        display: flex;  
+        justify-content: center;  
+        align-items: center;  
+        border-radius: 50%;  
+        width: 70px;  
+        height: 70px;  
+        background-color: #fff;  
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);  
+        transition: box-shadow 0.3s ease;  
+    }  
+
+    .avatar-container:hover .avatar-icon {  
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);  
+    }  
+
+    .col-md-12 {
+        padding: 10px;
+        width: 80%;
+        border-radius: 10px;
+    }
+</style>

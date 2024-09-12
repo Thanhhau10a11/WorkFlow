@@ -24,6 +24,7 @@ class UserLoginController {
 
             const token = jwt.sign({ id: user.IDUser, username: user.UserName }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
+            
             res.status(200).json({
                 message: 'Đăng nhập thành công',
                 token: token
