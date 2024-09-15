@@ -1,141 +1,194 @@
-<div class="py-5 team4">  
-    <div class="container">  
-        <div class="row justify-content-center mb-4">  
-            <div class="col-md-7 text-center">  
-                <h3 class="mb-3 text-big">{{Group.GroupName}}</h3>  
-                <h6 class="subtitle">You can rely on our amazing features list and also our customer services will be a great experience for you without doubt and in no-time</h6>  
-            </div>  
-        </div>  
-        <div class="row mt-4">  
-            <div class="col-lg-3 mb-4 locShadow">  
-                <a href="/group/addMember/{{Group.GroupID}}" style="text-decoration: none;">
-                    <div class="row " >  
-                    <div class="col-md-12 display-center">  
-                        <img src="/img/plus.png" alt="wrapkit" class="img-fluid rounded-circle" style="width: 103px;height:100px"/>  
-                    </div>  
-                    <div class="col-md-12 text-center">  
-                        <div class="pt-2" >  
-                            <h5 class="mt-4 font-weight-medium mb-0" >Add</h5>  
-                            {{!-- <h6 class="subtitle mb-3">Property Specialist</h6>  
-                            <p>You can rely on our amazing features list and also our customer services will be a great experience.</p>   --}}
-                        </div>  
-                    </div>  
+<div class="py-5 team4">
+    <div class="container">
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-7 text-center">
+                <h3 class="mb-3 text-big">{{Group.GroupName}}</h3>
+                <h6 class="subtitle">
+                    You can rely on our amazing features list and also our customer services will be a great experience for you without doubt and in no-time
+                </h6>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-lg-3 mb-4 locShadow mx-2">
+                <a href="/group/addMember/{{Group.GroupID}}" class="add-member-link">
+                    <div class="add-member-card">
+                        <div class="add-member-image">
+                            <img src="/img/plus.png" alt="Add Member" class="img-fluid rounded-circle" />
+                        </div>
+                        <div class="add-member-text text-center">
+                            <h5 class="mt-4 font-weight-medium mb-0">Add</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {{#each members}}
+                <div class="col-lg-3 mb-4 locShadow mx-2">
+                    <div class="member-card">
+                        <div class="member-image display-center">
+                            <img src="/img/user.png" alt="Member" class="img-fluid rounded-circle" />
+                        </div>
+                        <div class="member-text text-center">
+                            <h5 class="mt-4 font-weight-medium mb-0">{{this.Username}}</h5>
+                        </div>
+                        <button class="delete-button" onclick="removeMember({{../Group.GroupID}}, {{this.IDUser}})">Xóa</button>
+                    </div>
                 </div>
-                </a>  
-            </div>  
-        {{#each members}}
-             <div class="col-lg-3 mb-4 locShadow">  
-                <div class="row display-center">  
-                    <div class="col-md-12 display-center">  
-                        <img src="/img/user.png" alt="wrapkit" class="img-fluid rounded-circle" />  
-                    </div>  
-                    <div class="col-md-12 text-center">  
-                        <div class="pt-2">  
-                            <h5 class="mt-4 font-weight-medium mb-0">{{this.Username}}</h5>  
-                            {{!-- <h6 class="subtitle mb-3">Property Specialist</h6>  
-                            <p>You can rely on our amazing features list and also our customer services will be a great experience.</p>   --}}
-                        </div>  
-                    </div>  
-                </div>  
-            </div>  
-        {{/each}}
-        </div>  
-    </div>  
-</div>  
+            {{/each}}
+        </div>
+    </div>
+</div>
+<script>
+    function removeMember(groupId, userId) {
+        if (confirm('Bạn có chắc chắn muốn xóa thành viên này?')) {
+            const token = localStorage.getItem('authToken');
 
-<style>  
+            fetch(`/group/removeMember/${groupId}/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`  
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Đã xóa thành viên thành công!');
+                    location.reload(); 
+                } else {
+                    alert('Lỗi khi xóa thành viên!');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Đã xảy ra lỗi!');
+            });
+        }
+    }
+</script>
+
+<style>
+    @import url(//fonts.googleapis.com/css?family=Montserrat:300,500);
+
     * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
     }
+
+    .team4 {
+        font-family: "Montserrat", sans-serif;
+        color: #8d97ad;
+        font-weight: 300;
+    }
+
+    .team4 h1,
+    .team4 h2,
+    .team4 h3,
+    .team4 h4,
+    .team4 h5,
+    .team4 h6 {
+        color: #3e4555;
+    }
+
+    .team4 .font-weight-medium {
+        font-weight: 500;
+    }
+
+    .team4 h5 {
+        line-height: 22px;
+        font-size: 18px;
+    }
+
+    .team4 .subtitle {
+        color: #8d97ad;
+        line-height: 24px;
+        font-size: 20px;
+    }
+
+    .team4 ul li a {
+        color: #8d97ad;
+        padding-right: 15px;
+        transition: 0.1s ease-in;
+    }
+
+    .team4 ul li a:hover {
+        transform: translateY(-5px);
+        color: #316ce8;
+    }
+
     .locShadow {
         transition: box-shadow 0.35s;
-    }
-    .locShadow img {
+        border-radius: 10px;
+        overflow: hidden;
+        background-color: #fff;
         box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     }
+
     .locShadow:hover {
-        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        box-shadow: rgba(100, 100, 111, 0.3) 0px 15px 30px 0px;
     }
-    @import url(//fonts.googleapis.com/css?family=Montserrat:300,500);  
-    .team4 {  
-        font-family: "Montserrat", sans-serif;  
-        color: #8d97ad;  
-        font-weight: 300;  
-    }  
 
-    .team4 h1,  
-    .team4 h2,  
-    .team4 h3,  
-    .team4 h4,  
-    .team4 h5,  
-    .team4 h6 {  
-        color: #3e4555;  
-    }  
+    .add-member-link {
+        text-decoration: none;
+        display: block;
+        height: 100%;
+        color: inherit;
+    }
 
-    .team4 .font-weight-medium {  
-        font-weight: 500;  
-    }  
+    .add-member-card,
+    .member-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        text-align: center;
+        position: relative; /* Thêm */
+        height: 100%;
+    }
 
-    .team4 h5 {  
-        line-height: 22px;  
-        font-size: 18px;  
-    }  
+    .add-member-image,
+    .member-image {
+        margin-bottom: 15px;
+    }
 
-    .team4 .subtitle {  
-        color: #8d97ad;  
-        line-height: 24px;  
-        font-size: 20px;  
-    }  
+    .add-member-image img,
+    .member-image img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        transition: box-shadow 0.3s ease;
+    }
 
-    .team4 ul li a {  
-        color: #8d97ad;  
-        padding-right: 15px;  
-        transition: 0.1s ease-in;  
-    }  
-
-    .team4 ul li a:hover {  
-        transform: translate3d(0px, -5px, 0px);  
-        color: #316ce8;  
-    }  
-
-    .avatar-container {  
-        width: 100%;  
-        height: 150px; 
-        background-color: #f0f0f0; 
-        border-radius: 50%;  
-        display: flex;  
-        justify-content: center;  
-        align-items: center;  
-        margin-bottom: 15px;  
-        transition: background-color 0.3s ease;  
-        cursor: pointer; 
-    }  
-
-    .avatar-container:hover {  
-        background-color: #e0e0e0; 
-    }  
-
-    .avatar-icon {  
-        display: flex;  
-        justify-content: center;  
-        align-items: center;  
-        border-radius: 50%;  
-        width: 70px;  
-        height: 70px;  
-        background-color: #fff;  
-        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);  
-        transition: box-shadow 0.3s ease;  
-    }  
-
-    .avatar-container:hover .avatar-icon {  
-        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);  
-    }  
+    .add-member-image img:hover,
+    .member-image img:hover {
+        box-shadow: rgba(100, 100, 111, 0.3) 0px 15px 30px 0px;
+    }
 
     .col-md-12 {
         padding: 10px;
-        width: 80%;
-        border-radius: 10px;
+    }
+
+    .delete-button {
+        display: none; 
+        position: absolute; 
+        top: 10px; 
+        right: 10px; 
+        background-color: red; 
+        color: white; 
+        border: none; 
+        padding: 5px 10px; 
+        cursor: pointer; 
+        border-radius: 5px; 
+        text-decoration: none;
+        z-index: 1; 
+    }
+
+    .delete-button:hover {
+        background-color: crimson;
+    }
+
+    .member-card:hover .delete-button {
+        display: block; 
     }
 </style>

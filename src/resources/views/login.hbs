@@ -17,7 +17,7 @@
         </form>
     </div>
     <div class="form-container sign-in-container">
-        <form id="signinForm" action="http://localhost:3000/api/login" method="post">
+        <form id="signinForm" action="" method="">
             <h1>Sign in</h1>
             <div class="social-container">
                 <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
@@ -140,7 +140,7 @@ document.getElementById('signinForm').addEventListener('submit', function(event)
     }
     
     if (valid) {
-        // Send data to the server
+        // Gửi dữ liệu đến server để đăng nhập
         fetch('http://localhost:3000/api/login', {
             method: 'POST',
             headers: {
@@ -155,7 +155,23 @@ document.getElementById('signinForm').addEventListener('submit', function(event)
         .then(data => {
             if (data.success) {
                 localStorage.setItem('authToken', data.token);
-                window.location.href = '/';
+                const token = localStorage.getItem('authToken');
+                fetch('/', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,  
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/';
+                    } else {
+                        errorMessage.textContent = 'Login failed. Please try again.';
+                    }
+                })
+                .catch(error => {
+                    errorMessage.textContent = 'An error occurred: ' + error.message;
+                });
             } else {
                 errorMessage.textContent = data.message || 'Login failed';
             }
@@ -165,6 +181,7 @@ document.getElementById('signinForm').addEventListener('submit', function(event)
         });
     }
 });
+
 
 const signUpButton = document.getElementById('signUp');
 const signInButton = document.getElementById('signIn');

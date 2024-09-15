@@ -1,11 +1,17 @@
 const axios = require('axios');
-const Group = require('../../models/Group_Model');
-const { response } = require('express');
+const {Group,GroupMember} = require('../../models/index');
+const session = require('express-session');
+//const { response } = require('express');
 class GroupController {
     async index(req, res) {
+        const token = req.session.user.token
         const IDUser = req.session.user.IDUser
-        const respones = await axios.get(`http:///localhost:3000/api/group/get/${IDUser}`)
-        const groups =respones.data
+        const response = await axios.get(`http://localhost:3000/api/group/get/${IDUser}`, {
+            headers: {
+                'Authorization': `Bearer ${token}` // Đính kèm token vào headers
+            }
+        });
+        const groups =response.data
         res.render('Group/home', {
             groups, 
             layout: 'main.hbs' 
@@ -22,7 +28,13 @@ class GroupController {
                 groupName:GroupName,
                 IDUser:IDUser,
             }
-            const response = await axios.post(`http://localhost:3000/api/group/create`,groupData)
+
+            const token = req.session.user.token
+            const headers = {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json' 
+            };
+            const response = await axios.post(`http://localhost:3000/api/group/create`,groupData,{headers})
             if(response.status===201){
                 res.redirect('/group/')
             }else {
@@ -36,8 +48,12 @@ class GroupController {
     }
     async detail(req,res) {
         const GroupID = req.params.id
-        const response =await axios.get(`http://localhost:3000/api/group/getMember/${GroupID}`);
-        const responseGroup = await axios.get(`http://localhost:3000/api/group/${GroupID}`)
+        const token = req.session.user.token
+        const headers = {
+            Authorization: `Bearer ${token}`
+        };
+        const response =await axios.get(`http://localhost:3000/api/group/getMember/${GroupID}`, { headers });
+        const responseGroup = await axios.get(`http://localhost:3000/api/group/${GroupID}`, { headers })
         const Group =responseGroup.data
         const members = response.data
         res.render('Group/detail',{
@@ -53,7 +69,27 @@ class GroupController {
             layout : 'main.hbs',
         })
     }
+    async removeMember(req, res) {
+        const { GroupID, IDUser } = req.params;
+        try {
+            const token = req.session.user.token;
     
+            const headers = {
+                Authorization: `Bearer ${token}`
+            };
+    
+            const response = await axios.post(`http://localhost:3000/api/group/removeMember/${GroupID}/${IDUser}`, {}, { headers });
+    
+            if (response.status === 200) {
+                res.status(200).json({ message: 'User removed successfully.' });
+            } else {
+                res.status(500).json({ message: 'Failed to remove user.' });
+            }
+        } catch (error) {
+            console.error('Error removing user:', error.message);
+            res.status(500).json({ message: 'An error occurred while removing the user.' });
+        }
+    }
     
 }
 

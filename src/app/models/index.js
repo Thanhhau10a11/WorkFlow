@@ -12,7 +12,7 @@ const Project = require('./Project_Model');
 const Stage = require('./Stage_Model');
 const UserNotify = require('./UserNotify_Model');
 const Workflow = require('./WorkFlow_Model');
-
+const Invitation = require('./Invitation_Model');
 // Định nghĩa các mối quan hệ
 // AppUser.hasMany(Group, { as: 'Groups', foreignKey: 'IDUser' });
 // Group.belongsTo(AppUser, { as: 'User', foreignKey: 'IDUser' });
@@ -41,6 +41,7 @@ Notify.belongsToMany(AppUser, { through: UserNotify, as: 'Users', foreignKey: 'I
 
 module.exports = {
   sequelize,
+  Invitation,
   AppUser,
   Dates,
   Group,

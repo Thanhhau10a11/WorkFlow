@@ -194,11 +194,13 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const token = localStorage.getItem('authToken');
     
     fetch('/api/group/addMember', {  
         method: 'POST',  
         headers: {  
-            'Content-Type': 'application/json'  
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`  
         },  
         body: JSON.stringify({ emails: selectedEmails, groupId: GroupID })  
     })  

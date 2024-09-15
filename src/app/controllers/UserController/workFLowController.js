@@ -5,7 +5,11 @@ class WorkFlowController {
         try {
 
             const IDUser = req.session.user.IDUser
-            const response = await axios.get(`http://localhost:3000/api/userWorkFlow/${IDUser}`);
+            const token =req.session.user.token
+            const headers = {
+                'Authorization':`Bearer ${token}`
+            }
+            const response = await axios.get(`http://localhost:3000/api/userWorkFlow/${IDUser}`,{headers});
             const workflows = response.data;
             res.render('WorkFLow/homeWorkFlow', { workflows });
         } catch (error) {
@@ -19,7 +23,11 @@ class WorkFlowController {
     }
     async detailWorkFlow(req,res) {
         const IDWorkFlow = req.params.id;
-        const response = await axios.get(`http://localhost:3000/api/userWorkFlow/detail/${IDWorkFlow}`);
+        const token = req.session.user.token
+        const headers = {
+            'Authorization':`Bearer ${token}`
+        }
+        const response = await axios.get(`http://localhost:3000/api/userWorkFlow/detail/${IDWorkFlow}`,{headers});
         const workflow = response.data;
         res.render('WorkFlow/detailWorkFlow',{ 
             workflow,

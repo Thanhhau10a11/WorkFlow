@@ -15,16 +15,6 @@ class workFlowController {
         }
     }
     async getById(req,res) {
-        // try {
-        //     const workFlow = await WorkFlow.findByPk(req.params.id);
-        //     if(workFlow) {
-        //         res.json(workFlow);
-        //     }else {
-        //         res.status(404).json({error : 'workFlow not found'})
-        //     }
-        // } catch (error) {
-        //     res.status(500).json({error:error.message})
-        // }
         try {
           const workflow = await WorkFlow.findByPk(req.params.id, {
             include: {
@@ -78,30 +68,6 @@ class workFlowController {
             res.status(500).json({ error: error.message });
           }
     }
-    // async saveWorkFLow(req, res) {
-    //   const { name, description, stages } = req.body;
-    //   const IDCreator = req.session.user.IDUser;
-    //   try {
-    //       const workflow = await WorkFlow.create({ Name: name, Description: description, IDCreator: IDCreator });
-  
-    //       for (const stage of stages) {
-    //           await Stage.create({
-    //               NameStage: stage.name,
-    //               DescriptionStatus: stage.description,
-    //               IDWorkFlow: workflow.IDWorkFlow,
-    //               previousStage: stage.previousStage,
-    //               nextStage: stage.nextStage,
-    //               approximateTime: stage.approxTime,
-    //               timecompletedState: stage.timeCompleted,
-    //               IDRecipient: stage.recipient
-    //           });
-    //       }
-  
-    //       res.status(201).json({ message: 'Workflow created successfully!' });
-    //   } catch (error) {
-    //       res.status(500).json({ error: error.message });
-    //   }
-    // }
     async saveWorkFLow(req, res) {
       const { name, description, stages } = req.body; // Không cần inviteManagers nữa
       const IDCreator = req.session.user.IDUser;
