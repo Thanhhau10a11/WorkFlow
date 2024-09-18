@@ -90,7 +90,6 @@ class GroupController {
             res.status(500).json({ message: 'An error occurred while removing the user.' });
         }
     }
-    
 }
 
 module.exports = new GroupController();

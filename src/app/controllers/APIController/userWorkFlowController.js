@@ -3,17 +3,6 @@ const Stage = require('../../models/Stage_Model');
 const Job = require('../../models/Job_Model');
 
 class userWorkFlowController {
-    // // Get all workflows by user ID
-    // async getByUserId(req, res) {
-    //     try {
-    //         const workflows = await WorkFlow.findAll({
-    //             where: { IDCreator: req.params.id }
-    //         });
-    //         res.json(workflows);
-    //     } catch (error) {
-    //         res.status(500).json({ error: error.message });
-    //     }
-    // }
     async getByUserId(req, res) {
         try {
             const workflows = await WorkFlow.findAll({
@@ -34,7 +23,6 @@ class userWorkFlowController {
         }
     }
 
-    // Create workflow for a specific user
     async createForUser(req, res) {
         try {
             const workFlow = await WorkFlow.create({
@@ -47,7 +35,6 @@ class userWorkFlowController {
         }
     }
 
-    // Update workflow by ID and User ID
     async updateByUserId(req, res) {
         try {
             const [updated] = await WorkFlow.update(req.body, {
@@ -72,7 +59,6 @@ class userWorkFlowController {
         }
     }
 
-    // Delete workflow by ID and User ID
     async deleteByUserId(req, res) {
         try {
             const deleted = await WorkFlow.destroy({

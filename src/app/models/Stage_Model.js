@@ -21,7 +21,7 @@ const Stage = sequelize.define('Stage', {
   EmailRecipient:DataTypes.STRING
 }, {
   tableName: 'stage',
-  timestamps: false
+  timestamps: true
 });
 
 module.exports = Stage;

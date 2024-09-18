@@ -222,8 +222,7 @@
                 $('#workflowDescription').val('');
                 $('#stagesContainer').empty();
                 
-                // Chuyển hướng đến trang home
-                window.location.href = '/workFlow/';  // Thay đổi URL theo trang chính của bạn
+                window.location.href = '/workFlow/';  
             } else {
                 const errorData = await response.json();
                 alert(`Lỗi: ${errorData.error}`);

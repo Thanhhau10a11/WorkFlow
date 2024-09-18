@@ -4,6 +4,7 @@ const router = express.Router()
 const groupController = require('../../app/controllers/APIController/groupController.js')
 const checkToken = require('../../util/authenticateToken.js');
 
+router.get('/getDetailAllGroup',groupController.getDetailAllGroup)
 router.get('/getAll',checkToken,groupController.getALl)
 router.get('/:id',groupController.getById)
 router.get('/get/:id',groupController.getGroupsByIDUser)

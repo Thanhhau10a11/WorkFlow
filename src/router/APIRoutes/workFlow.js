@@ -9,6 +9,8 @@ router.post('/create',workFlowController.create)
 router.post('/update/:id',workFlowController.update)
 router.post('/delete/:id',workFlowController.delete)
 router.post('/saveWorkFLow',workFlowController.saveWorkFLow)
+router.post('/saveStages/:id',workFlowController.saveStageByWorkFlowID)
+
 
 
 module.exports = router

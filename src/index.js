@@ -106,11 +106,13 @@ const routerLoggin = require('./router/userLoggin');
 const routerRegister = require('./router/userRegister');  
 const UserRouter = require('./router/UserRoutes');  
 const username = require('./util/exportUserName');  
+//const appUserController = require('./app/controllers/UserController/AppUserController')
 
 app.use(username);  
 app.use('/api', router);  
 app.use('/login', routerLoggin);  
-app.use('/register', routerRegister);  
+app.use('/register', routerRegister);
+//app.get('/update-info',appUserController.index)
 app.use('/', UserRouter);  
 
 http.createServer(app).listen(port, () => {  

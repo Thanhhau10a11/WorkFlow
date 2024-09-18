@@ -68,51 +68,119 @@ class workFlowController {
             res.status(500).json({ error: error.message });
           }
     }
-    async saveWorkFLow(req, res) {
-      const { name, description, stages } = req.body; // Không cần inviteManagers nữa
-      const IDCreator = req.session.user.IDUser;
+    // async saveWorkFLow(req, res) {
+    //   const { name, description, stages } = req.body; 
+    //   const IDCreator = req.session.user.IDUser;
       
+    //   try {
+    //       const workflow = await WorkFlow.create({ Name: name, Description: description, IDCreator: IDCreator });
+  
+    //       const stageIds = [];
+  
+    //       for (const stage of stages) {
+    //           const createdStage = await Stage.create({
+    //               NameStage: stage.name,
+    //               DescriptionStatus: stage.description,
+    //               IDWorkFlow: workflow.IDWorkFlow,
+    //               previousStage: stage.previousStage,
+    //               nextStage: stage.nextStage,
+    //               approximateTime: stage.approxTime,
+    //               timecompletedState: stage.timeCompleted,
+    //               EmailRecipient: stage.recipient 
+    //           });
+    //           stageIds.push(createdStage.IdStage); 
+    //       }
+    //       if (stageIds.length > 0) {
+    //           for (const stageId of stageIds) {
+    //               // Lấy các stage từ cơ sở dữ liệu để lấy email recipient
+    //               const stage = await Stage.findByPk(stageId);
+    //               if (stage && stage.EmailRecipient) {
+    //                   const email = stage.EmailRecipient;
+    //                   const invitationUrl = `http://localhost:3000/api/email/${email}`;
+                      
+    //                   // Gọi API để gửi email
+    //                   await axios.post(invitationUrl, {
+    //                       email: email,
+    //                       workflowId: workflow.IDWorkFlow,
+    //                       stageId: stageId
+    //                   }, {
+    //                       headers: {
+    //                           'Content-Type': 'application/json'
+    //                       }
+    //                   });
+    //               }
+    //           }
+    //       }
+  
+    //       res.status(201).json({ 
+    //           message: 'Workflow created and invitations sent successfully!',
+    //           workflowId: workflow.IDWorkFlow,
+    //           stageIds: stageIds
+    //       });
+    //   } catch (error) {
+    //       console.error('Error creating workflow and sending invitations:', error);
+    //       res.status(500).json({ error: error.message });
+    //   }
+    // }
+    async saveWorkFLow(req, res) {
+      const { name, description, stages } = req.body;
+      const IDCreator = req.session.user.IDUser;
+  
       try {
-          const workflow = await WorkFlow.create({ Name: name, Description: description, IDCreator: IDCreator });
+          const workflow = await WorkFlow.create({
+              Name: name,
+              Description: description,
+              IDCreator: IDCreator
+          });
   
           const stageIds = [];
+          const createdStages = [];
   
           for (const stage of stages) {
               const createdStage = await Stage.create({
                   NameStage: stage.name,
                   DescriptionStatus: stage.description,
                   IDWorkFlow: workflow.IDWorkFlow,
-                  previousStage: stage.previousStage,
-                  nextStage: stage.nextStage,
                   approximateTime: stage.approxTime,
                   timecompletedState: stage.timeCompleted,
-                  EmailRecipient: stage.recipient 
+                  EmailRecipient: stage.recipient
               });
-              stageIds.push(createdStage.IdStage); 
+              stageIds.push(createdStage.IdStage);
+              createdStages.push(createdStage); 
           }
-          if (stageIds.length > 0) {
-              for (const stageId of stageIds) {
-                  // Lấy các stage từ cơ sở dữ liệu để lấy email recipient
-                  const stage = await Stage.findByPk(stageId);
-                  if (stage && stage.EmailRecipient) {
-                      const email = stage.EmailRecipient;
-                      const invitationUrl = `http://localhost:3000/api/email/${email}`;
-                      
-                      // Gọi API để gửi email
-                      await axios.post(invitationUrl, {
-                          email: email,
-                          workflowId: workflow.IDWorkFlow,
-                          stageId: stageId
-                      }, {
-                          headers: {
-                              'Content-Type': 'application/json'
-                          }
-                      });
-                  }
+  
+          for (let i = 0; i < createdStages.length; i++) {  
+              const stage = createdStages[i];
+              const previousStageId = i > 0 ? createdStages[i - 1].IdStage : null;
+              const nextStageId = i < createdStages.length - 1 ? createdStages[i + 1].IdStage : null;
+  
+              await Stage.update({
+                  previousStage: previousStageId,
+                  nextStage: nextStageId
+              }, {
+                  where: { IdStage: stage.IdStage }
+              });
+          }
+  
+          for (const stageId of stageIds) {
+              const stage = await Stage.findByPk(stageId);
+              if (stage && stage.EmailRecipient) {
+                  const email = stage.EmailRecipient;
+                  const invitationUrl = `http://localhost:3000/api/email/${email}`;
+  
+                  await axios.post(invitationUrl, {
+                      email: email,
+                      workflowId: workflow.IDWorkFlow,
+                      stageId: stageId
+                  }, {
+                      headers: {
+                          'Content-Type': 'application/json'
+                      }
+                  });
               }
           }
   
-          res.status(201).json({ 
+          res.status(201).json({
               message: 'Workflow created and invitations sent successfully!',
               workflowId: workflow.IDWorkFlow,
               stageIds: stageIds
@@ -121,7 +189,69 @@ class workFlowController {
           console.error('Error creating workflow and sending invitations:', error);
           res.status(500).json({ error: error.message });
       }
+  }
+
+  async saveStageByWorkFlowID(req, res) {
+    try {
+        const workflowId = req.params.id;
+        const { stages } = req.body; 
+
+        if (!Array.isArray(stages) || stages.length === 0) {
+            return res.status(400).json({ error: 'Dữ liệu stages không hợp lệ' });
+        }
+
+        const workflow = await WorkFlow.findByPk(workflowId);
+        if (!workflow) {
+            return res.status(404).json({ error: 'Không tìm thấy workflow' });
+        }
+
+        // Lấy các stages hiện có cho workflow này
+        const existingStages = await Stage.findAll({
+            where: { IDWorkFlow: workflowId },
+            order: [['IdStage', 'ASC']] 
+        });
+
+        // Tạo các stage mới
+        const newStages = await Promise.all(stages.map(async (stage) => {
+            return await Stage.create({
+                NameStage: stage.NameStage,
+                DescriptionStatus: stage.DescriptionStatus,
+                IDWorkFlow: workflowId,
+                approximateTime: stage.approximateTime,
+                //timecompletedState: stage.timecompletedState,
+                EmailRecipient: stage.EmailRecipient,
+            });
+        }));
+
+        // Kết hợp các stage cũ và mới
+        const allStages = [...existingStages, ...newStages];
+
+        // Cập nhật các trường previousStage và nextStage
+        for (let i = 0; i < allStages.length; i++) {
+            const currentStage = allStages[i];
+            const previousStageId = i > 0 ? allStages[i - 1].IdStage : null;
+            const nextStageId = i < allStages.length - 1 ? allStages[i + 1].IdStage : null;
+
+            await Stage.update({
+                previousStage: previousStageId,
+                nextStage: nextStageId
+            }, {
+                where: { IdStage: currentStage.IdStage }
+            });
+        }
+
+        res.status(201).json({
+            success: true,
+            message: 'Lưu các stages thành công!',
+            newStages
+        });
+    } catch (error) {
+        console.error('Lỗi khi lưu các stages:', error);
+        res.status(500).json({ error: 'Lỗi máy chủ nội bộ' });
     }
+}
+
+  
 }
 
 module.exports = new workFlowController();

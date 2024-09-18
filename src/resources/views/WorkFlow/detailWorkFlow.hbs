@@ -1,110 +1,261 @@
 
-    <style>
-        * {
-            box-sizing: border-box; 
-        }
-
-        body {
-            margin: 0;
-            background-color: #f0f4f8;
-            font-family: 'Arial', sans-serif; 
-            color: #333;
-        }
-
-        .workflow-container {
-            padding: 20px; 
-            width: 100%; 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            border-radius: 10px; 
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            background-color: #ffffff; 
-        }
-
-        .workflow-title {
-            text-align: center; 
-            margin-bottom: 20px; 
-            font-size: 2rem; 
-            color: #2980b9; 
-        }
-
-        .stage-list {
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 20px; 
-            padding: 0; 
-            margin: 0; 
-            align-items: flex-start; 
-        }
-
-        .stage-item {
-            background-color: #ecf0f1; 
-            border-radius: 8px; 
-            width: 220px; 
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
-            transition: transform 0.3s; 
-            cursor: pointer; 
-        }
-
-        .stage-item:hover {
-            transform: scale(1.05); 
-        }
-
-        .stage-header {
-            padding: 10px; 
-            background-color: #2980b9; 
-            color: #ffffff; 
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px; 
-        }
-
-        .stage-name {
-            margin: 0; 
-            font-size: 1.2rem; 
-        }
-
-        .stage-content {
-            padding: 10px; 
-        }
-
-        .stage-description, .stage-recipient {
-            margin: 5px 0; 
-            font-size: 0.9rem;
-        }
-
-        .add-stage {
-            background-color: #3498db;
-            color: #ffffff; 
-            text-align: center;
-        }
-
-        .add-stage:hover {
-            background-color: #2980b9; 
-        }
-    </style>
-
-    <div class="workflow-container">
-        <h2 class="workflow-title">{{workflow.Name}}</h2>
-        <div class="stage-list">
-            {{#each workflow.Stages}}
-                <div class="stage-item">
-                    <div class="stage-header">
-                        <h3 class="stage-name">{{this.NameStage}}</h3>
-                    </div>
-                    <div class="stage-content">
-                        <p class="stage-description">{{this.DescriptionStatus}}</p>
-                        <p class="stage-recipient">Người nhận: {{this.EmailRecipient}}</p>
-                    </div>
-                </div>
-            {{/each}}
-            <div class="stage-item add-stage">
-                <div class="stage-header">
-                    <h3 class="stage-name">+</h3>
-                </div>
-                <div class="stage-content">
-                    <p class="stage-description">Thêm danh sách khác</p>
+    <link rel="stylesheet" href="/css/test.css">
+</head>
+<body>
+    <div class='container-main container'>
+        <main class='project' style="max-width:100%">
+            <div class='project-info'>
+                <h1 id="WorkFlowID" data-id="{{workflow.IDWorkFlow}}">{{workflow.Name}}</h1>
+                <div class='project-participants'>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <button class='project-participants__add' title="Add Stages">Add Stages</button>
                 </div>
             </div>
-        </div>
+            <div class='project-tasks row'>
+                {{#each stages}}
+                    <div class="">
+                        <div class='task' draggable='true'>
+                            <div class='task__tags'>
+                                <span class='task__tag task__tag--design'>{{this.NameStage}}</span>
+                                <button class='task__options'><i class="fas fa-ellipsis-h"></i></button>
+                            </div>
+                            <p>Người nhận: {{this.EmailRecipient}}</p>
+                            <div class='task__stats'>
+                                <span><time datetime="{{this.approximateTime}}"><i class="fas fa-flag" style="margin-right: 5px;"></i>{{formatDate this.approximateTime}}</time></span>
+                                <span class='task__owner'></span>
+                            </div>
+                        </div>
+                    </div>
+                {{/each}}
+            </div>
+        </main>
     </div>
+
+    <div class="overlay"></div>
+
+    <div class="form-container">  
+      <form id="add-stage-form" style="position: relative;">  
+          <h2 class="display-center" style="margin-bottom:10px">Add New Stage</h2>  
+          <div id="stages-container">  
+              <!-- Dynamic stage fields will be added here -->  
+          </div>  
+          <button type="submit">Add Stages</button>  
+          <button type="button" id="cancel-button">Cancel</button>  
+          <button type="button" class="add-more-stage-btn" id="add-more-stage" title="Add More Stage">+</button>  
+      </form>  
+  </div>
+
+   <script>  
+    document.addEventListener('DOMContentLoaded', (event) => {  
+        var workFlowIDElement = document.getElementById('WorkFlowID');
+        var WorkFlowID = workFlowIDElement.getAttribute('data-id');
+        var dragSrcEl = null;  
+
+        function handleDragStart(e) {  
+            this.style.opacity = '0.1';  
+            this.style.border = '3px dashed #c4cad3';  
+
+            dragSrcEl = this;  
+
+            e.dataTransfer.effectAllowed = 'move';  
+            e.dataTransfer.setData('text/html', this.innerHTML);  
+        }  
+
+        function handleDragOver(e) {  
+            if (e.preventDefault) {  
+                e.preventDefault();  
+            }  
+
+            e.dataTransfer.dropEffect = 'move';  
+
+            return false;  
+        }  
+
+        function handleDragEnter(e) {  
+            this.classList.add('task-hover');  
+        }  
+
+        function handleDragLeave(e) {  
+            this.classList.remove('task-hover');  
+        }  
+
+        function handleDrop(e) {  
+            if (e.stopPropagation) {  
+                e.stopPropagation(); // stops the browser from redirecting.  
+            }  
+
+            if (dragSrcEl != this) {  
+                dragSrcEl.innerHTML = this.innerHTML;  
+                this.innerHTML = e.dataTransfer.getData('text/html');  
+            }  
+
+            return false;  
+        }  
+
+        function handleDragEnd(e) {  
+            this.style.opacity = '1';  
+            this.style.border = 'none';  
+
+            items.forEach(function (item) {  
+                item.classList.remove('task-hover');  
+            });  
+        }  
+
+        let items = document.querySelectorAll('.task');  
+        items.forEach(function(item) {  
+            item.addEventListener('dragstart', handleDragStart, false);  
+            item.addEventListener('dragenter', handleDragEnter, false);  
+            item.addEventListener('dragover', handleDragOver, false);  
+            item.addEventListener('dragleave', handleDragLeave, false);  
+            item.addEventListener('drop', handleDrop, false);  
+            item.addEventListener('dragend', handleDragEnd, false);  
+        });  
+
+        document.querySelector('.project-participants__add').addEventListener('click', function() {  
+            document.querySelector('.overlay').style.display = 'block';  
+            document.querySelector('.form-container').style.display = 'block';  
+            addStageFields();   
+        });  
+
+        document.getElementById('cancel-button').addEventListener('click', function() {  
+            document.querySelector('.overlay').style.display = 'none';  
+            document.querySelector('.form-container').style.display = 'none';  
+        });  
+
+        document.getElementById('add-more-stage').addEventListener('click', function() {  
+            addStageFields();  
+        });  
+
+        document.getElementById('add-stage-form').addEventListener('submit', function(e) {  
+            e.preventDefault();  
+
+            const stagesData = {
+                stages: []  // Chứa danh sách các stages
+            };
+
+            document.querySelectorAll('.stage-group').forEach((stageGroup, index) => {  
+                const stageName = stageGroup.querySelector('[name="stageName"]').value;  
+                const stageDescription = stageGroup.querySelector('[name="stageDescription"]').value;  
+                const showRecipient = stageGroup.querySelector('[name="showRecipient"]').checked;  
+                const stageRecipient = showRecipient ? stageGroup.querySelector('[name="stageRecipient"]').value : null;  
+                const stageApproxTime = stageGroup.querySelector('[name="stageApproxTime"]').value;  
+
+                if (!stageName) {  
+                    alert('Please enter a stage name.');  
+                    return;
+                }
+
+                // Thêm stage vào mảng stagesData
+                stagesData.stages.push({  
+                    NameStage: stageName,  
+                    DescriptionStatus: stageDescription,  
+                    EmailRecipient: stageRecipient,  
+                    approximateTime: stageApproxTime
+                });  
+            });
+
+            console.log(stagesData);  // Xem dữ liệu JSON trên console
+
+            // Gửi dữ liệu lên server
+            const token = localStorage.getItem('authToken');
+            fetch(`/api/workFlow/saveStages/${WorkFlowID}`, {  
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(stagesData),  // Chuyển stagesData thành chuỗi JSON
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.querySelector('.overlay').style.display = 'none';  
+                    document.querySelector('.form-container').style.display = 'none';  
+                    window.location.href = window.location.href;
+
+                    // Cập nhật danh sách các stage mà không cần tải lại trang
+                    //updateStageList(data.newStages);
+                } else {
+                    alert('Đã có lỗi xảy ra khi lưu dữ liệu.');
+                }
+            })
+            .catch((error) => {
+                console.error('Lỗi:', error);
+            });
+        });  
+
+        document.getElementById('stages-container').addEventListener('change', function(e) {  
+            if (e.target.name === 'showRecipient') {  
+                const recipientField = e.target.closest('.stage-group').querySelector('.recipient-field');  
+                recipientField.style.display = e.target.checked ? 'block' : 'none';  
+            }  
+        });  
+
+        function addStageFields() {  
+            const container = document.getElementById('stages-container');  
+            const stageIndex = container.children.length;  
+
+            const stageHTML = `  
+                <div class="stage-group">  
+                    <h3>Stage ${stageIndex + 1} <button type="button" class="remove-stage-btn" onclick="removeStage(this)"><i class="fa-solid fa-trash"></i></button></h3>  
+                    <label for="stageName-${stageIndex}">Stage Name:</label>  
+                    <input type="text" id="stageName-${stageIndex}" name="stageName">  
+                    <label for="stageDescription-${stageIndex}">Stage Description:</label>  
+                    <input type="text" id="stageDescription-${stageIndex}" name="stageDescription">  
+                    
+                    <!-- Assign Recipient Checkbox -->  
+                    <label for="showRecipient-${stageIndex}">  
+                        <input type="checkbox" id="showRecipient-${stageIndex}" name="showRecipient">  
+                        Assign Recipient  
+                    </label>  
+
+                    <!-- Recipient Field (hidden by default) -->  
+                    <div class="recipient-field" id="recipientField-${stageIndex}" style="display: none;">  
+                        <label for="stageRecipient-${stageIndex}">Recipient:</label>  
+                        <input type="email" id="stageRecipient-${stageIndex}" name="stageRecipient">  
+                    </div>  
+                    
+                    <!-- Estimated Time field -->  
+                    <label for="stageApproxTime-${stageIndex}">Estimated Time:</label>  
+                    <input type="datetime-local" id="stageApproxTime-${stageIndex}" name="stageApproxTime">  
+                </div>  
+            `;  
+            
+            container.insertAdjacentHTML('beforeend', stageHTML);  
+        }  
+
+        window.removeStage = function(button) {  
+            button.closest('.stage-group').remove();  
+        };  
+    });  
+
+    {{!-- function updateStageList(stages) {
+        const stageContainer = document.querySelector('.project-tasks .row');
+        
+        stages.forEach(stage => {
+            const stageHTML = `
+                <div class="">
+                    <div class='task' draggable='true'>
+                        <div class='task__tags'>
+                            <span class='task__tag task__tag--design'>${stage.name}</span>
+                            <button class='task__options'><i class="fas fa-ellipsis-h"></i></button>
+                        </div>
+                        <p>Người nhận: ${stage.recipient || 'N/A'}</p>
+                        <div class='task__stats'>
+                            <span><time datetime="${stage.approxTime}"><i class="fas fa-flag" style="margin-right: 5px;"></i>${stage.approxTime}</time></span>
+                            <span class='task__owner'></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            stageContainer.insertAdjacentHTML('beforeend', stageHTML);
+        });
+
+        // Gọi lại các hàm drag and drop nếu cần
+        initDragAndDrop();
+    } --}}
+
+</script>
 

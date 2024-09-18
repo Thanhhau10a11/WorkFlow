@@ -1,4 +1,4 @@
-    :root {
+:root {
   --bg: #ebf0f7;
   --header: #fbf4f6;
   --text: #2e2e2f;
@@ -27,7 +27,6 @@ body {
 }
 
 .container-main {
-  background-color: var(--bg);
   width: 100%;
   min-height: 100vh;
 }
@@ -302,6 +301,108 @@ h1 {
 
 .task-icon--edit {
   background-color: #7784ee;
+}
+
+/* Form create Stage */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+}
+.form-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 500px;
+    max-height: 80vh; /* Điều chỉnh chiều cao tối đa của form */
+    overflow-y: auto; /* Cho phép cuộn khi cần */
+    z-index: 1000;
+    display: none;
+}
+.form-container form {
+    display: flex;
+    flex-direction: column;
+}
+.form-container label {
+    margin-bottom: 8px;
+}
+.form-container input {
+    margin-bottom: 12px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.form-container button {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.form-container button[type="submit"] {
+    background: linear-gradient(to right, #2F80ED, #56CCF2);
+    color: #fff;
+}
+.form-container button[type="submit"]:hover {
+    background: linear-gradient(to right, #56CCF2, #2F80ED);
+}
+.form-container button[type="button"] {
+    background-color: #ccc;
+    color: #000;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+.form-container button[type="button"]:hover {
+    background-color: #999;
+}
+.stage-group {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #f9f9f9;
+}
+.stage-group h3 {
+    margin-top: 0;
+}
+.stage-group label {  
+    display: block; 
+    margin-bottom: 8px; 
+}  
+
+.recipient-field {  
+    margin-top: 8px; 
+}  
+.remove-stage-btn {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    float: right;
+}
+.remove-stage-btn:hover {
+    background-color: #c0392b;
+}
+.add-more-stage-btn {  
+  position: absolute;  
+  top: -25px;   
+  right: 0; 
+  background: none;  
+  border: none;  
+  color: #2F80ED;  
+  cursor: pointer;  
+  font-size: 1 rem; 
 }
 
 @media only screen and (max-width: 1300px) {

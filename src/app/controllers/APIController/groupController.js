@@ -275,6 +275,23 @@ class GroupController {
         res.status(500).json({ message: 'Failed to remove user from group.' });
     }
   }
+  async getDetailAllGroup(req,res){
+    const IDUser = req.session.user.IDUser;
+    try {
+      const groups = await Group.findAll({
+        where: { IDUser: IDUser },
+        include: [{
+          model: AppUser,
+          as: 'Members',
+          through: { attributes: [] }
+        }]
+      });
+      res.status(200).json(groups)
+    } catch (error) {
+      console.error('Error load details from groups:', error);
+      res.status(500).json({ message: 'Failed to load details from groups.' });
+    }
+  }
 }
 
 module.exports = new GroupController();
