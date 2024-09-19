@@ -95,6 +95,25 @@ class userWorkFlowController {
             res.status(500).json('Error fetching workflow:', error);
         }
     }
+
+    async saveStageOrder(req, res) {
+        const { stages } = req.body;
+        try {
+            for (let stageData of stages) {
+                await Stage.update({
+                    previousStage: stageData.previousStage,
+                    nextStage: stageData.nextStage
+                }, {
+                    where: { IdStage: stageData.IdStage }
+                });
+            }
+            res.json({ success: true });
+        } catch (error) {
+            console.error('Lỗi khi cập nhật thứ tự stage:', error);
+            res.status(500).json({ success: false, message: 'Lỗi server' });
+        }
+    }
+    
 }
 
 module.exports = new userWorkFlowController();

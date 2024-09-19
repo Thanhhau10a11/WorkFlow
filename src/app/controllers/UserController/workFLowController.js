@@ -83,9 +83,8 @@ class WorkFlowController {
                 currentStage = orderedStages.find(stage => stage.previousStage === currentStage.IdStage);
             }
     
-            // Truyền dữ liệu JSON vào template
             res.render('WorkFlow/detailWorkFlow', { 
-                workflow, // Nếu `workflow` đã là đối tượng JSON thì không cần chuyển đổi nữa
+                workflow,
                 stages: sortedStages,
                 layout: 'main.hbs' 
             });

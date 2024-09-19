@@ -65,6 +65,16 @@ h1 {
   margin: 0 .2rem;
 }
 
+.project-participants span,
+.project-participants__save {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  background: var(--purple);
+  border-radius: 100rem;
+  margin: 0 .2rem;
+}
+
 .project-participants__add {
   background: transparent;
   border: 1px dashed rgb(150, 150, 150);
@@ -73,8 +83,24 @@ h1 {
   position: relative;
 }
 
+.project-participants__save {
+  background: transparent;
+  border: 1px dashed rgb(150, 150, 150);
+  font-size: 0;
+  cursor: pointer;
+  position: relative;
+  background-color: #46bd84;
+
+}
+
 .project-participants__add:after {
   content: '+';
+  font-size: 15px;
+  color: rgb(150, 150, 150);
+}
+
+.project-participants__save:after {
+  content: '';
   font-size: 15px;
   color: rgb(150, 150, 150);
 }
