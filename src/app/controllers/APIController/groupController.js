@@ -276,7 +276,7 @@ class GroupController {
     }
   }
   async getDetailAllGroup(req,res){
-    const IDUser = req.session.user.IDUser;
+    const IDUser = req.params.id;
     try {
       const groups = await Group.findAll({
         where: { IDUser: IDUser },

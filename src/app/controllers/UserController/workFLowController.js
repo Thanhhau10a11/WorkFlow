@@ -18,8 +18,15 @@ class WorkFlowController {
         }
     }
 
-    createWorkFLow(req, res) {
-        res.render('WorkFLow/createWorkFlow', { layout: 'main.hbs' });
+    async createWorkFLow(req, res) {
+        const token = req.session.user.token
+        const IDUser = req.session.user.IDUser
+        const headers = {
+            'Authorization':`Bearer ${token}`
+        }
+        const response = await axios.get(`http://localhost:3000/api/group/getDetailAllGroup/${IDUser}`,{headers})
+        const groups = response.data
+        res.render('WorkFLow/createWorkFlow', { layout: 'main.hbs' ,groups});
     }
     // async detailWorkFlow(req,res) {
     //     const IDWorkFlow = req.params.id;
@@ -83,8 +90,9 @@ class WorkFlowController {
                 currentStage = orderedStages.find(stage => stage.previousStage === currentStage.IdStage);
             }
     
+            // Truyền dữ liệu JSON vào template
             res.render('WorkFlow/detailWorkFlow', { 
-                workflow,
+                workflow, // Nếu `workflow` đã là đối tượng JSON thì không cần chuyển đổi nữa
                 stages: sortedStages,
                 layout: 'main.hbs' 
             });
