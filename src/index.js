@@ -94,7 +94,10 @@ app.engine("hbs", engine({
     },  
     and: function () {  
       return Array.prototype.every.call(arguments, Boolean);  
-    }  
+    },  
+    json: function(context) {
+      return JSON.stringify(context);
+    }
   }  
 }));  
 

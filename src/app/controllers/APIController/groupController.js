@@ -112,6 +112,128 @@ class GroupController {
     }
   }
 
+  // async addMember(req, res) {
+  //   const { emails, groupId } = req.body;
+
+  //   const authToken = req.session.user.token;
+
+  //   if (!emails || !groupId) {
+  //       return res.status(400).json({ success: false, message: 'Thiếu thông tin' });
+  //   }
+
+  //   try {
+  //       const group = await Group.findByPk(groupId);
+  //       if (!group) {
+  //           return res.status(404).json({ success: false, message: 'Nhóm không tìm thấy' });
+  //       }
+
+  //       // Tìm tất cả người dùng trong `AppUser` dựa trên `emails`
+  //       const users = await AppUser.findAll({
+  //           where: {
+  //               Username: {
+  //                   [Sequelize.Op.in]: emails
+  //               }
+  //           }
+  //       });
+
+  //       const existingUsernames = users.map(user => user.Username);
+  //       const existingUserIds = users.map(user => user.IDUser);
+
+  //       // Tìm những người dùng đã có trong nhóm này (`GroupMember`)
+  //       const existingMembers = await GroupMember.findAll({
+  //           where: {
+  //               GroupID: groupId,
+  //               IDUser: {
+  //                   [Sequelize.Op.in]: existingUserIds
+  //               }
+  //           }
+  //       });
+
+  //       const existingMemberIds = new Set(existingMembers.map(member => member.IDUser)); // Sử dụng Set để tránh trùng lặp
+
+  //       // Người dùng chưa tồn tại trong ứng dụng (`AppUser`)
+  //       const newEmails = emails.filter(email => !existingUsernames.includes(email));
+
+  //       const defaultPassword = process.env.DEFAULT_PASSWORD;
+  //       const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+
+  //       const membersToInvite = [];
+
+  //       // Tạo người dùng mới nếu chưa tồn tại trong ứng dụng
+  //       await Promise.all(newEmails.map(async (email) => {
+  //           try {
+  //               const newUser = await AppUser.create({
+  //                   Username: email,
+  //                   Password: hashedPassword
+  //               });
+
+  //               const token = crypto.randomBytes(20).toString('hex');
+  //               const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+  //               membersToInvite.push({
+  //                   GroupID: groupId,
+  //                   IDUser: newUser.IDUser,
+  //                   Token: token,
+  //                   TokenExpiry: tokenExpiry,
+  //                   Status: 'pending'
+  //               });
+
+  //               try {
+  //                   const headers = {
+  //                     'Authorization': `Bearer ${authToken}` 
+  //                   };
+  //                   await axios.post(`http://localhost:3000/api/email/inviteGroup/${email}`, {
+  //                       email: email,
+  //                       token: token
+  //                   },{headers});
+  //                   console.log(`Email sent successfully to ${email}`);
+  //               } catch (emailError) {
+  //                   console.error(`Failed to send email to ${email}:`, emailError.message);
+  //               }
+  //           } catch (error) {
+  //               console.error(`Failed to process ${email}:`, error.message);
+  //           }
+  //       }));
+
+  //       // Thêm người dùng đã tồn tại vào nhóm nếu chưa phải là thành viên của nhóm đó
+  //       users.forEach(user => {
+  //           if (!existingMemberIds.has(user.IDUser)) { // Kiểm tra nếu người dùng chưa có trong nhóm
+  //               const token = crypto.randomBytes(20).toString('hex');
+  //               const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+  //               membersToInvite.push({
+  //                   GroupID: groupId,
+  //                   IDUser: user.IDUser,
+  //                   Token: token,
+  //                   TokenExpiry: tokenExpiry,
+  //                   Status: 'pending'
+  //               });
+  //           }
+  //       });
+
+  //       if (membersToInvite.length > 0) {
+  //           await Promise.all(membersToInvite.map(async (member) => {
+  //               await GroupMember.upsert(member);
+  //           }));
+
+  //           const addedMembers = await GroupMember.findAll({
+  //               where: {
+  //                   GroupID: groupId,
+  //                   IDUser: membersToInvite.map(member => member.IDUser)
+  //               }
+  //           });
+
+  //           return res.status(200).json({ success: true, addedMembers });
+  //       } else {
+  //           console.log('No new members to add.');
+  //           return res.status(200).json({ success: true, message: 'Không có thành viên mới để thêm' });
+  //       }
+
+  //   } catch (error) {
+  //       console.error('Error occurred:', error.message);  
+  //       return res.status(500).json({ success: false, message: 'Có lỗi xảy ra trong quá trình xử lý.' });
+  //   }
+  // }
   async addMember(req, res) {
     const { emails, groupId } = req.body;
 
@@ -182,10 +304,13 @@ class GroupController {
                     const headers = {
                       'Authorization': `Bearer ${authToken}` 
                     };
-                    await axios.post(`http://localhost:3000/api/email/inviteGroup/${email}`, {
+                    axios.post(`http://localhost:3000/api/email/sendEmailNoti`, {
                         email: email,
+                        type: 'invite',
+                        username: newUser.Username,
+                        groupName: group.GroupName	, 
                         token: token
-                    },{headers});
+                    }, { headers });
                     console.log(`Email sent successfully to ${email}`);
                 } catch (emailError) {
                     console.error(`Failed to send email to ${email}:`, emailError.message);
@@ -196,20 +321,35 @@ class GroupController {
         }));
 
         // Thêm người dùng đã tồn tại vào nhóm nếu chưa phải là thành viên của nhóm đó
-        users.forEach(user => {
-            if (!existingMemberIds.has(user.IDUser)) { // Kiểm tra nếu người dùng chưa có trong nhóm
-                const token = crypto.randomBytes(20).toString('hex');
-                const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
-                membersToInvite.push({
-                    GroupID: groupId,
-                    IDUser: user.IDUser,
-                    Token: token,
-                    TokenExpiry: tokenExpiry,
-                    Status: 'pending'
-                });
-            }
-        });
+        for (const user of users) {
+          if (!existingMemberIds.has(user.IDUser)) { // Kiểm tra nếu người dùng chưa có trong nhóm
+              const token = crypto.randomBytes(20).toString('hex');
+              const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      
+              membersToInvite.push({
+                  GroupID: groupId,
+                  IDUser: user.IDUser,
+                  Token: token,
+                  TokenExpiry: tokenExpiry,
+                  Status: 'pending'
+              });
+      
+              try {
+                  const headers = {
+                      'Authorization': `Bearer ${authToken}` 
+                  };
+                  axios.post(`http://localhost:3000/api/email/sendEmailNoti`, {
+                      email: user.Username,
+                      type: 'group',
+                      username: user.Username,
+                      groupName: group.GroupName	
+                  }, { headers });
+                  console.log(`Email sent successfully to ${user.Username}`);
+              } catch (emailError) {
+                  console.error(`Failed to send email to ${user.Username}:`, emailError.message);
+              }
+          }
+      }
 
         if (membersToInvite.length > 0) {
             await Promise.all(membersToInvite.map(async (member) => {
@@ -233,7 +373,7 @@ class GroupController {
         console.error('Error occurred:', error.message);  
         return res.status(500).json({ success: false, message: 'Có lỗi xảy ra trong quá trình xử lý.' });
     }
-  }
+}
 
 
   async getMemberByGroupID(req, res) {

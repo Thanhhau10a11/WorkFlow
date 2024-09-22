@@ -5,7 +5,10 @@ const { Invitation, AppUser, Workflow, Stage, Group, GroupMember } = require('..
 const bcrypt = require('bcryptjs');
 const {sendEmail} = require('../../../util/emailUtils')
 
+const sendEmailNoti = require('../../../util/mailServices')
+
 class InvitationController {
+    // đang được thay thế bằng api khác
     async inviteManager(req, res) {
         const { email, workflowId, stageId } = req.body;
         const token = crypto.randomBytes(20).toString('hex');
@@ -42,7 +45,7 @@ class InvitationController {
             res.status(500).json({ message: 'Failed to send invitation' });
         }
     }
-
+    //đang được thay thế bằng api khác 
     async acceptInvitation(req, res) {
         const { token } = req.query;
     
@@ -146,6 +149,44 @@ class InvitationController {
             res.status(500).json({ message: 'Failed to accept invitation' });
         }
     }
+
+
+
+
+    async sendEmail(req, res) {
+        const { email, type, username, stageName, groupName, token } = req.body;
+    
+        try {
+            let subject, template, context;
+    
+            if (type === 'stage') {
+                subject = 'Thông báo nhận stage';
+                template = 'stageNotification';
+                context = { username, stageName };
+            } else if (type === 'group') {
+                subject = 'Thông báo thêm vào group';
+                template = 'groupNotification';
+                context = { username, groupName };
+            } else if (type === 'invite') {  
+                subject = 'Thông báo thêm vào group';
+                template = 'inviteGroup';
+                context = { 
+                    username, 
+                    groupName, 
+                    inviteLink: `http://localhost:3000/api/email/inviteGroup/accept-invitation?token=${token}` 
+                };
+            } else {
+                return res.status(400).json({ message: 'Loại email không hợp lệ.' });
+            }
+    
+            await sendEmailNoti(email, subject, template, context);
+            res.status(200).json({ message: 'Email đã được gửi thành công!' });
+        } catch (error) {
+            console.error('Lỗi khi gửi email:', error);
+            res.status(500).json({ message: 'Lỗi khi gửi email.' });
+        }
+    }
+      
 }
 
 module.exports = new InvitationController();

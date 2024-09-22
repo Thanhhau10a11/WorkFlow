@@ -8,7 +8,6 @@ const Job = sequelize.define('Job', {
     autoIncrement: true,
     primaryKey: true
   },
-  IDStage: DataTypes.INTEGER,
   Status: DataTypes.STRING,
   IDUserAssign: DataTypes.INTEGER,
   IDCreator: DataTypes.INTEGER,

@@ -14,6 +14,7 @@ const projectRouter = require('./project');
 const groupRouter = require('./group');
 const userWorkFlowRouter = require('./userWorkFlow');
 const emailRouter = require('./email');
+const testStageJob = require('./testApi');
 
 // Sử dụng các router
 
@@ -28,6 +29,8 @@ router.use('/project',checkToken,projectRouter);
 router.use('/group',checkToken,groupRouter);
 router.use('/userWorkFlow',checkToken,userWorkFlowRouter);
 router.use('/email',checkToken,emailRouter);
+router.use('/test',checkToken,testStageJob);
+
 
 
 module.exports = router;

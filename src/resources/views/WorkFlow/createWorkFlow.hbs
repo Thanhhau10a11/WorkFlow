@@ -103,135 +103,171 @@
     }
 
     .recipient-field {
-        display: none;
+        display: none; 
+    }
+
+    ..stageRecipient {
+        border-radius: 0.25rem; /* Rounded corners */
+        border: 1px solid #ced4da; /* Border color */
+        background-color: #ffffff; /* Background color */
+        padding: 0.375rem 0.75rem; /* Padding */
+        font-size: 1rem; /* Font size */
+        line-height: 1.5; /* Line height */
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; /* Transition effects */
+    }
+
+    .stageRecipient:focus {
+        border-color: #80bdff; /* Border color on focus */
+        outline: 0; /* Remove default outline */
+        box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25); /* Shadow effect */
+    }
+
+    .stageRecipient option {
+        padding: 0.5rem; /* Padding for options */
+    }
+
+    .stageRecipient optgroup {
+        font-weight: bold; /* Bold font for optgroup labels */
+        background-color: #f8f9fa; /* Background color for optgroup */
+        border-bottom: 1px solid #e9ecef; /* Border for optgroup */
+        padding: 0.25rem 0; /* Padding for optgroup */
     }
 </style>
 
-<script>
-    $(document).ready(function () {
-        let stageCount = 0;
+<script>  
+    $(document).ready(function () {  
+        let stageCount = 0;  
 
-        $('#addStageBtn').click(function () {
-            stageCount++;
-            const stageHtml = `
-                <div class="stage" data-stage-id="${stageCount}">
-                    <h6>Stage ${stageCount}</h6>
-                    <div class="form-row">
-                        <div class="col">
-                            <label for="stageName${stageCount}" class="required">Tên Stage <span class="required-star">*</span></label>
-                            <input type="text" class="form-control stageName" id="stageName${stageCount}" placeholder="Nhập tên stage" required>
-                        </div>
-                        <div class="col">
-                            <label for="stageDescription${stageCount}">Mô tả Stage</label>
-                            <input type="text" class="form-control stageDescription" id="stageDescription${stageCount}" placeholder="Nhập mô tả">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col">
-                            <input type="checkbox" class="show-recipient" id="showRecipient${stageCount}">
-                            <label for="showRecipient${stageCount}">Chỉ định người nhận</label>
-                        </div>
-                    </div>
-                    <div class="form-row recipient-field" id="recipientField${stageCount}">
-                        <div class="col">
-                            <label for="stageRecipient${stageCount}">Người nhận</label>
-                            <input type="text" class="form-control stageRecipient" id="stageRecipient${stageCount}" placeholder="Nhập người nhận">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col">
-                            <label for="stageApproxTime${stageCount}">Thời gian dự kiến</label>
-                            <input type="datetime-local" class="form-control stageApproxTime" id="stageApproxTime${stageCount}">
-                        </div>
-                    </div>
-                </div>
-            `;
-            $('#stagesContainer').append(stageHtml);
+        $('#addStageBtn').click(function () {  
+            stageCount++;  
+            const stageHtml = `  
+                <div class="stage" data-stage-id="${stageCount}">  
+                    <h6>Stage ${stageCount}</h6>  
+                    <div class="form-row">  
+                        <div class="col">  
+                            <label for="stageName${stageCount}" class="required">Tên Stage <span class="required-star">*</span></label>  
+                            <input type="text" class="form-control stageName" id="stageName${stageCount}" placeholder="Nhập tên stage" required>  
+                        </div>  
+                        <div class="col">  
+                            <label for="stageDescription${stageCount}">Mô tả Stage</label>  
+                            <input type="text" class="form-control stageDescription" id="stageDescription${stageCount}" placeholder="Nhập mô tả">  
+                        </div>  
+                    </div>  
+                    <div class="form-row">  
+                        <div class="col">  
+                            <input type="checkbox" class="show-recipient" id="showRecipient${stageCount}">  
+                            <label for="showRecipient${stageCount}">Chỉ định người nhận</label>  
+                        </div>  
+                    </div>  
+                    <div class="form-row recipient-field" id="recipientField${stageCount}" style="display:none;">  
+                        <div class="col">  
+                            <label for="stageRecipient${stageCount}">Người nhận</label>  
+                            <select class="form-control stageRecipient" id="stageRecipient${stageCount}">  
+                                <option value="" class="display-center">Chọn người nhận</option>  
+                                {{#each groups}}  
+                                    <optgroup label="{{this.GroupName}}">  
+                                        {{#each this.Members}}  
+                                            <option value="{{Username}}">{{Username}}</option>  
+                                        {{/each}}  
+                                    </optgroup>  
+                                {{/each}}  
+                            </select>  
+                        </div>  
+                    </div>  
+                    <div class="form-row">  
+                        <div class="col">  
+                            <label for="stageApproxTime${stageCount}">Thời gian dự kiến</label>  
+                            <input type="datetime-local" class="form-control stageApproxTime" id="stageApproxTime${stageCount}">  
+                        </div>  
+                    </div>  
+                </div>  
+            `;  
 
-            // Toggle recipient field visibility based on checkbox
-            $(`#showRecipient${stageCount}`).change(function () {
-                if ($(this).is(':checked')) {
-                    $(`#recipientField${stageCount}`).show();
-                } else {
-                    $(`#recipientField${stageCount}`).hide();
-                }
-            });
-        });
+            $('#stagesContainer').append(stageHtml);  
 
-        $('#saveWorkflowBtn').click(async function () {
-            const workflowName = $('#workflowName').val();
-            const workflowDescription = $('#workflowDescription').val();
+            // Gán sự kiện change cho checkbox mới  
+            $(`#showRecipient${stageCount}`).change(function () {  
+                const recipientFieldId = `#recipientField${stageCount}`;  
+                if ($(this).is(':checked')) {  
+                    $(recipientFieldId).show();  
+                } else {  
+                    $(recipientFieldId).hide();  
+                }  
+            });  
+        });  
 
-            if (!workflowName) {
-                alert('Vui lòng nhập tên workflow.');
-                return;
-            }
+        $('#saveWorkflowBtn').click(async function () {  
+            const workflowName = $('#workflowName').val();  
+            const workflowDescription = $('#workflowDescription').val();  
 
-            const stages = [];
-            let valid = true;
+            if (!workflowName) {  
+                alert('Vui lòng nhập tên workflow.');  
+                return;  
+            }  
 
-            $('.stage').each(function () {
-                const stageName = $(this).find('.stageName').val();
-                const showRecipient = $(this).find('.show-recipient').is(':checked');
-                const stageRecipient = showRecipient ? $(this).find('.stageRecipient').val() : null;
+            const stages = [];  
+            let valid = true;  
 
-                if (!stageName) {
-                    alert('Vui lòng nhập tên cho tất cả các stage.');
-                    valid = false;
-                    return false; // Dừng vòng lặp
-                }
+            $('.stage').each(function () {  
+                const stageName = $(this).find('.stageName').val();  
+                const showRecipient = $(this).find('.show-recipient').is(':checked');  
+                const stageRecipient = showRecipient ? $(this).find('.stageRecipient').val() : null;  
 
-                stages.push({
-                    name: stageName,
-                    description: $(this).find('.stageDescription').val(),
-                    recipient: stageRecipient,
-                    approxTime: $(this).find('.stageApproxTime').val()
-                });
-            });
+                if (!stageName) {  
+                    alert('Vui lòng nhập tên cho tất cả các stage.');  
+                    valid = false;  
+                    return false;   
+                }  
 
-            if (!valid) return;
+                stages.push({  
+                    name: stageName,  
+                    description: $(this).find('.stageDescription').val(),  
+                    recipient: stageRecipient,  
+                    approxTime: $(this).find('.stageApproxTime').val()  
+                });  
+            });  
 
-            // Xác định mối quan hệ giữa các stage dựa trên thứ tự tạo
-            stages.forEach((stage, index) => {
-                if (index > 0) {
-                    stage.previousStage = stages[index - 1].name;
-                }
-                if (index < stages.length - 1) {
-                    stage.nextStage = stages[index + 1].name;
-                }
-            });
+            if (!valid) return;  
 
-            try {
-            const token = localStorage.getItem('authToken');
-            const response = await fetch('/api/workFlow/saveWorkFLow', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    name: workflowName,
-                    description: workflowDescription,
-                    stages: stages
-                })
-            });
+            // Xác định mối quan hệ giữa các stage dựa trên thứ tự tạo  
+            stages.forEach((stage, index) => {  
+                if (index > 0) {  
+                    stage.previousStage = stages[index - 1].name;  
+                }  
+                if (index < stages.length - 1) {  
+                    stage.nextStage = stages[index + 1].name;  
+                }  
+            });  
 
-            if (response.ok) {
-                alert('Workflow đã được lưu thành công!');
-                $('#workflowName').val('');
-                $('#workflowDescription').val('');
-                $('#stagesContainer').empty();
-                
-                window.location.href = '/workFlow/';  
-            } else {
-                const errorData = await response.json();
-                alert(`Lỗi: ${errorData.error}`);
-            }
-        } catch (error) {
-            alert('Có lỗi xảy ra, vui lòng thử lại.');
-        }
+            try {  
+                const token = localStorage.getItem('authToken');  
+                const response = await fetch('/api/workFlow/saveWorkFLow', {  
+                    method: 'POST',  
+                    headers: {  
+                        'Content-Type': 'application/json',  
+                        'Authorization': `Bearer ${token}`  
+                    },  
+                    body: JSON.stringify({  
+                        name: workflowName,  
+                        description: workflowDescription,  
+                        stages: stages  
+                    })  
+                });  
 
-        });
-    });
+                if (response.ok) {  
+                    alert('Workflow đã được lưu thành công!');  
+                    $('#workflowName').val('');  
+                    $('#workflowDescription').val('');  
+                    $('#stagesContainer').empty();  
+                    window.location.href = '/workFlow/';  
+                } else {  
+                    const errorData = await response.json();  
+                    alert(`Lỗi: ${errorData.error}`);  
+                }  
+            } catch (error) {  
+                alert('Có lỗi xảy ra, vui lòng thử lại.');  
+            }  
+        });  
+    });  
 </script>
 

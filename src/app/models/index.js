@@ -1,4 +1,3 @@
-
 const sequelize = require('../../config/db');
 const AppUser = require('./User_Model');
 const Dates = require('./Dates_Model');
@@ -13,13 +12,11 @@ const Stage = require('./Stage_Model');
 const UserNotify = require('./UserNotify_Model');
 const Workflow = require('./WorkFlow_Model');
 const Invitation = require('./Invitation_Model');
-// Định nghĩa các mối quan hệ
-// AppUser.hasMany(Group, { as: 'Groups', foreignKey: 'IDUser' });
-// Group.belongsTo(AppUser, { as: 'User', foreignKey: 'IDUser' });
+const JobStage = require('./JobStage_Model'); // Import model JobStage
 
+// Định nghĩa các mối quan hệ
 Group.belongsToMany(AppUser, { through: GroupMember, as: 'Members', foreignKey: 'GroupID' });
 AppUser.belongsToMany(Group, { through: GroupMember, as: 'Groups', foreignKey: 'IDUser' });
-
 
 Job.belongsToMany(Dates, { through: JobDates, as: 'Dates', foreignKey: 'IDJob' });
 Dates.belongsToMany(Job, { through: JobDates, as: 'Jobs', foreignKey: 'IDDate' });
@@ -33,8 +30,9 @@ Job.belongsTo(Project, { foreignKey: 'IDProject' });
 Workflow.hasMany(Stage, { foreignKey: 'IDWorkFlow', as: 'Stages' });
 Stage.belongsTo(Workflow, { foreignKey: 'IDWorkFlow', as: 'Workflow' });
 
-Stage.hasMany(Job, { foreignKey: 'IDStage', as: 'Jobs' });
-Job.belongsTo(Stage, { foreignKey: 'IDStage', as: 'Stage' });
+// Định nghĩa quan hệ nhiều-nhiều giữa Job và Stage thông qua JobStage
+Job.belongsToMany(Stage, { through: JobStage, as: 'Stages', foreignKey: 'IDJob' });
+Stage.belongsToMany(Job, { through: JobStage, as: 'Jobs', foreignKey: 'IDStage' });
 
 AppUser.belongsToMany(Notify, { through: UserNotify, as: 'ReceivedNotifies', foreignKey: 'IDUser' });
 Notify.belongsToMany(AppUser, { through: UserNotify, as: 'Users', foreignKey: 'IDNotify' });
@@ -53,5 +51,6 @@ module.exports = {
   Project,
   Stage,
   UserNotify,
-  Workflow
+  Workflow,
+  JobStage // Xuất khẩu model JobStage
 };
