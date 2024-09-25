@@ -8,6 +8,8 @@ router.get('/:id',projectController.getById)
 router.post('/create',projectController.create)
 router.post('/update/:id',projectController.update)
 router.post('/delete/:id',projectController.delete)
+router.post('/create/:id',projectController.createByIDUser)
+
 
 
 module.exports = router

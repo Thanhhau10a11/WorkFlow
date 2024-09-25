@@ -9,9 +9,10 @@ const Project = sequelize.define('Project', {
     primaryKey: true
   },
   Progress: DataTypes.STRING,
-  IDUser: DataTypes.INTEGER,
+  IDCreator: DataTypes.INTEGER,
   InfoProject: DataTypes.TEXT,
-  NameProjectComment: DataTypes.STRING
+  NameProject: DataTypes.STRING,
+  Comment: DataTypes.STRING,
 }, {
   tableName: 'project',
   timestamps: false

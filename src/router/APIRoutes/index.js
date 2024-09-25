@@ -28,7 +28,8 @@ router.use('/job',checkToken,jobRouter);
 router.use('/project',checkToken,projectRouter);
 router.use('/group',checkToken,groupRouter);
 router.use('/userWorkFlow',checkToken,userWorkFlowRouter);
-router.use('/email',checkToken,emailRouter);
+//router.use('/email',checkToken,emailRouter);
+router.use('/email',emailRouter);
 router.use('/test',checkToken,testStageJob);
 
 

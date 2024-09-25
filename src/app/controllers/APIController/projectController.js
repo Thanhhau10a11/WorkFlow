@@ -59,6 +59,22 @@ class ProjectController {
             res.status(500).json({ error: error.message });
           }
     }
+    async createByIDUser(req,res){
+      try {
+        const {projectName,IDUser} =req.body;
+        if(!projectName || !IDUser){
+          return res.status(400).json({error:'Ten project va ID nguoi dung la bat buoc.'});
+        }
+        const newProject = await Project.create({
+          NameProject :projectName,
+          IDCreator :IDUser,
+        })
+        return res.status(201).json({message:'Project da duoc tao thanh cong',project:newProject})
+      } catch (error) {
+        console.error('Lỗi khi tạo nhóm:', error);
+        return res.status(500).json({ error: 'Có lỗi xảy ra khi tạo project.' });
+      }
+    }
 }
 
 module.exports = new ProjectController();

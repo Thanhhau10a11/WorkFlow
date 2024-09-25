@@ -89,11 +89,16 @@ class WorkFlowController {
                 sortedStages.push(currentStage);
                 currentStage = orderedStages.find(stage => stage.previousStage === currentStage.IdStage);
             }
-    
-            // Truyền dữ liệu JSON vào template
+            
+            // Lay du lieu nguoi dung trong nhom
+            const IDUser = req.session.user.IDUser
+            const responseGroups = await axios.get(`http://localhost:3000/api/group/getDetailAllGroup/${IDUser}`,{headers})
+            const groups = responseGroups.data
+            
             res.render('WorkFlow/detailWorkFlow', { 
-                workflow, // Nếu `workflow` đã là đối tượng JSON thì không cần chuyển đổi nữa
+                workflow, 
                 stages: sortedStages,
+                groups,
                 layout: 'main.hbs' 
             });
     

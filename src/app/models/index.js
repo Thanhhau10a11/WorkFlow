@@ -2,7 +2,7 @@ const sequelize = require('../../config/db');
 const AppUser = require('./User_Model');
 const Dates = require('./Dates_Model');
 const Group = require('./Group_Model');
-const GroupMember = require('./GroupMember_Model'); // Import model mới
+const GroupMember = require('./GroupMember_Model'); 
 const Job = require('./Job_Model');
 const JobDates = require('./JobdDates_Model');
 const JobNotify = require('./JobNotify_Model');
@@ -12,7 +12,7 @@ const Stage = require('./Stage_Model');
 const UserNotify = require('./UserNotify_Model');
 const Workflow = require('./WorkFlow_Model');
 const Invitation = require('./Invitation_Model');
-const JobStage = require('./JobStage_Model'); // Import model JobStage
+const JobStage = require('./JobStage_Model'); 
 
 // Định nghĩa các mối quan hệ
 Group.belongsToMany(AppUser, { through: GroupMember, as: 'Members', foreignKey: 'GroupID' });

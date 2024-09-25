@@ -189,35 +189,47 @@
         });  
 
         function addStageFields() {  
-            const container = document.getElementById('stages-container');  
-            const stageIndex = container.children.length;  
+    const container = document.getElementById('stages-container');  
+    const stageIndex = container.children.length;  
 
-            const stageHTML = `  
-                <div class="stage-group">  
-                    <h3>Stage ${stageIndex + 1} <button type="button" class="remove-stage-btn" onclick="removeStage(this)"><i class="fa-solid fa-trash"></i></button></h3>  
-                    <label for="stageName-${stageIndex}">Stage Name:</label>  
-                    <input type="text" id="stageName-${stageIndex}" name="stageName">  
-                    <label for="stageDescription-${stageIndex}">Stage Description:</label>  
-                    <input type="text" id="stageDescription-${stageIndex}" name="stageDescription">  
-                    
-                    <label for="showRecipient-${stageIndex}">  
-                        <input type="checkbox" id="showRecipient-${stageIndex}" name="showRecipient">  
-                        Assign Recipient  
-                    </label>  
+    const stageHTML = `  
+        <div class="stage-group">  
+            <h3>Stage ${stageIndex + 1} <button type="button" class="remove-stage-btn" onclick="removeStage(this)"><i class="fa-solid fa-trash"></i></button></h3>  
+            <label for="stageName-${stageIndex}">Tên Stage:</label>  
+            <input type="text" id="stageName-${stageIndex}" name="stageName" required>  
+            <label for="stageDescription-${stageIndex}">Mô tả Stage:</label>  
+            <input type="text" id="stageDescription-${stageIndex}" name="stageDescription">  
+            
+            <label for="showRecipient-${stageIndex}">  
+                <input type="checkbox" id="showRecipient-${stageIndex}" name="showRecipient" onchange="toggleRecipientField(${stageIndex})">  
+                Chỉ định người nhận  
+            </label>  
 
-                    <div class="recipient-field" id="recipientField-${stageIndex}" style="display: none;">  
-                        <label for="stageRecipient-${stageIndex}">Recipient:</label>  
-                        <input type="email" id="stageRecipient-${stageIndex}" name="stageRecipient">  
-                    </div>  
-                    
-                    <label for="stageApproxTime-${stageIndex}">Approximate Time:</label>  
-                    <input type="date" id="stageApproxTime-${stageIndex}" name="stageApproxTime">  
-                </div>  
-            `;  
+            <div class="recipient-field" id="recipientField-${stageIndex}" style="display: none;">  
+                <label for="stageRecipient-${stageIndex}">Người nhận:</label>  
+                <select id="stageRecipient-${stageIndex}" name="stageRecipient">  
+                    <option value="" class="display-center">Chọn người nhận</option>  
+                    <!-- Giả định rằng bạn đã có sẵn dữ liệu cho các nhóm và thành viên đây -->  
+                    {{#each groups}}  
+                        <optgroup label="{{this.GroupName}}">  
+                            {{#each this.Members}}  
+                                <option value="{{Username}}">{{Username}}</option>  
+                            {{/each}}  
+                        </optgroup>  
+                    {{/each}}  
+                </select>  
+            </div>  
+        </div>  
+    `;  
 
-            container.insertAdjacentHTML('beforeend', stageHTML);  
-        }  
+    container.insertAdjacentHTML('beforeend', stageHTML);  
+}  
 
+function toggleRecipientField(stageIndex) {  
+    const recipientField = document.getElementById(`recipientField-${stageIndex}`);  
+    const checkbox = document.getElementById(`showRecipient-${stageIndex}`);  
+    recipientField.style.display = checkbox.checked ? 'block' : 'none';  
+}
     });  
 
     function removeStage(button) {  

@@ -156,7 +156,7 @@ document.getElementById('signinForm').addEventListener('submit', function(event)
             if (data.success) {
                 localStorage.setItem('authToken', data.token);
                 const token = localStorage.getItem('authToken');
-                fetch('/', {
+                fetch('http://localhost:3000', {
                     method: 'GET',
                     headers: {
                         'Authorization': 'Bearer ' + token,  

@@ -8,7 +8,7 @@ class GroupController {
         const IDUser = req.session.user.IDUser
         const response = await axios.get(`http://localhost:3000/api/group/get/${IDUser}`, {
             headers: {
-                'Authorization': `Bearer ${token}` // Đính kèm token vào headers
+                'Authorization': `Bearer ${token}` ,
             }
         });
         const groups =response.data

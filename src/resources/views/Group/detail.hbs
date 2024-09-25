@@ -1,5 +1,8 @@
 <div class="py-5 team4">
     <div class="container">
+        <div class="btn__createProject">
+            <button >Ceater project<button>
+        </div>
         <div class="row justify-content-center mb-4">
             <div class="col-md-7 text-center">
                 <h3 class="mb-3 text-big">{{Group.GroupName}}</h3>
@@ -72,6 +75,29 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+    }
+
+    .btn__createProject {
+        height: 40px;
+        width: 140px;
+        background: linear-gradient(to right, #2F80ED, #56CCF2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        float: right;
+    }
+
+    .btn__createProject:hover {
+        background: linear-gradient(to right, #56CCF2, #2F80ED);
+    }
+    .btn__createProject button {
+        background-color: transparent;
+        border: none; 
+        color: inherit; 
+        cursor: pointer;
+        color: white;
+        height: 100%;
     }
 
     .team4 {
