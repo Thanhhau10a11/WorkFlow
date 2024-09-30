@@ -16,7 +16,7 @@ class userWorkFlowController {
                     }]
                 }]
             });
-    
+
             res.json(workflows);
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -38,7 +38,7 @@ class userWorkFlowController {
     async updateByUserId(req, res) {
         try {
             const [updated] = await WorkFlow.update(req.body, {
-                where: { 
+                where: {
                     IDWorkFlow: req.params.id,
                     IDUser: req.params.userId
                 }
@@ -62,7 +62,7 @@ class userWorkFlowController {
     async deleteByUserId(req, res) {
         try {
             const deleted = await WorkFlow.destroy({
-                where: { 
+                where: {
                     IDWorkFlow: req.params.id,
                     IDUser: req.params.userId
                 }
@@ -76,20 +76,20 @@ class userWorkFlowController {
             res.status(500).json({ error: error.message });
         }
     }
-    async getStagesByWorkFlowID(req,res){
+    async getStagesByWorkFlowID(req, res) {
         try {
             const workflow = await WorkFlow.findOne({
-            where: { IDWorkFlow: req.params.id, },
-            include: [{
-                model: Stage,
-                as: 'Stages',
-            }]
+                where: { IDWorkFlow: req.params.id, },
+                include: [{
+                    model: Stage,
+                    as: 'Stages',
+                }]
             });
-        
+
             if (!workflow) {
                 res.status(500).json('Workflow not found');
             }
-        
+
             res.json(workflow);
         } catch (error) {
             res.status(500).json('Error fetching workflow:', error);
@@ -113,7 +113,7 @@ class userWorkFlowController {
             res.status(500).json({ success: false, message: 'Lỗi server' });
         }
     }
-    
+
 }
 
 module.exports = new userWorkFlowController();

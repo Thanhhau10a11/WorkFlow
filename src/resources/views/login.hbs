@@ -1,6 +1,6 @@
 <div class="container" id="container">
     <div class="form-container sign-up-container">
-        <form id="signupForm" action="http://localhost:3000/api/register" method="post">
+        <form id="signupForm" action="" method="post">
             <h1>Create Account</h1>
             <div class="social-container">
                 <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
@@ -11,7 +11,8 @@
             <input id="signupName" type="text" name="name" placeholder="Name" />
             <input id="signupEmail" type="email" name="username" placeholder="Email" />
             <input id="signupPassword" type="password" name="password" placeholder="Password" />
-            <input id="signupPasswordConfirmation" type="password" name="password_confirmation" placeholder="Confirm Password" />
+            <input id="signupPasswordConfirmation" type="password" name="password_confirmation"
+                placeholder="Confirm Password" />
             <button type="submit">Sign Up</button>
             <div id="signupError" class="error-message"></div>
         </form>
@@ -49,150 +50,151 @@
 </div>
 
 <script>
-    document.getElementById('signupForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    const name = document.getElementById('signupName').value.trim();
-    const email = document.getElementById('signupEmail').value.trim();
-    const password = document.getElementById('signupPassword').value;
-    const passwordConfirmation = document.getElementById('signupPasswordConfirmation').value;
-    const errorMessage = document.getElementById('signupError');
-    
-    errorMessage.textContent = ''; // Clear previous errors
-    
-    let valid = true;
-    
-    // Validate Name
-    if (name === '') {
-        errorMessage.textContent += 'Name is required.\n';
-        valid = false;
-    }
-    
-    // Validate Email
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
-        errorMessage.textContent += 'Invalid email address.\n';
-        valid = false;
-    }
-    
-    // Validate Password
-    if (password.length < 8) {
-        errorMessage.textContent += 'Password must be at least 8 characters long.\n';
-        valid = false;
-    }
-    
-    // Validate Password Confirmation
-    if (password !== passwordConfirmation) {
-        errorMessage.textContent += 'Passwords do not match.\n';
-        valid = false;
-    }
-    
-    if (valid) {
-        // Send data to the server
-        fetch('http://localhost:3000/api/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                name: name,
-                username: email,
-                password: password,
-                password_confirmation: passwordConfirmation
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                window.location.href = '/login';
-            } else {
-                errorMessage.textContent = data.message || 'Registration failed';
-            }
-        })
-        .catch(error => {
-            errorMessage.textContent = 'An error occurred: ' + error.message;
-        });
-    }
-});
+    document.getElementById('signupForm').addEventListener('submit', function (event) {
+        event.preventDefault();
 
-document.getElementById('signinForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    const email = document.getElementById('signinEmail').value.trim();
-    const password = document.getElementById('signinPassword').value;
-    const errorMessage = document.getElementById('signinError');
-    
-    errorMessage.textContent = ''; // Clear previous errors
-    
-    let valid = true;
-    
-    // Validate Email
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
-        errorMessage.textContent += 'Invalid email address.\n';
-        valid = false;
-    }
-    
-    // Validate Password
-    if (password.length === 0) {
-        errorMessage.textContent += 'Password is required.\n';
-        valid = false;
-    }
-    
-    if (valid) {
-        // Gửi dữ liệu đến server để đăng nhập
-        fetch('http://localhost:3000/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username: email,
-                password: password
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                localStorage.setItem('authToken', data.token);
-                const token = localStorage.getItem('authToken');
-                fetch('http://localhost:3000', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,  
-                    }
+        const name = document.getElementById('signupName').value.trim();
+        const email = document.getElementById('signupEmail').value.trim();
+        const password = document.getElementById('signupPassword').value;
+        const passwordConfirmation = document.getElementById('signupPasswordConfirmation').value;
+        const errorMessage = document.getElementById('signupError');
+
+        errorMessage.textContent = ''; // Clear previous errors
+
+        let valid = true;
+
+        // Validate Name
+        if (name === '') {
+            errorMessage.textContent += 'Name is required.\n';
+            valid = false;
+        }
+
+        // Validate Email
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            errorMessage.textContent += 'Invalid email address.\n';
+            valid = false;
+        }
+
+        // Validate Password
+        if (password.length < 8) {
+            errorMessage.textContent += 'Password must be at least 8 characters long.\n';
+            valid = false;
+        }
+
+        // Validate Password Confirmation
+        if (password !== passwordConfirmation) {
+            errorMessage.textContent += 'Passwords do not match.\n';
+            valid = false;
+        }
+
+        if (valid) {
+            // Send data to the server
+            fetch('http://localhost:3000/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: name,
+                    username: email,
+                    password: password,
+                    password_confirmation: passwordConfirmation
                 })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.href = '/';
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = '/login';
                     } else {
-                        errorMessage.textContent = 'Login failed. Please try again.';
+                        errorMessage.textContent = data.message || 'Registration failed';
                     }
                 })
                 .catch(error => {
                     errorMessage.textContent = 'An error occurred: ' + error.message;
                 });
-            } else {
-                errorMessage.textContent = data.message || 'Login failed';
-            }
-        })
-        .catch(error => {
-            errorMessage.textContent = 'An error occurred: ' + error.message;
-        });
-    }
-});
+        }
+    });
+
+    document.getElementById('signinForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const email = document.getElementById('signinEmail').value.trim();
+        const password = document.getElementById('signinPassword').value;
+        const errorMessage = document.getElementById('signinError');
+
+        errorMessage.textContent = ''; // Clear previous errors
+
+        let valid = true;
+
+        // Validate Email
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            errorMessage.textContent += 'Invalid email address.\n';
+            valid = false;
+        }
+
+        // Validate Password
+        if (password.length === 0) {
+            errorMessage.textContent += 'Password is required.\n';
+            valid = false;
+        }
+
+        if (valid) {
+            fetch('http://localhost:3000/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: email,
+                    password: password
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        localStorage.setItem('authToken', data.token);
+                        const token = localStorage.getItem('authToken');
+                        localStorage.setItem('DOMAIN',data.DOMAIN);
+                        const DOMAIN = localStorage.getItem('DOMAIN');;
+                        fetch(`${DOMAIN}`, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': 'Bearer ' + token,
+                            }
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    window.location.href = '/';
+                                } else {
+                                    errorMessage.textContent = 'Login failed. Please try again.';
+                                }
+                            })
+                            .catch(error => {
+                                errorMessage.textContent = 'An error occurred: ' + error.message;
+                            });
+                    } else {
+                        errorMessage.textContent = data.message || 'Login failed';
+                    }
+                })
+                .catch(error => {
+                    errorMessage.textContent = 'An error occurred: ' + error.message;
+                });
+        }
+    });
 
 
-const signUpButton = document.getElementById('signUp');
-const signInButton = document.getElementById('signIn');
-const container = document.getElementById('container');
+    const signUpButton = document.getElementById('signUp');
+    const signInButton = document.getElementById('signIn');
+    const container = document.getElementById('container');
 
-signUpButton.addEventListener('click', () => {
-    container.classList.add("right-panel-active");
-});
+    signUpButton.addEventListener('click', () => {
+        container.classList.add("right-panel-active");
+    });
 
-signInButton.addEventListener('click', () => {
-    container.classList.remove("right-panel-active");
-});
+    signInButton.addEventListener('click', () => {
+        container.classList.remove("right-panel-active");
+    });
 
 </script>

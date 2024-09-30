@@ -11,17 +11,17 @@
                 </div>
             </a>
         </div>
-        
+
         {{#each workflows}}
-            <div class="col-md-3 mb-4">  
-                <a href="/workflow/detail/{{this.IDWorkFlow}}" style="text-decoration: none;"> 
-                    <div class="card gradient-background text-center">  
-                        <div class="card-body">  
-                            <h5 class="card-title">{{this.Name}}</h5>  
-                        </div>  
-                    </div>  
-                </a>  
-            </div>  
+        <div class="col-md-3 mb-4">
+            <a href="/workflow/detail/{{this.IDWorkFlow}}" style="text-decoration: none;">
+                <div class="card gradient-background text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">{{this.Name}}</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
         {{/each}}
     </div>
 </div>

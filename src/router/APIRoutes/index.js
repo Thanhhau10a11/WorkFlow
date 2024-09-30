@@ -19,18 +19,18 @@ const testStageJob = require('./testApi');
 // Sử dụng các router
 
 router.use('/login', userLogginRouter);
-router.use('/register',userRegisterRouter);
-router.use('/appUser',checkToken,appUserRouter);
-router.use('/notify',checkToken,notifyRouter);
-router.use('/workFlow',checkToken,workFlowRouter);
-router.use('/stage',checkToken,stageRouter);
-router.use('/job',checkToken,jobRouter);
-router.use('/project',checkToken,projectRouter);
-router.use('/group',checkToken,groupRouter);
-router.use('/userWorkFlow',checkToken,userWorkFlowRouter);
+router.use('/register', userRegisterRouter);
+router.use('/appUser', checkToken, appUserRouter);
+router.use('/notify', checkToken, notifyRouter);
+router.use('/workFlow', checkToken, workFlowRouter);
+router.use('/stage', checkToken, stageRouter);
+router.use('/job', checkToken, jobRouter);
+router.use('/project', checkToken, projectRouter);
+router.use('/group', checkToken, groupRouter);
+router.use('/userWorkFlow', checkToken, userWorkFlowRouter);
 //router.use('/email',checkToken,emailRouter);
-router.use('/email',emailRouter);
-router.use('/test',checkToken,testStageJob);
+router.use('/email', emailRouter);
+router.use('/test', checkToken, testStageJob);
 
 
 

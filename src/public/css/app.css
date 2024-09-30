@@ -16,6 +16,26 @@
 .text-sm {
   font-size: 14px; }
 
+.bg-bold {
+  background-color: #2F80ED !important; }
+
+.bg-bland {
+  background-color: #56CCF2 !important; }
+
+.bg {
+  background: linear-gradient(to right, #2F80ED, #56CCF2) !important; }
+
+.bg:hover {
+  background: linear-gradient(to right, #56CCF2, #2F80ED) !important;
+  cursor: pointer !important; }
+
+.bg-red {
+  background-color: #FF0000 !important; }
+
+.bg-red:hover {
+  background-color: #F44336 !important;
+  cursor: pointer !important; }
+
 :root {
   --c-gray-900: white;
   --c-gray-800: white;

@@ -3,7 +3,7 @@ const router = express.Router()
 
 const HomeController = require('../../app/controllers/UserController/HomeController.js')
 
-router.get('/',HomeController.index)
+router.get('/', HomeController.index)
 
 
 

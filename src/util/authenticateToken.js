@@ -18,7 +18,7 @@ function authenticateToken(req, res, next) {
         console.log('Verifying token...');
         if (err) {
             //console.log("JWT Verification Error:", err);
-            console.log("Khong pass vi co loiii :",err)
+            console.log("Khong pass vi co loiii :", err)
             return res.redirect('/login');
         }
 
@@ -42,7 +42,7 @@ module.exports = authenticateToken;
 
 // function authenticateToken(req, res, next) {
 //     const authHeader = req.headers['authorization'];
-//     const token = authHeader && authHeader.split(' ')[1] || req.query.token; 
+//     const token = authHeader && authHeader.split(' ')[1] || req.query.token;
 
 //     if (token == null) {
 //         return res.redirect('/login');
@@ -53,7 +53,7 @@ module.exports = authenticateToken;
 //             return res.redirect('/login');
 //         }
 //         console.log("Passsssssssssssssssssssssssssssssssssssssssss")
-//         req.user = user; 
+//         req.user = user;
 //         next();
 //     });
 // }

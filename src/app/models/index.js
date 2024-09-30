@@ -24,8 +24,11 @@ Dates.belongsToMany(Job, { through: JobDates, as: 'Jobs', foreignKey: 'IDDate' }
 Job.belongsToMany(Notify, { through: JobNotify, as: 'Notifies', foreignKey: 'IDJob' });
 Notify.belongsToMany(Job, { through: JobNotify, as: 'Jobs', foreignKey: 'IDNotify' });
 
-Project.hasMany(Job, { foreignKey: 'IDProject' });
+Project.hasMany(Job, { foreignKey: 'IDProject' ,as: 'JobsInProject'});
 Job.belongsTo(Project, { foreignKey: 'IDProject' });
+
+Group.hasMany(Project, { foreignKey: 'GroupID', as: 'Projects', onDelete: 'CASCADE' });
+Project.belongsTo(Group, { foreignKey: 'GroupID', as: 'Group' });
 
 Workflow.hasMany(Stage, { foreignKey: 'IDWorkFlow', as: 'Stages' });
 Stage.belongsTo(Workflow, { foreignKey: 'IDWorkFlow', as: 'Workflow' });

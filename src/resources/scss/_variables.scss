@@ -4,26 +4,6 @@ $text-secondary:#f1f1f1;
 $text-tertiary:#969593;
 $hover-color:#CCCCFF;
 $black-color:#000000;
-//    background: linear-gradient(to right, #FF4B2B, #FF416C);
-//$c-gray-900:#000000;
-//:root {
-//     --c-gray-900: #000000;
-//     --c-gray-800: #1f1f1f;
-//     --c-gray-700: #2e2e2e;
-//     --c-gray-600: #313131;
-//     --c-gray-500: #969593;
-//     --c-gray-400: #a6a6a6;
-//     --c-gray-300: #bdbbb7;
-//     --c-gray-200: #f1f1f1;
-//     --c-gray-100: #ffffff;
-//     --c-green-500: #45ffbc;
-//     --c-olive-500: #e3ffa8;
-//     --c-white: var(--c-gray-100);
-//     --c-text-primary: var(#ffffff);
-//     --c-text-secondary: var(--c-gray-200);
-//     --c-text-tertiary: var(--c-gray-500);
-//   }
-
 
 .display-center {
     display: flex;
@@ -44,5 +24,31 @@ $black-color:#000000;
 }
 .text-sm {
     font-size: 14px; 
+}
+
+.bg-bold {
+    background-color: #2F80ED!important;
+}
+
+.bg-bland {
+    background-color: #56CCF2!important;
+}
+
+.bg {
+    background: linear-gradient(to right, #2F80ED, #56CCF2)!important;
+}
+
+.bg:hover {
+    background: linear-gradient(to right, #56CCF2, #2F80ED)!important;
+    cursor: pointer!important;
+}
+
+.bg-red {
+    background-color: #FF0000!important;
+}
+
+.bg-red:hover {
+    background-color: #F44336!important;
+    cursor: pointer!important;
 }
 

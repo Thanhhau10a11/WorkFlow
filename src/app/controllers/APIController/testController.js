@@ -9,10 +9,10 @@ class testController {
       const jobs = await Job.findAll({
         include: {
           model: Stage,
-          as: 'Stages', 
+          as: 'Stages',
           through: {
-            model: JobStage, 
-            as: 'JobStage' 
+            model: JobStage,
+            as: 'JobStage'
           }
         }
       });
@@ -27,10 +27,10 @@ class testController {
       const stages = await Stage.findAll({
         include: {
           model: Job,
-          as: 'Jobs', 
+          as: 'Jobs',
           through: {
-            model: JobStage, 
-            as: 'JobStage' 
+            model: JobStage,
+            as: 'JobStage'
           }
         }
       });
@@ -43,66 +43,66 @@ class testController {
     const { stageId, jobs } = req.body;
 
     try {
-        const stage = await Stage.findByPk(stageId);
-        if (!stage) {
-            return res.status(404).json({ message: 'Stage not found' });
+      const stage = await Stage.findByPk(stageId);
+      if (!stage) {
+        return res.status(404).json({ message: 'Stage not found' });
+      }
+
+      const existingJobs = await Job.findAll({
+        where: {
+          IDJob: jobs
         }
+      });
 
-        const existingJobs = await Job.findAll({
-            where: {
-                IDJob: jobs
-            }
-        });
+      if (existingJobs.length !== jobs.length) {
+        return res.status(400).json({ message: 'Some job IDs are invalid' });
+      }
 
-        if (existingJobs.length !== jobs.length) {
-            return res.status(400).json({ message: 'Some job IDs are invalid' });
-        }
+      await Promise.all(jobs.map(jobId => {
+        return JobStage.create({ IDJob: jobId, IDStage: stageId });
+      }));
 
-        await Promise.all(jobs.map(jobId => {
-            return JobStage.create({ IDJob: jobId, IDStage: stageId });
-        }));
-
-        return res.status(201).json({
-            message: 'Jobs added to stage successfully',
-            stage: stage.toJSON(),
-            jobs: existingJobs.map(job => job.toJSON())
-        });
+      return res.status(201).json({
+        message: 'Jobs added to stage successfully',
+        stage: stage.toJSON(),
+        jobs: existingJobs.map(job => job.toJSON())
+      });
     } catch (error) {
-        return res.status(500).json({ error: error.errors ? error.errors.map(e => e.message) : error.message });
+      return res.status(500).json({ error: error.errors ? error.errors.map(e => e.message) : error.message });
     }
-}
-async addJobsToStage2(req, res) {
-  const { stageId, jobs } = req.body;
+  }
+  async addJobsToStage2(req, res) {
+    const { stageId, jobs } = req.body;
 
-  try {
+    try {
       // Tìm stage theo ID
       const stage = await Stage.findByPk(stageId);
       if (!stage) {
-          return res.status(404).json({ message: 'Stage not found' });
+        return res.status(404).json({ message: 'Stage not found' });
       }
 
       const jobsAdded = [];
       const jobCreationPromises = jobs.map(async (jobData) => {
-          // Tạo job mới từ dữ liệu
-          const newJob = await Job.create({
-              Status: jobData.Status,
-              IDUserAssign: jobData.IDUserAssign,
-              IDCreator: jobData.IDCreator,
-              TimeComplete: jobData.TimeComplete,
-              TimeStart: jobData.TimeStart,
-              DescriptionJob: jobData.DescriptionJob,
-              NameJob: jobData.NameJob,
-              IDPriorityLevel: jobData.IDPriorityLevel,
-              Priority: jobData.Priority,
-              IDListFollower: jobData.IDListFollower,
-              IDProject: jobData.IDProject
-          });
+        // Tạo job mới từ dữ liệu
+        const newJob = await Job.create({
+          Status: jobData.Status,
+          IDUserAssign: jobData.IDUserAssign,
+          IDCreator: jobData.IDCreator,
+          TimeComplete: jobData.TimeComplete,
+          TimeStart: jobData.TimeStart,
+          DescriptionJob: jobData.DescriptionJob,
+          NameJob: jobData.NameJob,
+          IDPriorityLevel: jobData.IDPriorityLevel,
+          Priority: jobData.Priority,
+          IDListFollower: jobData.IDListFollower,
+          IDProject: jobData.IDProject
+        });
 
-          // Thêm job vào JobStage
-          await JobStage.create({ IDJob: newJob.IDJob, IDStage: stageId });
-          
-          // Lưu đối tượng job mới đã thêm vào danh sách
-          jobsAdded.push(newJob.toJSON()); // Lưu thông tin job
+        // Thêm job vào JobStage
+        await JobStage.create({ IDJob: newJob.IDJob, IDStage: stageId });
+
+        // Lưu đối tượng job mới đã thêm vào danh sách
+        jobsAdded.push(newJob.toJSON()); // Lưu thông tin job
       });
 
       // Chờ tất cả job được tạo
@@ -110,14 +110,14 @@ async addJobsToStage2(req, res) {
 
       // Xuất thông tin chi tiết về stage và jobs đã thêm
       return res.status(201).json({
-          message: 'Jobs created and added to stage successfully',
-          stage: stage.toJSON(),
-          jobsAdded: jobsAdded // Trả về thông tin chi tiết về jobs
+        message: 'Jobs created and added to stage successfully',
+        stage: stage.toJSON(),
+        jobsAdded: jobsAdded // Trả về thông tin chi tiết về jobs
       });
-  } catch (error) {
+    } catch (error) {
       return res.status(500).json({ error: error.errors ? error.errors.map(e => e.message) : error.message });
+    }
   }
-}
 
 
 }

@@ -5,7 +5,7 @@ const emailController = require('../../app/controllers/APIController/emailContro
 
 const authToken = require('../../util/authenticateToken.js')
 
-router.post('/sendEmailNoti',authToken,emailController.sendEmail)
+router.post('/sendEmailNoti', authToken, emailController.sendEmail)
 router.get('/accept-invitation', emailController.acceptGroup);
 
 

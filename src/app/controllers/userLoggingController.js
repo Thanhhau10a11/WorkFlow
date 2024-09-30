@@ -1,9 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const AppUser = require('../models/User_Model'); 
+const AppUser = require('../models/User_Model');
 
 class UserLoginController {
-    index(req,res) {
+    index(req, res) {
         res.render('login', { layout: 'login.hbs' });
     }
     async login(req, res) {
@@ -22,10 +22,11 @@ class UserLoginController {
                 return res.status(400).json({ message: 'Mật khẩu không đúng' });
             }
 
-            const token = jwt.sign({ id: user.IDUser, username: user.UserName }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            const token = jwt.sign({ id: user.IDUser, username: user.UserName }, process.env.JWT_SECRET, { expiresIn: '3h' });
 
-            
+
             res.status(200).json({
+                domain:process.env.DOMAIN,
                 message: 'Đăng nhập thành công',
                 token: token
             });

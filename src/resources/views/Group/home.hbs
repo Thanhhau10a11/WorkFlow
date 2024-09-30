@@ -1,60 +1,65 @@
- 
-    <div class="container">  
-        <div class="header">  
-            <h1 class="text-big">Groups</h1>  
-            <a class="btn btn-create text-small" href="/group/create" >Create New Group</a>  
-        </div>  
-        <input type="text" class="form-control mb-4" placeholder="Search groups...">  
-        <div class="row">  
-            {{#each groups}}
-                <div class="col-md-3">  
-                    <div class="card">  
-                        <a href="/group/detail/{{this.GroupID}}">
-                            <div class="card-body">  
-                                <h5 class="card-title text">{{this.GroupName}}</h5>  
-                                <p class="card-text">Group for designers to collaborate on projects.</p>  
-                                <p class="card-text"><small class="text-muted">{{this.memberCount}} members</small></p>  
-                            </div>  
-                        </a>
-                    </div>  
-                </div>
-            {{/each}}
-        </div>  
-    </div>  
-    
-    <style>  
-        body {  
-            background-color: #f8f9fa; 
-        }  
-        .card {  
-            margin-top: 10px;  
-            width: 250px; 
-            height: 150px; 
-            display: flex;  
-            flex-direction: column;  
-            justify-content: space-between;
-            background-color: #ffffff; 
-            border: 1px solid #dee2e6; 
-        }  
-        .card-title {  
-            color: #343a40;
-        }  
-        .card-text {  
-            margin-bottom: 20px;
-            color: #6c757d; 
-        }  
-        .header {  
-            display: flex;  
-            justify-content: space-between;  
-            align-items: center;  
-            margin-bottom: 20px;  
-        }  
-        .btn-create {
-           background: linear-gradient(to right, #2F80ED, #56CCF2); 
-           color:white;
-        }
-        .btn-create:hover {
-           background: linear-gradient(to right, #56CCF2, #2F80ED); 
+<div class="container">
+    <div class="header">
+        <h1 class="text-big">Groups</h1>
+        <a class="btn btn-create text-small" href="/group/create">Create New Group</a>
+    </div>
+    <input type="text" class="form-control mb-4" placeholder="Search groups...">
+    <div class="row">
+        {{#each groups}}
+        <div class="col-md-3">
+            <div class="card">
+                <a href="/group/detail/{{this.GroupID}}">
+                    <div class="card-body">
+                        <h5 class="card-title text">{{this.GroupName}}</h5>
+                        <p class="card-text">Group for designers to collaborate on projects.</p>
+                        <p class="card-text"><small class="text-muted">{{this.memberCount}} members</small></p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>
 
-        }
-    </style> 
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        margin-top: 10px;
+        width: 250px;
+        height: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+    }
+
+    .card-title {
+        color: #343a40;
+    }
+
+    .card-text {
+        margin-bottom: 20px;
+        color: #6c757d;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .btn-create {
+        background: linear-gradient(to right, #2F80ED, #56CCF2);
+        color: white;
+    }
+
+    .btn-create:hover {
+        background: linear-gradient(to right, #56CCF2, #2F80ED);
+
+    }
+</style>

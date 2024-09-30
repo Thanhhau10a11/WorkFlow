@@ -1,6 +1,7 @@
 // models/Project.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
+const Group = require('./Group_Model')
 
 const Project = sequelize.define('Project', {
   IdProject: {
@@ -13,9 +14,17 @@ const Project = sequelize.define('Project', {
   InfoProject: DataTypes.TEXT,
   NameProject: DataTypes.STRING,
   Comment: DataTypes.STRING,
+  GroupID: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Group, 
+      key: 'GroupID'
+    }
+  }
 }, {
   tableName: 'project',
-  timestamps: false
+  timestamps: true
 });
 
 module.exports = Project;

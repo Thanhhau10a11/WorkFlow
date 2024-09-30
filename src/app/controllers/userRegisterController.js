@@ -2,7 +2,7 @@
 const axios = require('axios');
 
 class UserRegisterController {
-    index(req,res) {
+    index(req, res) {
         res.render('login', { layout: 'login.hbs' });
     }
     async register(req, res) {

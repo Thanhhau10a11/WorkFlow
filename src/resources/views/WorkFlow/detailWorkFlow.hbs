@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Drag and Drop WorkFlow</title>
     <link rel="stylesheet" href="/css/test.css">
 </head>
+
 <body>
     <div class='container-main container'>
         <main class='project' style="max-width:100%">
@@ -15,25 +17,27 @@
                     <span></span>
                     <span></span>
                     <span></span>
-                    <button class='project-participants__save' title="Save Stages"><i class="fa-regular fa-floppy-disk" style="font-size:14px;color:white"></i></button>
+                    <button class='project-participants__save' title="Save Stages"><i class="fa-regular fa-floppy-disk"
+                            style="font-size:14px;color:white"></i></button>
                     <button class='project-participants__add' title="Add Stages">Add Stages</button>
                 </div>
             </div>
             <div class='project-tasks row'>
                 {{#each stages}}
-                    <div class="task-container">
-                        <div class='task' data-id="{{this.IdStage}}" draggable='true'>
-                            <div class='task__tags'>
-                                <span class='task__tag task__tag--design'>{{this.NameStage}}</span>
-                                <button class='task__options'><i class="fas fa-ellipsis-h"></i></button>
-                            </div>
-                            <p>Người nhận: {{this.EmailRecipient}}</p>
-                            <div class='task__stats'>
-                                <span><time datetime="{{this.approximateTime}}"><i class="fas fa-flag" style="margin-right: 5px;"></i>{{formatDate this.approximateTime}}</time></span>
-                                <span class='task__owner'></span>
-                            </div>
+                <div class="task-container">
+                    <div class='task' data-id="{{this.IdStage}}" draggable='true'>
+                        <div class='task__tags'>
+                            <span class='task__tag task__tag--design'>{{this.NameStage}}</span>
+                            <button class='task__options'><i class="fas fa-ellipsis-h"></i></button>
+                        </div>
+                        <p>Người nhận: {{this.EmailRecipient}}</p>
+                        <div class='task__stats'>
+                            <span><time datetime="{{this.approximateTime}}"><i class="fas fa-flag"
+                                        style="margin-right: 5px;"></i>{{formatDate this.approximateTime}}</time></span>
+                            <span class='task__owner'></span>
                         </div>
                     </div>
+                </div>
                 {{/each}}
             </div>
         </main>
@@ -41,158 +45,158 @@
 
     <div class="overlay"></div>
 
-    <div class="form-container">  
-        <form id="add-stage-form" style="position: relative;">  
-            <h2 class="display-center" style="margin-bottom:10px">Add New Stage</h2>  
-            <div id="stages-container">  
-                <!-- Dynamic stage fields will be added here -->  
-            </div>  
-            <button type="submit">Add Stages</button>  
-            <button type="button" id="cancel-button">Cancel</button>  
-            <button type="button" class="add-more-stage-btn" id="add-more-stage" title="Add More Stage">+</button>  
-        </form>  
+    <div class="form-container">
+        <form id="add-stage-form" style="position: relative;">
+            <h2 class="display-center" style="margin-bottom:10px">Add New Stage</h2>
+            <div id="stages-container">
+                <!-- Dynamic stage fields will be added here -->
+            </div>
+            <button type="submit">Add Stages</button>
+            <button type="button" id="cancel-button">Cancel</button>
+            <button type="button" class="add-more-stage-btn" id="add-more-stage" title="Add More Stage">+</button>
+        </form>
     </div>
 
-   <script>  
-    document.addEventListener('DOMContentLoaded', (event) => {  
-        var workFlowIDElement = document.getElementById('WorkFlowID');
-        var WorkFlowID = workFlowIDElement.getAttribute('data-id');
-        var dragSrcEl = null;  
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            var workFlowIDElement = document.getElementById('WorkFlowID');
+            var WorkFlowID = workFlowIDElement.getAttribute('data-id');
+            var dragSrcEl = null;
 
-        function handleDragStart(e) {  
-            this.style.opacity = '0.4';  
-            dragSrcEl = this;  
-            e.dataTransfer.effectAllowed = 'move';  
-            e.dataTransfer.setData('text/html', this.innerHTML);  
-        }  
+            function handleDragStart(e) {
+                this.style.opacity = '0.4';
+                dragSrcEl = this;
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', this.innerHTML);
+            }
 
-        function handleDragOver(e) {  
-            if (e.preventDefault) {  
-                e.preventDefault();  
-            }  
-            e.dataTransfer.dropEffect = 'move';  
-            return false;  
-        }  
-
-        function handleDragEnter(e) {  
-            this.classList.add('task-hover');  
-        }  
-
-        function handleDragLeave(e) {  
-            this.classList.remove('task-hover');  
-        }  
-
-        function handleDrop(e) {  
-            if (e.stopPropagation) {  
-                e.stopPropagation();  
-            }  
-
-            if (dragSrcEl != this) {  
-                let tempHTML = dragSrcEl.innerHTML;
-                dragSrcEl.innerHTML = this.innerHTML;
-                this.innerHTML = tempHTML;
-
-                let draggedId = dragSrcEl.getAttribute('data-id');
-                let droppedId = this.getAttribute('data-id');
-                dragSrcEl.setAttribute('data-id', droppedId);
-                this.setAttribute('data-id', draggedId);
-            }  
-            return false;  
-        }  
-
-        function handleDragEnd(e) {  
-            this.style.opacity = '1';  
-            items.forEach(function (item) {  
-                item.classList.remove('task-hover');  
-            });  
-        }  
-
-        let items = document.querySelectorAll('.task');  
-        items.forEach(function(item) {  
-            item.addEventListener('dragstart', handleDragStart, false);  
-            item.addEventListener('dragenter', handleDragEnter, false);  
-            item.addEventListener('dragover', handleDragOver, false);  
-            item.addEventListener('dragleave', handleDragLeave, false);  
-            item.addEventListener('drop', handleDrop, false);  
-            item.addEventListener('dragend', handleDragEnd, false);  
-        });  
-
-        document.querySelector('.project-participants__add').addEventListener('click', function() {  
-            document.querySelector('.overlay').style.display = 'block';  
-            document.querySelector('.form-container').style.display = 'block';  
-            addStageFields();   
-        });  
-
-        document.getElementById('cancel-button').addEventListener('click', function() {  
-            document.querySelector('.overlay').style.display = 'none';  
-            document.querySelector('.form-container').style.display = 'none';  
-        });  
-
-        document.getElementById('add-more-stage').addEventListener('click', function() {  
-            addStageFields();  
-        });  
-
-        document.getElementById('add-stage-form').addEventListener('submit', function(e) {  
-            e.preventDefault();  
-
-            const stagesData = {
-                stages: []  
-            };
-
-            document.querySelectorAll('.stage-group').forEach((stageGroup, index) => {  
-                const stageName = stageGroup.querySelector('[name="stageName"]').value;  
-                const stageDescription = stageGroup.querySelector('[name="stageDescription"]').value;  
-                const showRecipient = stageGroup.querySelector('[name="showRecipient"]').checked;  
-                const stageRecipient = showRecipient ? stageGroup.querySelector('[name="stageRecipient"]').value : null;  
-                const stageApproxTime = stageGroup.querySelector('[name="stageApproxTime"]').value;  
-
-                if (!stageName) {  
-                    alert('Please enter a stage name.');  
-                    return;
+            function handleDragOver(e) {
+                if (e.preventDefault) {
+                    e.preventDefault();
                 }
-                stagesData.stages.push({  
-                    NameStage: stageName,  
-                    DescriptionStatus: stageDescription,  
-                    EmailRecipient: stageRecipient,  
-                    approximateTime: stageApproxTime
-                });  
-            });
-            const token = localStorage.getItem('authToken');
-            fetch(`/api/workFlow/saveStages/${WorkFlowID}`, {  
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(stagesData),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.querySelector('.overlay').style.display = 'none';  
-                    document.querySelector('.form-container').style.display = 'none';  
-                    window.location.href = window.location.href;
-                } else {
-                    alert('Đã có lỗi xảy ra khi lưu dữ liệu.');
+                e.dataTransfer.dropEffect = 'move';
+                return false;
+            }
+
+            function handleDragEnter(e) {
+                this.classList.add('task-hover');
+            }
+
+            function handleDragLeave(e) {
+                this.classList.remove('task-hover');
+            }
+
+            function handleDrop(e) {
+                if (e.stopPropagation) {
+                    e.stopPropagation();
                 }
-            })
-            .catch((error) => {
-                console.error('Lỗi:', error);
+
+                if (dragSrcEl != this) {
+                    let tempHTML = dragSrcEl.innerHTML;
+                    dragSrcEl.innerHTML = this.innerHTML;
+                    this.innerHTML = tempHTML;
+
+                    let draggedId = dragSrcEl.getAttribute('data-id');
+                    let droppedId = this.getAttribute('data-id');
+                    dragSrcEl.setAttribute('data-id', droppedId);
+                    this.setAttribute('data-id', draggedId);
+                }
+                return false;
+            }
+
+            function handleDragEnd(e) {
+                this.style.opacity = '1';
+                items.forEach(function (item) {
+                    item.classList.remove('task-hover');
+                });
+            }
+
+            let items = document.querySelectorAll('.task');
+            items.forEach(function (item) {
+                item.addEventListener('dragstart', handleDragStart, false);
+                item.addEventListener('dragenter', handleDragEnter, false);
+                item.addEventListener('dragover', handleDragOver, false);
+                item.addEventListener('dragleave', handleDragLeave, false);
+                item.addEventListener('drop', handleDrop, false);
+                item.addEventListener('dragend', handleDragEnd, false);
             });
-        });  
 
-        document.getElementById('stages-container').addEventListener('change', function(e) {  
-            if (e.target.name === 'showRecipient') {  
-                const recipientField = e.target.closest('.stage-group').querySelector('.recipient-field');  
-                recipientField.style.display = e.target.checked ? 'block' : 'none';  
-            }  
-        });  
+            document.querySelector('.project-participants__add').addEventListener('click', function () {
+                document.querySelector('.overlay').style.display = 'block';
+                document.querySelector('.form-container').style.display = 'block';
+                addStageFields();
+            });
 
-        function addStageFields() {  
-    const container = document.getElementById('stages-container');  
-    const stageIndex = container.children.length;  
+            document.getElementById('cancel-button').addEventListener('click', function () {
+                document.querySelector('.overlay').style.display = 'none';
+                document.querySelector('.form-container').style.display = 'none';
+            });
 
-    const stageHTML = `  
+            document.getElementById('add-more-stage').addEventListener('click', function () {
+                addStageFields();
+            });
+
+            document.getElementById('add-stage-form').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const stagesData = {
+                    stages: []
+                };
+
+                document.querySelectorAll('.stage-group').forEach((stageGroup, index) => {
+                    const stageName = stageGroup.querySelector('[name="stageName"]').value;
+                    const stageDescription = stageGroup.querySelector('[name="stageDescription"]').value;
+                    const showRecipient = stageGroup.querySelector('[name="showRecipient"]').checked;
+                    const stageRecipient = showRecipient ? stageGroup.querySelector('[name="stageRecipient"]').value : null;
+                    const stageApproxTime = stageGroup.querySelector('[name="stageApproxTime"]').value;
+
+                    if (!stageName) {
+                        alert('Please enter a stage name.');
+                        return;
+                    }
+                    stagesData.stages.push({
+                        NameStage: stageName,
+                        DescriptionStatus: stageDescription,
+                        EmailRecipient: stageRecipient,
+                        approximateTime: stageApproxTime
+                    });
+                });
+                const token = localStorage.getItem('authToken');
+                fetch(`/api/workFlow/saveStages/${WorkFlowID}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(stagesData),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.querySelector('.overlay').style.display = 'none';
+                            document.querySelector('.form-container').style.display = 'none';
+                            window.location.href = window.location.href;
+                        } else {
+                            alert('Đã có lỗi xảy ra khi lưu dữ liệu.');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Lỗi:', error);
+                    });
+            });
+
+            document.getElementById('stages-container').addEventListener('change', function (e) {
+                if (e.target.name === 'showRecipient') {
+                    const recipientField = e.target.closest('.stage-group').querySelector('.recipient-field');
+                    recipientField.style.display = e.target.checked ? 'block' : 'none';
+                }
+            });
+
+            function addStageFields() {
+                const container = document.getElementById('stages-container');
+                const stageIndex = container.children.length;
+
+                const stageHTML = `  
         <div class="stage-group">  
             <h3>Stage ${stageIndex + 1} <button type="button" class="remove-stage-btn" onclick="removeStage(this)"><i class="fa-solid fa-trash"></i></button></h3>  
             <label for="stageName-${stageIndex}">Tên Stage:</label>  
@@ -220,40 +224,41 @@
                 </select>  
             </div>  
         </div>  
-    `;  
+    `;
 
-    container.insertAdjacentHTML('beforeend', stageHTML);  
-}  
+                container.insertAdjacentHTML('beforeend', stageHTML);
+            }
 
-function toggleRecipientField(stageIndex) {  
-    const recipientField = document.getElementById(`recipientField-${stageIndex}`);  
-    const checkbox = document.getElementById(`showRecipient-${stageIndex}`);  
-    recipientField.style.display = checkbox.checked ? 'block' : 'none';  
-}
-    });  
+            function toggleRecipientField(stageIndex) {
+                const recipientField = document.getElementById(`recipientField-${stageIndex}`);
+                const checkbox = document.getElementById(`showRecipient-${stageIndex}`);
+                recipientField.style.display = checkbox.checked ? 'block' : 'none';
+            }
+        });
 
-    function removeStage(button) {  
-        const stageGroup = button.closest('.stage-group');  
-        stageGroup.remove();  
-    }
-   </script>  
+        function removeStage(button) {
+            const stageGroup = button.closest('.stage-group');
+            stageGroup.remove();
+        }
+    </script>
 </body>
+
 </html>
 
 <script>
-    document.querySelector('.project-participants__save').addEventListener('click', function() {
+    document.querySelector('.project-participants__save').addEventListener('click', function () {
         saveNewStageOrder()
     })
 
     function saveNewStageOrder() {
         const stages = document.querySelectorAll('.task'); // Lấy danh sách các stage theo thứ tự hiện tại
         const stageOrder = [];
-        
+
         stages.forEach((stage, index) => {
             const stageId = stage.getAttribute('data-id'); // Giả sử bạn có trường `data-id` lưu ID của stage
             const prevStage = index === 0 ? null : stageOrder[index - 1].IdStage;
             const nextStage = index === stages.length - 1 ? null : stages[index + 1].getAttribute('data-id');
-            
+
             stageOrder.push({
                 IdStage: stageId,
                 previousStage: prevStage,
@@ -268,19 +273,18 @@ function toggleRecipientField(stageIndex) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ stages: stageOrder }) 
+            body: JSON.stringify({ stages: stageOrder })
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Cập nhật thứ tự thành công!');
-            } else {
-                alert('Có lỗi khi cập nhật thứ tự.');
-            }
-        })
-        .catch(error => {
-            console.error('Lỗi:', error);
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Cập nhật thứ tự thành công!');
+                } else {
+                    alert('Có lỗi khi cập nhật thứ tự.');
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi:', error);
+            });
     }
 </script>
-
