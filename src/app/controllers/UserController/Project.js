@@ -9,12 +9,12 @@ class ProjectController {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
         };
-        const response = await axios.get(`${env.process.DOMAIN}/api/project/getJobsInGroup/${ProjectID}`, { headers });
+        const response = await axios.get(`${process.env.DOMAIN}/api/project/getJobsInGroup/${ProjectID}`, { headers });
         const Project = response.data;
 
         // lay member trong group
         const GroupID = Project.GroupID;
-        const responseGroup = await axios.get(`${env.process.DOMAIN}/api/group/getMember/${GroupID}`,{headers});
+        const responseGroup = await axios.get(`${process.env.DOMAIN}/api/group/getMember/${GroupID}`,{headers});
         const countMember =responseGroup.data.length;
 
         res.render('Project/detail',{
@@ -39,7 +39,7 @@ class ProjectController {
                 return res.status(404).json({ error: 'Group không tồn tại' });
             }
     
-            const response = await axios.post(`${env.process.DOMAIN}/api/project/createByIDGroup/${GroupID}/${IDCreator}`, {
+            const response = await axios.post(`${process.env.DOMAIN}/api/project/createByIDGroup/${GroupID}/${IDCreator}`, {
                 NameProject,
                 Progress,
                 InfoProject
@@ -50,7 +50,7 @@ class ProjectController {
             const newProject = response.data;
 
             if (jobs && jobs.length > 0) {
-                const jobsResponse = await axios.post(`${env.process.DOMAIN}/api/project/addJobsToProject`, {
+                const jobsResponse = await axios.post(`${process.env.DOMAIN}/api/project/addJobsToProject`, {
                     IDProject: newProject.IdProject, 
                     jobs
                 }, {
