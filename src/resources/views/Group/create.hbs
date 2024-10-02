@@ -1,66 +1,168 @@
-<style>
-    body {
-        background-color: #f0f4f8;
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --background-color: #ecf0f1;
+            --text-color: #34495e;
+            --error-color: #e74c3c;
+        }
 
-    .container {
-        background-color: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        max-width: 400px;
-        width: 100%;
-        padding: 20px;
-        height: fit-content;
-    }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
 
-    .container__form {}
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 100%;
+            max-width: 450px;
+        }
 
-    .btn-create {
-        background: linear-gradient(to right, #2F80ED, #56CCF2);
-        color: white;
-        border: 1px solid white;
-        border-radius: 5px;
-        text-decoration: none;
-    }
+        .container__form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
 
-    .btn-create:hover {
-        background: linear-gradient(to right, #56CCF2, #2F80ED);
-    }
-</style>
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
 
+        p {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #7f8c8d;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn-create {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-create:hover {
+            background-color: var(--secondary-color);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
 <body>
-    <div class="container d-flex align-items-center">
+    <div class="container">
         <div class="container__form">
-            <h2 class="text-2xl font-semibold mb-4 text-center">Create New Group</h2>
-            <p class="mb-6 text-center text-gray-600 mb-4">Fill out the form to create a new group for your gaming
-                community.</p>
-            <form action="/group/create" method="post">
-                <div class="mb-4 flex items-center" style="display: grid;">
-                    <label class="block text-sm font-medium mb-1 mr-2" for="groupName">Group Name:</label>
-                    <input type="text" id="groupName" name="GroupName" placeholder="Enter group name"
-                        class="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required>
+            <h2>Create New Group</h2>
+            <p>Fill out the form to create a new group for your community.</p>
+            <form action="/group/create" method="post" id="createGroupForm">
+                <div class="mb-4">
+                    <label for="groupName">Group Name:</label>
+                    <input type="text" id="groupName" name="GroupName" placeholder="Enter group name" class="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                 </div>
-                <div class="mb-4 flex items-center" style="display: grid;">
-                    <label class="block text-sm font-medium mb-1 mr-2" for="description">Description:</label>
-                    <textarea id="description" placeholder="Provide a short description for your group"
-                        class="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        rows="3"></textarea>
+                <div class="mb-4">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="Description" placeholder="Provide a short description for your group" class="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" rows="3" required></textarea>
                 </div>
-
-                <button type="submit"
-                    class="btn-create text-white rounded-md p-2 w-full hover:bg-gray-800 transition">Create
-                    Group</button>
+                <button type="submit" class="btn-create">Create Group</button>
             </form>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('createGroupForm');
+            const groupNameInput = document.getElementById('groupName');
+            const descriptionInput = document.getElementById('description');
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                let isValid = true;
+
+                if (groupNameInput.value.trim() === '') {
+                    groupNameInput.style.borderColor = 'var(--error-color)';
+                    isValid = false;
+                } else {
+                    groupNameInput.style.borderColor = '#bdc3c7';
+                }
+
+                if (descriptionInput.value.trim() === '') {
+                    descriptionInput.style.borderColor = 'var(--error-color)';
+                    isValid = false;
+                } else {
+                    descriptionInput.style.borderColor = '#bdc3c7';
+                }
+
+                if (isValid) {
+                    console.log('Form submitted:', {
+                        groupName: groupNameInput.value,
+                        description: descriptionInput.value
+                    });
+                    alert('Group created successfully!');
+                    form.reset();
+                } else {
+                    alert('Please fill in all required fields.');
+                }
+            });
+
+            [groupNameInput, descriptionInput].forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.style.borderColor = 'var(--primary-color)';
+                });
+
+                input.addEventListener('blur', function() {
+                    this.style.borderColor = '#bdc3c7';
+                });
+            });
+        });
+    </script>
 </body>
-
-<script>
-
-</script>

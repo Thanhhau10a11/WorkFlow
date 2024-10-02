@@ -97,7 +97,8 @@ app.engine("hbs", engine({
     },
     json: function (context) {
       return JSON.stringify(context);
-    }
+    },
+    
   }
 }));
 

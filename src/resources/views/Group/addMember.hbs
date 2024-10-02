@@ -1,36 +1,4 @@
-<!DOCTYPE html>
-<html lang="vi">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thêm Thành Viên</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-
-<body>
-  <h1 hidden id="GroupID">{{GroupID}}</h1>
-  <div class="container">
-    <h1>Thêm Thành Viên vào Nhóm</h1>
-    <div class="input-container">
-      <input type="text" id="emailInput" placeholder="Nhập địa chỉ email và nhấn Enter" aria-label="Nhập địa chỉ email">
-    </div>
-    <div class="selected-members">
-      <h2>Thành viên đã chọn</h2>
-      <ul id="selectedList">
-        <!-- Danh sách email đã chọn sẽ được tạo động ở đây -->
-      </ul>
-    </div>
-    <button id="submit">Thêm vào nhóm</button>
-    <p id="message" aria-live="polite"></p>
-  </div>
-  <script src="script.js"></script>
-</body>
-
-</html>
 <style>
-  /* styles.css */
-
   body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -39,193 +7,195 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
   }
 
   .container {
-    background-color: #fff;
-    padding: 20px;
+    background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
     width: 100%;
-    max-width: 600px;
-    position: relative;
+    max-width: 450px;
   }
 
   h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
+    color: #333;
+    font-size: 1.5rem;
     text-align: center;
+    margin-bottom: 1.5rem;
   }
 
   .input-container {
-    margin-bottom: 20px;
+    margin-bottom: 1rem;
   }
 
-  #emailInput {
+  input {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 16px;
-    box-sizing: border-box;
-    outline: none;
-    transition: border-color 0.3s;
   }
 
-  #emailInput:focus {
-    border-color: #007bff;
+  .selected-emails {
+    margin-top: 1rem;
   }
 
-  .selected-members {
-    margin-bottom: 20px;
+  .selected-emails h2 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
   }
 
-  .selected-members h2 {
-    font-size: 18px;
-    margin-bottom: 10px;
-  }
-
-  .selected-members ul {
-    list-style: none;
+  .email-list {
+    list-style-type: none;
     padding: 0;
-    margin: 0;
   }
 
-  .selected-members li span {
-    flex-grow: 1;
-    margin-right: 10px;
-    word-break: break-word;
-    /* Đảm bảo email không bị cắt */
-  }
-
-  .selected-members li button {
-    background-color: red;
-    color: #fff;
-    border: none;
-    padding: 6px 12px;
-    cursor: pointer;
+  .email-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f0f0f0;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
     border-radius: 4px;
-    font-size: 14px;
-    transition: background-color 0.3s;
   }
 
-  .selected-members li button:hover {
-    background-color: darkred;
-  }
-
-  button {
-    background-color: #007bff;
-    color: #fff;
+  .remove-btn {
+    background-color: #ff4d4d;
+    color: white;
     border: none;
-    padding: 12px;
-    font-size: 16px;
-    cursor: pointer;
+    padding: 0.25rem 0.5rem;
     border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .submit-btn {
     width: 100%;
+    padding: 0.75rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
     transition: background-color 0.3s;
   }
 
-  button:hover {
-    background-color: #0056b3;
+  .submit-btn:hover {
+    background-color: #45a049;
   }
 
-  #message {
-    margin-top: 10px;
-    font-size: 16px;
-    text-align: center;
+  .toast {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    padding: 1rem;
+    background-color: #333;
+    color: white;
+    border-radius: 4px;
+    display: none;
   }
 </style>
-<script>
-  // script.js
+<div class="container" style="height: fit-content;">
+  <h1>Thêm Thành Viên vào Nhóm</h1>
+  <div class="input-container">
+    <input type="email" id="emailInput" placeholder="Nhập địa chỉ email và nhấn Enter" aria-label="Nhập địa chỉ email">
+  </div>
+  <div class="selected-emails">
+    <ul id="emailList" class="email-list"></ul>
+  </div>
+  <button id="submitBtn" class="submit-btn bg">Thêm vào nhóm</button>
+</div>
+<div id="toast" class="toast" role="alert" aria-live="assertive"></div>
 
+<script>
   document.addEventListener('DOMContentLoaded', () => {
     const emailInput = document.getElementById('emailInput');
-    const selectedList = document.getElementById('selectedList');
-    const submitButton = document.getElementById('submit');
-    const messageElement = document.getElementById('message');
-    const GroupID = document.getElementById('GroupID').innerText
-    let selectedEmails = [];
+    const emailList = document.getElementById('emailList');
+    const submitBtn = document.getElementById('submitBtn');
+    const toast = document.getElementById('toast');
+    let emails = [];
 
-    function renderSelectedList() {
-      selectedList.innerHTML = '';
-      selectedEmails.forEach(email => {
-        const listItem = document.createElement('li');
-        listItem.innerHTML = `
-        <span>${email}</span>
-        <button data-email="${email}" aria-label="Xóa ${email}">X</button>
-      `;
-        selectedList.appendChild(listItem);
-      });
+    function showToast(message, isError = false) {
+      toast.textContent = message;
+      toast.style.backgroundColor = isError ? '#ff4d4d' : '#4CAF50';
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
     }
 
-    function showMessage(message, isSuccess) {
-      messageElement.textContent = message;
-      messageElement.style.color = isSuccess ? 'green' : 'red';
+    function addEmail(email) {
+      if (email && !emails.includes(email)) {
+        emails.push(email);
+        const li = document.createElement('li');
+        li.className = 'email-item';
+        li.innerHTML = `
+                        <span>${email}</span>
+                        <button class="remove-btn" aria-label="Xóa ${email}">X</button>
+                    `;
+        emailList.appendChild(li);
+        emailInput.value = '';
+      } else if (emails.includes(email)) {
+        showToast('Email đã được chọn.', true);
+      }
     }
 
-    // Sự kiện nhập email
     emailInput.addEventListener('keypress', (event) => {
       if (event.key === 'Enter') {
         event.preventDefault();
-        const email = emailInput.value.trim();
-        if (email && !selectedEmails.includes(email)) {
-          selectedEmails.push(email);
-          renderSelectedList();
-          emailInput.value = ''; // Xóa ô nhập
-        } else if (selectedEmails.includes(email)) {
-          showMessage('Email đã được chọn.', false);
-        } else if (!email) {
-          showMessage('Vui lòng nhập địa chỉ email.', false);
-        }
+        addEmail(emailInput.value.trim());
       }
     });
 
-    // Sự kiện bỏ chọn email
-    selectedList.addEventListener('click', (event) => {
-      if (event.target.tagName === 'BUTTON') {
-        const email = event.target.getAttribute('data-email');
-        selectedEmails = selectedEmails.filter(e => e !== email);
-        renderSelectedList();
+    emailList.addEventListener('click', (event) => {
+      if (event.target.classList.contains('remove-btn')) {
+        const email = event.target.previousElementSibling.textContent;
+        emails = emails.filter(e => e !== email);
+        event.target.parentElement.remove();
       }
     });
 
-    // Sự kiện gửi dữ liệu
-    submitButton.addEventListener('click', () => {
-      if (selectedEmails.length === 0) {
-        showMessage('Vui lòng chọn ít nhất một địa chỉ email.', false);
+    submitBtn.addEventListener('click', async () => {
+      if (emails.length === 0) {
+        showToast('Vui lòng chọn ít nhất một địa chỉ email.', true);
         return;
       }
 
-      const token = localStorage.getItem('authToken');
-
-      fetch('/api/group/addMember', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ emails: selectedEmails, groupId: GroupID })
-      })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Lỗi mạng, mã trạng thái: ' + response.status);
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (data.success) {
-            showMessage('Thêm thành viên thành công!', true);
-            window.location.href = `/group/detail/${GroupID}`;
-          } else {
-            showMessage('Có lỗi xảy ra!', false);
-          }
-        })
-        .catch(error => {
-          console.error('Lỗi:', error);
-          showMessage('Có lỗi xảy ra: ' + error.message, false);
+      try {
+        const token = localStorage.getItem('authToken');
+        const groupId = '{{GroupID}}'; // Replace with actual group ID
+        const response = await fetch('/api/group/addMember', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ emails, groupId })
         });
-    });
-  });
 
+        if (!response.ok) {
+          throw new Error('Lỗi mạng, mã trạng thái: ' + response.status);
+        }
+
+        const data = await response.json();
+        if (data.success) {
+          showToast('Thêm thành viên thành công!');
+          setTimeout(() => {
+            window.location.href = `/group/detail/${groupId}`;
+          }, 1000);
+        } else {
+          throw new Error('Có lỗi xảy ra!');
+        }
+      } catch (error) {
+        console.error('Lỗi:', error);
+        showToast('Có lỗi xảy ra: ' + error.message, true);
+      }
+    });
+
+    // Focus on input field when page loads
+    emailInput.focus();
+  });
 </script>

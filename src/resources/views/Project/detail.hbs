@@ -44,8 +44,9 @@
                             <h5 class="card-title">Available Positions</h5>
                             <ul class="list-group list-group-flush">
                                 {{#each Project.JobsInProject}}
-                                <li class="list-group-item d-flex justify-content-between align-items-center text-sm"
-                                    style="font-weight: 500;">
+                                <li data-job-id="{{this.IDJob}}" data-project-id="{{this.IDProject}}"
+                                    class="list-group-item d-flex justify-content-between align-items-center text-sm"
+                                    style="font-weight: 500; {{#if (eq this.Status 'completed')}} background-color: #e0f7fa; {{/if}}">
                                     <div>
                                         <h6 class="mb-0">{{this.NameJob}}</h6>
                                         <p class="text-muted">{{this.DescriptionJob}}</p>
@@ -53,10 +54,20 @@
                                             <i class="bi bi-clock me-2 text-muted"></i>
                                             <p>Deadline: {{formatDate this.approximateTime}}</p>
                                         </div>
-
                                     </div>
-                                    <button class="btn btn-outline-primary btn-sm bg"
-                                        style="color: #f0f8ff;">Finish</button>
+
+                                    {{#if (eq this.Status 'completed')}}
+                                    <!-- Công việc đã hoàn thành -->
+                                    <button class="btn btn-completed disabled" aria-disabled="true">
+                                        <i class="bi bi-check-circle me-2"></i> Completed
+                                    </button>
+                                    {{else}}
+                                    <!-- Công việc chưa hoàn thành -->
+                                    <button class="btn btn-primary btn-finish bg"
+                                        onclick="markAsCompleted('{{this.IDJob}}', '{{Project.IdProject}}')">
+                                        <i class="bi bi-check-circle me-2"></i> Finish
+                                    </button>
+                                    {{/if}}
                                 </li>
                                 {{/each}}
                             </ul>
@@ -88,9 +99,9 @@
                             <div class="progress" style="height: 1.5rem;">
                                 {{!-- <div class="progress-bar bg" role="progressbar" style="width: 65%;"
                                     aria-valuenow="65" aria-valuemin="0" aria-valuemax="100">65%</div> --}}
-                                <div class="progress-bar bg" role="progressbar" style="width: {{Project.progress}}"
-                                    aria-valuenow="{{Project.progress}}" aria-valuemin="0" aria-valuemax="100">
-                                    {{Project.progress}}
+                                <div class="progress-bar bg" role="progressbar" style="width: {{Project.Progress}}"
+                                    aria-valuenow="{{Project.Progress}}" aria-valuemin="0" aria-valuemax="100">
+                                    {{Project.Progress}}
                                 </div>
                             </div>
                         </li>
@@ -111,6 +122,82 @@
         </aside>
     </div>
 </div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const finishButtons = document.querySelectorAll('.btn-finish');
+        finishButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                const jobElement = event.target.closest('.list-group-item');
+                const jobId = jobElement.getAttribute('data-job-id');
+                const projectId = jobElement.getAttribute('data-project-id');
+                console.log(jobId, projectId)
+
+                markAsCompleted(jobId, projectId);
+            });
+        });
+    });
+
+    async function markAsCompleted(jobId, projectId) {
+        const token = localStorage.getItem('authToken');
+        try {
+            const jobResponse = await fetch(`/api/job/markJobComplete/${jobId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    status: 'completed'
+                })
+            });
+
+            const jobData = await jobResponse.json();
+            if (jobData.success) {
+                const progressResponse = await fetch(`/api/project/updateProgress/${projectId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                });
+
+                const progressData = await progressResponse.json();
+                if (progressData.success) {
+                    updateJobStatusOnFrontend(jobId, progressData.progress);
+                } else {
+                    console.error('Failed to update project progress');
+                }
+            } else {
+                console.error('Failed to update job status');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function updateJobStatusOnFrontend(jobId, newProgress) {
+        const jobElement = document.querySelector(`[data-job-id="${jobId}"]`);
+
+        if (jobElement) {
+            const button = jobElement.querySelector('button');
+
+            button.classList.remove('btn-primary' ,'bg');
+            button.classList.add('btn-completed', 'disabled');
+
+            button.innerHTML = '<i class="bi bi-check-circle me-2"></i> Completed';
+            button.disabled = true;
+
+            jobElement.style.backgroundColor = '#e0f7fa';
+
+            const progressBar = document.querySelector('.progress-bar');
+            progressBar.style.width = `${newProgress}%`;
+            progressBar.setAttribute('aria-valuenow', newProgress);
+            progressBar.textContent = `${newProgress}%`;
+        }
+    }
+</script>
 
 <style>
     * {
@@ -185,5 +272,33 @@
 
     .deadline {
         display: flex;
+    }
+
+    .list-group-item {
+        margin: 5px 0;
+        border-radius: 10px;
+    }
+
+    .completed-job {
+        background-color: #e0f7fa !important;
+        color: white !important;
+    }
+
+    .btn-completed {
+        background-color: #28a745;
+        /* Màu nền xanh */
+        color: white;
+        /* Màu chữ trắng */
+        border: none;
+        /* Không có viền */
+        cursor: not-allowed;
+        /* Con trỏ không cho phép */
+    }
+
+    .btn-completed.disabled {
+        opacity: 0.65;
+        /* Độ mờ cho nút không hoạt động */
+        pointer-events: none;
+        /* Không cho phép tương tác */
     }
 </style>

@@ -82,6 +82,26 @@ class JobCOntroller {
     }
   }
 
+  async  markJobComplete(req, res) {
+    try {
+      const jobId = req.params.JobID;
+      const { status } = req.body; 
+  
+      const job = await Job.findByPk(jobId);
+      if (!job) {
+        return res.status(404).json({ success: false, message: 'Job not found' });
+      }
+  
+      job.Status = status; 
+      await job.save();
+  
+      return res.status(200).json({ success: true, message: 'Job status updated successfully' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: 'Failed to update job status' });
+    }
+  }
+
 }
 
 module.exports = new JobCOntroller();

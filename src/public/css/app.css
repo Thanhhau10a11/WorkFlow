@@ -16,6 +16,9 @@
 .text-sm {
   font-size: 14px; }
 
+.white-color {
+  color: #FFF !important; }
+
 .bg-bold {
   background-color: #2F80ED !important; }
 

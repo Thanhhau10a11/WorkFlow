@@ -153,26 +153,30 @@ class ProjectController {
     }
   }
 
-  async updateProjectProgress(req,res){
-    try {
-      console.log("Da vaooooooooo")
-      const projectId = req.params.ProjectID;
-      const jobs = await Job.findAll({ where: { IDProject: projectId } });
-  
-      if (jobs.length === 0) return 0; 
-  
-      const completedJobs = jobs.filter(job => job.Status === 'completed').length;
-  
-      const progress = (completedJobs / jobs.length) * 100;
-  
-      await Project.update({ Progress: `${progress}%` }, { where: { IdProject: projectId } });
-  
-      return res.status(200).json({ progress });
-    } catch (error) {
-      console.error(error);
-      throw error; 
-    }
-  }
+  async updateProjectProgress(req, res) {  
+    try {  
+        const projectId = req.params.ProjectID;   
+        const jobs = await Job.findAll({ where: { IDProject: projectId } });   
+
+        if (jobs.length === 0) {  
+            return res.status(404).json({ success: false, message: 'No jobs found for this project.' });  
+        }  
+
+        const completedJobs = jobs.filter(job => job.Status === 'completed').length;   
+
+        const progress = (completedJobs / jobs.length) * 100;  
+
+        const roundedProgress = Math.round(progress);  
+
+        await Project.update({ Progress: `${roundedProgress}%` }, { where: { IdProject: projectId } });   
+
+        return res.status(200).json({ success: true, progress: roundedProgress });   
+    } catch (error) {  
+        console.error(error);  
+        return res.status(500).json({ success: false, message: 'An error occurred while updating progress.' });  
+    }  
+}
+
 }
 
 module.exports = new ProjectController();

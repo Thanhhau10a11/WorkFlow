@@ -3,12 +3,17 @@
     <div class="container">
         <div class="row">
             <nav class="mobile-category mb-4" style="width :100%;background-color:#F8F8F0;padding:20px;border-radius:10px">
-                <ul class="mobile-category__list" style="width:1000px;margin:0 auto">
-                    {{#each Project}}
-                        <li class="mobile-category__item">
-                            <a href="/project/detail/{{this.IdProject}}" class="mobile-category__link">{{this.NameProject}}</a>
-                        </li>
-                    {{/each}}
+                <ul class="mobile-category__list " style="width:1000px;margin:0 auto">
+                    {{#if Project}}
+                        {{#each Project}}
+                            <li class="mobile-category__item">
+                                <a href="/project/detail/{{this.IdProject}}" class="mobile-category__link">{{this.NameProject}}</a>
+                            </li>
+                        {{/each}}
+                    {{else}}
+                        <h1 class="display-center" style="width: 100%;font-weight:400;">Make your Project </h1>
+                    {{/if}}
+                    
                 </ul>
             </nav>
         </div>
