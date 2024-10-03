@@ -5,7 +5,6 @@ const GroupController = require('../../app/controllers/UserController/GroupContr
 const authenLogin = require('../../util/checkLogin.js')
 
 router.get('/', GroupController.index)
-router.get('/create', GroupController.formCreate)
 router.post('/create', GroupController.create)
 router.get('/detail/:id', GroupController.detail)
 router.get('/addMember/:id', GroupController.formAddMember)

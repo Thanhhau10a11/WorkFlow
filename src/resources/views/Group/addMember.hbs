@@ -1,114 +1,109 @@
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-  }
 
-  .container {
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
-    width: 100%;
-    max-width: 450px;
-  }
+.addContainer {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  width: 100%;
+  max-width: 450px;
+}
 
-  h1 {
-    color: #333;
-    font-size: 1.5rem;
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
+h1 {
+  color: #333;
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
 
-  .input-container {
-    margin-bottom: 1rem;
-  }
+.input-container {
+  margin-bottom: 1rem;
+}
 
-  input {
-    width: 100%;
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
+input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
 
-  .selected-emails {
-    margin-top: 1rem;
-  }
+.selected-emails {
+  margin-top: 1rem;
+}
 
-  .selected-emails h2 {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-  }
+.selected-emails h2 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
 
-  .email-list {
-    list-style-type: none;
-    padding: 0;
-  }
+.email-list {
+  list-style-type: none;
+  padding: 0;
+}
 
-  .email-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #f0f0f0;
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
-    border-radius: 4px;
-  }
+.email-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f0f0f0;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+}
 
-  .remove-btn {
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    cursor: pointer;
-  }
+.remove-btn {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
 
-  .submit-btn {
-    width: 100%;
-    padding: 0.75rem;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
+.submit-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
 
-  .submit-btn:hover {
-    background-color: #45a049;
-  }
+.submit-btn:hover {
+  background-color: #45a049;
+}
 
-  .toast {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    padding: 1rem;
-    background-color: #333;
-    color: white;
-    border-radius: 4px;
-    display: none;
-  }
+.toast {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  padding: 1rem;
+  background-color: #333;
+  color: white;
+  border-radius: 4px;
+  display: none;
+}
+
 </style>
-<div class="container" style="height: fit-content;">
-  <h1>Thêm Thành Viên vào Nhóm</h1>
-  <div class="input-container">
-    <input type="email" id="emailInput" placeholder="Nhập địa chỉ email và nhấn Enter" aria-label="Nhập địa chỉ email">
-  </div>
-  <div class="selected-emails">
-    <ul id="emailList" class="email-list"></ul>
-  </div>
-  <button id="submitBtn" class="submit-btn bg">Thêm vào nhóm</button>
+
+<div class="wrapper">
+  <form class="addContainer" style="height: fit-content;">
+    <h1>Thêm Thành Viên vào Nhóm</h1>
+    <div class="input-container">
+      <input type="email" id="emailInput" placeholder="Nhập địa chỉ email và nhấn Enter" aria-label="Nhập địa chỉ email">
+    </div>
+    <div class="selected-emails">
+      <ul id="emailList" class="email-list"></ul>
+    </div>
+    <button type="button" id="submitBtn" class="submit-btn bg">Thêm vào nhóm</button>
+  </form>
 </div>
 <div id="toast" class="toast" role="alert" aria-live="assertive"></div>
+
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
@@ -158,7 +153,9 @@
       }
     });
 
-    submitBtn.addEventListener('click', async () => {
+    submitBtn.addEventListener('click', async (event) => {
+      event.preventDefault(); 
+
       if (emails.length === 0) {
         showToast('Vui lòng chọn ít nhất một địa chỉ email.', true);
         return;
@@ -166,7 +163,7 @@
 
       try {
         const token = localStorage.getItem('authToken');
-        const groupId = '{{GroupID}}'; // Replace with actual group ID
+        const groupId = '{{GroupID}}'; 
         const response = await fetch('/api/group/addMember', {
           method: 'POST',
           headers: {

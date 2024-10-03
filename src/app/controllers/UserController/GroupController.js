@@ -36,10 +36,10 @@ class GroupController {
             };
             const response = await axios.post(`${process.env.DOMAIN}/api/group/create`, groupData, { headers })
             if (response.status === 201) {
-                res.redirect('/group/')
+                res.json({ message: 'Group created successfully', redirect: '/group/' });
             } else {
-                console.log("Tạo group thất bại", response.data)
-                res.status(500).json({ message: "Thất bại" })
+                console.log("Tạo group thất bại", response.data);
+                res.status(500).json({ message: "Thất bại" });
             }
         } catch (error) {
             console.error('Error sending request:', error.message);

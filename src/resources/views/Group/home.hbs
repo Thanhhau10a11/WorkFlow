@@ -1,7 +1,7 @@
 <div class="container">
     <div class="header">
         <h1 class="text-big">Groups</h1>
-        <a class="btn btn-create text-small" href="/group/create">Create New Group</a>
+        <button class="btn btn-create text-small" id="openCreateGroupModal">Create New Group</button>
     </div>
     <input type="text" class="form-control mb-4" placeholder="Search groups...">
     <div class="row">
@@ -21,8 +21,105 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div id="createGroupModal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Create New Group</h2>
+        <form id="createGroupForm">
+            <div class="mb-4">
+                <label for="groupName">Group Name:</label>
+                <input type="text" id="groupName" name="GroupName" placeholder="Enter group name" required>
+            </div>
+            <div class="mb-4">
+                <label for="description">Description:</label>
+                <textarea id="description" name="Description" placeholder="Provide a short description"
+                    rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-create">Create Group</button>
+        </form>
+    </div>
+</div>
+
 <style>
-   
+    /* Modal Styles */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        width: 400px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        position: relative;
+    }
+
+    .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .modal-content h2 {
+        color: var(--primary-color);
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .modal-content input,
+    .modal-content textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .modal-content .btn-create {
+        width: 100%;
+        background: linear-gradient(to right, #2F80ED, #56CCF2);
+        color: white;
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        border-radius: 4px;
+    }
+
+    .modal-content .btn-create:hover {
+        background: linear-gradient(to right, #56CCF2, #2F80ED);
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .btn-create {
+        background: linear-gradient(to right, #2F80ED, #56CCF2);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+    }
+
+    .btn-create:hover {
+        background: linear-gradient(to right, #56CCF2, #2F80ED);
+    }
 
     .card {
         margin-top: 10px;
@@ -43,21 +140,97 @@
         margin-bottom: 20px;
         color: #6c757d;
     }
-
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-    .btn-create {
-        background: linear-gradient(to right, #2F80ED, #56CCF2);
-        color: white;
-    }
-
-    .btn-create:hover {
-        background: linear-gradient(to right, #56CCF2, #2F80ED);
-
-    }
 </style>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const openModalBtn = document.getElementById('openCreateGroupModal');
+        const modalOverlay = document.getElementById('createGroupModal');
+        const closeModalBtn = document.querySelector('.close');
+
+        openModalBtn.addEventListener('click', function () {
+            modalOverlay.style.display = 'flex';
+        });
+
+        closeModalBtn.addEventListener('click', function () {
+            modalOverlay.style.display = 'none';
+        });
+
+        window.addEventListener('click', function (event) {
+            if (event.target === modalOverlay) {
+                modalOverlay.style.display = 'none';
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('createGroupForm');
+        const groupNameInput = document.getElementById('groupName');
+        const descriptionInput = document.getElementById('description');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            let isValid = true;
+
+            if (groupNameInput.value.trim() === '') {
+                groupNameInput.style.borderColor = 'var(--error-color)';
+                isValid = false;
+            } else {
+                groupNameInput.style.borderColor = '#bdc3c7';
+            }
+
+            if (descriptionInput.value.trim() === '') {
+
+            } else {
+                descriptionInput.style.borderColor = '#bdc3c7';
+            }
+
+            if (isValid) {
+                const formData = {
+                    GroupName: groupNameInput.value,
+                    description: descriptionInput.value
+                };
+
+                const token = localStorage.getItem('authToken');
+
+                fetch('/group/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+
+                    },
+                    body: JSON.stringify(formData)
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error('Failed to create group');
+                        }
+                    })
+                    .then(data => {
+                        alert('Group created successfully!');
+                        if (data.redirect) {
+                            window.location.href = data.redirect; 
+                        }
+                        form.reset();
+                    })
+                    .catch(error => {
+                        alert('Error: ' + error.message);
+                    });
+            } else {
+                alert('Please fill in all required fields.');
+            }
+        });
+
+        [groupNameInput, descriptionInput].forEach(input => {
+            input.addEventListener('focus', function () {
+                this.style.borderColor = 'var(--primary-color)';
+            });
+
+            input.addEventListener('blur', function () {
+                this.style.borderColor = '#bdc3c7';
+            });
+        });
+    });
+</script>

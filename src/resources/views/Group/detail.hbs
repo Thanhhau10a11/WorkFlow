@@ -1,19 +1,21 @@
+<link rel="stylesheet" href="/css/groupDetail.css">
 <div class="py-4 team4" data-group-id="{{Group.GroupID}}">
 
     <div class="container">
         <div class="row">
-            <nav class="mobile-category mb-4" style="width :100%;background-color:#F8F8F0;padding:20px;border-radius:10px">
-                <ul class="mobile-category__list " style="width:1000px;margin:0 auto">
+            <nav class="mobile-category mb-4"
+                style="width:100%; background-color:#F8F8F0; padding:20px; border-radius:10px;">
+                <ul class="mobile-category__list" style="width:1000px; margin:0 auto;">
                     {{#if Project}}
-                        {{#each Project}}
-                            <li class="mobile-category__item">
-                                <a href="/project/detail/{{this.IdProject}}" class="mobile-category__link">{{this.NameProject}}</a>
-                            </li>
-                        {{/each}}
+                    {{#each Project}}
+                    <li class="mobile-category__item">
+                        <a href="/project/detail/{{this.IdProject}}"
+                            class="mobile-category__link">{{this.NameProject}}</a>
+                    </li>
+                    {{/each}}
                     {{else}}
-                        <h1 class="display-center" style="width: 100%;font-weight:400;">Make your Project </h1>
+                    <h1 class="display-center" style="width:100%; font-weight:400;">Make your Project </h1>
                     {{/if}}
-                    
                 </ul>
             </nav>
         </div>
@@ -46,7 +48,7 @@
 
         <div class="row mt-4">
             <div class="col-lg-3 mb-4 locShadow mx-2">
-                <a href="/group/addMember/{{Group.GroupID}}" class="add-member-link">
+                <a href="#" class="add-member-link">
                     <div class="add-member-card">
                         <div class="add-member-image">
                             <img src="/img/plus.png" alt="Add Member" class="img-fluid rounded-circle" />
@@ -74,6 +76,26 @@
         </div>
     </div>
 </div>
+
+<!-- Add Member Form -->
+<div class="overlay add-member-overlay" style="display:none;"></div>  
+
+<!-- Add Member Form -->  
+<div class="wrapper add-member-form" style="display:none;">  
+    <form class="addContainer">  
+        <h1>Thêm Thành Viên vào Nhóm</h1>  
+        <div class="input-container">  
+            <input type="email" id="emailInput" placeholder="Nhập địa chỉ email và nhấn Enter" aria-label="Nhập địa chỉ email">  
+        </div>  
+        <div class="selected-emails">  
+            <ul id="emailList" class="email-list"></ul>  
+        </div>  
+        <button type="button" id="submitBtn" class="submit-btn bg">Add members</button>  
+        <button type="button" id="closeMemberFormBtn" class="submit-btn bg-red">Close</button>  
+    </form>  
+</div> 
+<div id="toast" class="toast" role="alert" aria-live="assertive"></div>  
+
 
 
 
@@ -125,27 +147,28 @@
             return;
         }
 
-        const jobs = [];
-        for (let job of jobsContainer.children) {
-            const jobName = job.children[0].children[1].value.trim();
-            const jobDescription = job.children[1].children[1].value.trim();
-            const jobDeadline = job.children[2].children[1].value;
+        const jobs = [];  
+for (let job of jobsContainer.children) {  
+    const jobName = job.children[0].children[1].value.trim();  
+    const jobDescription = job.children[1].children[1].value.trim();  
+    const jobDeadline = job.children[2].children[1].value;   
 
-            if (jobName === '') {
-                alert('Job Name is required!');
-                return;
-            }
+    if (jobName === '') {  
+        alert('Job Name is required!');  
+        return;  
+    }  
 
-            if (jobDeadline) {
-                const currentDate = new Date().toISOString().split('T')[0];
-                if (jobDeadline < currentDate) {
-                    alert('Job Deadline must be today or later!');
-                    return;
-                }
-            }
-
-            jobs.push({ NameJob: jobName, DescriptionJob: jobDescription, approximateTime: jobDeadline });
-        }
+    if (jobDeadline) {  
+        const currentDate = new Date().toISOString().split('T')[0];  
+        if (jobDeadline < currentDate) {  
+            alert('Job Deadline must be today or later!');  
+            return;  
+        }  
+        jobs.push({ NameJob: jobName, DescriptionJob: jobDescription, approximateTime: jobDeadline });  
+    } else {  
+        jobs.push({ NameJob: jobName, DescriptionJob: jobDescription }); 
+    }  
+}
 
         const token = localStorage.getItem('authToken');
         const projectData = {
@@ -204,305 +227,115 @@
 </script>
 
 
-<style>
-    @import url(//fonts.googleapis.com/css?family=Montserrat:300,500);
+<script>  
+  document.addEventListener('DOMContentLoaded', () => {  
+    const emailInput = document.getElementById('emailInput');  
+    const emailList = document.getElementById('emailList');  
+    const submitBtn = document.getElementById('submitBtn');  
+    const toast = document.getElementById('toast');  
+    const addMemberLink = document.querySelector('.add-member-link');  
+    const addMemberForm = document.querySelector('.add-member-form');  
+    const memberOverlay = document.querySelector('.add-member-overlay');  
+    const closeMemberButton = document.getElementById('closeMemberFormBtn');  
+    let emails = [];  
 
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+    function showToast(message, isError = false) {  
+      toast.textContent = message;  
+      toast.style.backgroundColor = isError ? '#ff4d4d' : '#4CAF50';  
+      toast.style.display = 'block';  
+      setTimeout(() => {  
+        toast.style.display = 'none';  
+      }, 3000);  
+    }  
 
-    .btn__createProject {
-        height: 40px;
-        width: 140px;
-        background: linear-gradient(to right, #2F80ED, #56CCF2);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 5px;
-        float: right;
-    }
+    function addEmail(email) {  
+      if (email && !emails.includes(email)) {  
+        emails.push(email);  
+        const li = document.createElement('li');  
+        li.className = 'email-item';  
+        li.innerHTML = `  
+                        <span>${email}</span>  
+                        <button class="remove-btn" aria-label="Xóa ${email}">X</button>  
+                    `;  
+        emailList.appendChild(li);  
+        emailInput.value = '';  
+      } else if (emails.includes(email)) {  
+        showToast('Email đã được chọn.', true);  
+      }  
+    }  
 
-    .btn__createProject:hover {
-        background: linear-gradient(to right, #56CCF2, #2F80ED);
-    }
+    emailInput.addEventListener('keypress', (event) => {  
+      if (event.key === 'Enter') {  
+        event.preventDefault();  
+        addEmail(emailInput.value.trim());  
+      }  
+    });  
 
-    .btn__createProject button {
-        background-color: transparent;
-        border: none;
-        color: inherit;
-        cursor: pointer;
-        color: white;
-        height: 100%;
-    }
+    emailList.addEventListener('click', (event) => {  
+      if (event.target.classList.contains('remove-btn')) {  
+        const email = event.target.previousElementSibling.textContent;  
+        emails = emails.filter(e => e !== email);  
+        event.target.parentElement.remove();  
+      }  
+    });  
 
-    .team4 {
-        font-family: "Montserrat", sans-serif;
-        color: #8d97ad;
-        font-weight: 300;
-    }
+    submitBtn.addEventListener('click', async (event) => {  
+      event.preventDefault();
 
-    .team4 h1,
-    .team4 h2,
-    .team4 h3,
-    .team4 h4,
-    .team4 h5,
-    .team4 h6 {
-        color: #3e4555;
-    }
+      if (emails.length === 0) {  
+        showToast('Vui lòng chọn ít nhất một địa chỉ email.', true);  
+        return;  
+      }  
 
-    .team4 .font-weight-medium {
-        font-weight: 500;
-    }
+      try {  
+        const token = localStorage.getItem('authToken');  
+        const groupId = document.querySelector('.team4').getAttribute('data-group-id'); 
+        const response = await fetch('/api/group/addMember', {  
+          method: 'POST',  
+          headers: {  
+            'Content-Type': 'application/json',  
+            'Authorization': `Bearer ${token}`  
+          },  
+          body: JSON.stringify({ emails, groupId })  
+        });  
 
-    .team4 h5 {
-        line-height: 22px;
-        font-size: 18px;
-    }
+        if (!response.ok) {  
+          throw new Error('Lỗi mạng, mã trạng thái: ' + response.status);  
+        }  
 
-    .team4 .subtitle {
-        color: #8d97ad;
-        line-height: 24px;
-        font-size: 20px;
-    }
+        const data = await response.json();  
+        if (data.success) {  
+          showToast('Thêm thành viên thành công!');  
+          setTimeout(() => {  
+            window.location.href = `/group/detail/${groupId}`;  
+          }, 1000);  
+        } else {  
+          throw new Error('Có lỗi xảy ra!');  
+        }  
+      } catch (error) {  
+        console.error('Lỗi:', error);  
+        showToast('Có lỗi xảy ra: ' + error.message, true);  
+      }  
+    });  
 
-    .team4 ul li a {
-        color: #8d97ad;
-        padding-right: 15px;
-        transition: 0.1s ease-in;
-    }
+    addMemberLink.addEventListener('click', function (event) {  
+        event.preventDefault(); 
+        addMemberForm.style.display = 'block';  
+        memberOverlay.style.display = 'block';  
+    });  
 
-    .team4 ul li a:hover {
-        transform: translateY(-5px);
-        color: #316ce8;
-    }
+    memberOverlay.addEventListener('click', function () {  
+        addMemberForm.style.display = 'none';  
+        memberOverlay.style.display = 'none';  
+    });  
 
-    .locShadow {
-        transition: box-shadow 0.35s;
-        border-radius: 10px;
-        overflow: hidden;
-        background-color: #fff;
-        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-    }
+    if (closeMemberButton) {  
+        closeMemberButton.addEventListener('click', function () {  
+            addMemberForm.style.display = 'none';  
+            memberOverlay.style.display = 'none';  
+        });  
+    }  
 
-    .locShadow:hover {
-        box-shadow: rgba(100, 100, 111, 0.3) 0px 15px 30px 0px;
-    }
-
-    .add-member-link {
-        text-decoration: none;
-        display: block;
-        height: 100%;
-        color: inherit;
-    }
-
-    .add-member-card,
-    .member-card {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        text-align: center;
-        position: relative;
-        height: 100%;
-    }
-
-    .add-member-image,
-    .member-image {
-        margin-bottom: 15px;
-    }
-
-    .add-member-image img,
-    .member-image img {
-        width: 100px;
-        height: 100px;
-        object-fit: cover;
-        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-        transition: box-shadow 0.3s ease;
-    }
-
-    .add-member-image img:hover,
-    .member-image img:hover {
-        box-shadow: rgba(100, 100, 111, 0.3) 0px 15px 30px 0px;
-    }
-
-    .col-md-12 {
-        padding: 10px;
-    }
-
-    .delete-button {
-        display: none;
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background-color: red;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        cursor: pointer;
-        border-radius: 5px;
-        text-decoration: none;
-        z-index: 1;
-    }
-
-    .delete-button:hover {
-        background-color: crimson;
-    }
-
-    .member-card:hover .delete-button {
-        display: block;
-    }
-
-        {
-            {
-            !-- form --
-        }
-    }
-
-    .overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-        z-index: 1000;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    #projectForm {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        width: 500px;
-        max-width: 90%;
-        max-height: 80%;
-        overflow-y: auto;
-    }
-
-    #projectForm input,
-    #projectForm textarea {
-        width: 100%;
-        padding: 10px;
-        margin: 10px 0;
-        border: solid 1px #ccc;
-        /* Light border */
-        border-radius: 4px;
-    }
-
-    #projectForm button {
-        background-color: #45a049;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-top: 10px;
-    }
-
-    #projectForm button:hover {
-        background-color: #4CAF50;
-    }
-
-    #jobsContainer button {
-        background-color: #f44336 !important;
-        color: white;
-        padding: 5px 10px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    .btn__container {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    #jobsContainer div {
-        border: 1px solid #ccc;
-        padding: 10px;
-        margin-bottom: 10px;
-        border-radius: 5px;
-        background-color: #f9f9f9;
-    }
-
-    #jobsContainer button:hover {
-        background-color: #d32f2f;
-    }
-
-    /* mobile category */
-    /* mobile category */
-    .mobile-category {  
-    display: block;  
-}  
-
-.mobile-category__list {  
-    display: flex;  
-    list-style: none;  
-    padding: 0 0 10px 0;  
-    max-width: 100%;  
-    overflow-x: auto;  
-}  
-
-.mobile-category__list::-webkit-scrollbar {  
-    height: 10px;  
-}  
-
-.mobile-category__list::-webkit-scrollbar-thumb {  
-    background-color: #87AFD8;  
-    border-radius: 10px;  
-}  
-
-.mobile-category__list::-webkit-scrollbar-track {  
-    background-color: #f1f1f1;  
-}  
-
-.mobile-category__item {  
-    flex-shrink: 0;  
-    margin-right: 15px;  
-}  
-
-.mobile-category__item:nth-of-type(3n + 1) .mobile-category__link {  
-    background-color: #87AFD8;  
-}  
-
-.mobile-category__item:nth-of-type(3n + 2) .mobile-category__link {  
-    background-color: #76C9BD;  
-}  
-
-.mobile-category__item:nth-of-type(3n + 3) .mobile-category__link {  
-    background-color: #88CF81;  
-}  
-
-.mobile-category__link {  
-    --line-height: 2rem;  
-    text-decoration: none;  
-    color: white;  
-    font-size: 1.4rem;  
-    line-height: var(--line-height);
-    height: calc(var(--line-height) * 2);  
-    overflow: hidden;  
-    width: 110px;  
-    display: block;  
-    display: -webkit-box;  
-    -webkit-box-orient: vertical;  
-    -webkit-line-clamp: 2;  
-    border-radius: 3px;  
-    font-weight: 300;  
-    user-select: none;  
-    -webkit-user-select: none;  
-    -webkit-tap-highlight-color: transparent;  
-    text-align: center;  
-    transition: opacity 0.3s;  
-}  
-
-.mobile-category__link:hover {  
-    opacity: 0.8;  
-}
-
-</style>
+    emailInput.focus();  
+  });  
+</script>

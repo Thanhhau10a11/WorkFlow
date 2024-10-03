@@ -52,17 +52,19 @@
                                         <p class="text-muted">{{this.DescriptionJob}}</p>
                                         <div class="deadline">
                                             <i class="bi bi-clock me-2 text-muted"></i>
+                                            {{#if this.approximateTime}}
                                             <p>Deadline: {{formatDate this.approximateTime}}</p>
+                                            {{else}}
+                                            <p>Deadline: Unlimited</p>
+                                            {{/if}}
                                         </div>
                                     </div>
 
                                     {{#if (eq this.Status 'completed')}}
-                                    <!-- Công việc đã hoàn thành -->
                                     <button class="btn btn-completed disabled" aria-disabled="true">
                                         <i class="bi bi-check-circle me-2"></i> Completed
                                     </button>
                                     {{else}}
-                                    <!-- Công việc chưa hoàn thành -->
                                     <button class="btn btn-primary btn-finish bg"
                                         onclick="markAsCompleted('{{this.IDJob}}', '{{Project.IdProject}}')">
                                         <i class="bi bi-check-circle me-2"></i> Finish
@@ -132,7 +134,6 @@
                 const jobElement = event.target.closest('.list-group-item');
                 const jobId = jobElement.getAttribute('data-job-id');
                 const projectId = jobElement.getAttribute('data-project-id');
-                console.log(jobId, projectId)
 
                 markAsCompleted(jobId, projectId);
             });
