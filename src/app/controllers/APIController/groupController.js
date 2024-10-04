@@ -115,7 +115,10 @@ class GroupController {
   async addMember(req, res) {
     const { emails, groupId } = req.body;
 
-    const authToken = req.session.user.token;
+    //const authToken = req.session.user.token;
+    const authHeader = req.headers['authorization'];
+    const tokenHeader = authHeader && authHeader.split(' ')[1];
+    const authToken = tokenHeader;
 
     if (!emails || !groupId) {
       return res.status(400).json({ success: false, message: 'Thiếu thông tin' });

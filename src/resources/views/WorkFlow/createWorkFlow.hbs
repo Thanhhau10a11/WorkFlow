@@ -206,7 +206,7 @@
             const workflowDescription = $('#workflowDescription').val();
 
             if (!workflowName) {
-                alert('Vui lòng nhập tên workflow.');
+                showToast('Vui lòng nhập tên workflow.', true);
                 return;
             }
 
@@ -219,7 +219,7 @@
                 const stageRecipient = showRecipient ? $(this).find('.stageRecipient').val() : null;
 
                 if (!stageName) {
-                    alert('Vui lòng nhập tên cho tất cả các stage.');
+                    showToast('Vui lòng nhập tên cho tất cả các stage.', true);
                     valid = false;
                     return false; // Dừng lại khi gặp lỗi  
                 }
@@ -250,7 +250,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        
+
                     },
                     body: JSON.stringify({
                         name: workflowName,
@@ -260,17 +260,20 @@
                 });
 
                 if (response.ok) {
-                    alert('Workflow đã được lưu thành công!');
-                    $('#workflowName').val('');
-                    $('#workflowDescription').val('');
-                    $('#stagesContainer').empty();
-                    window.location.href = '/workFlow/';
+
+                    showToast('Workflow đã được lưu thành công!');
+                    setTimeout(() => {
+                        $('#workflowName').val('');
+                        $('#workflowDescription').val('');
+                        $('#stagesContainer').empty();
+                        window.location.href = '/workFlow/';
+                    }, 1000);
                 } else {
                     const errorData = await response.json();
-                    alert(`Lỗi: ${errorData.error}`);
+                    showToast(`Lỗi: ${errorData.error}`, true);
                 }
             } catch (error) {
-                alert('Có lỗi xảy ra, vui lòng thử lại.');
+                showToast('Có lỗi xảy ra, vui lòng thử lại.', true);
             }
         });
     });

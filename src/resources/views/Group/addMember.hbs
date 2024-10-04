@@ -102,7 +102,6 @@ input {
     <button type="button" id="submitBtn" class="submit-btn bg">Thêm vào nhóm</button>
   </form>
 </div>
-<div id="toast" class="toast" role="alert" aria-live="assertive"></div>
 
 
 <script>
@@ -113,14 +112,7 @@ input {
     const toast = document.getElementById('toast');
     let emails = [];
 
-    function showToast(message, isError = false) {
-      toast.textContent = message;
-      toast.style.backgroundColor = isError ? '#ff4d4d' : '#4CAF50';
-      toast.style.display = 'block';
-      setTimeout(() => {
-        toast.style.display = 'none';
-      }, 3000);
-    }
+    
 
     function addEmail(email) {
       if (email && !emails.includes(email)) {

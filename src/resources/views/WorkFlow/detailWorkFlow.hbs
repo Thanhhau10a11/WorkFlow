@@ -151,7 +151,7 @@
                     const stageApproxTime = stageGroup.querySelector('[name="stageApproxTime"]').value;
 
                     if (!stageName) {
-                        alert('Please enter a stage name.');
+                        showToast('Please enter a stage name.',true);
                         return;
                     }
                     stagesData.stages.push({
@@ -177,7 +177,7 @@
                             document.querySelector('.form-container').style.display = 'none';
                             window.location.href = window.location.href;
                         } else {
-                            alert('Đã có lỗi xảy ra khi lưu dữ liệu.');
+                            showToast('Đã có lỗi xảy ra khi lưu dữ liệu.',true);
                         }
                     })
                     .catch((error) => {
@@ -278,9 +278,9 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Cập nhật thứ tự thành công!');
+                    showToast('Cập nhật thứ tự thành công!');
                 } else {
-                    alert('Có lỗi khi cập nhật thứ tự.');
+                    showToast('Có lỗi khi cập nhật thứ tự.',true);
                 }
             })
             .catch(error => {
