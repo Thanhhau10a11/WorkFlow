@@ -3,25 +3,28 @@
 
     <div class="container">
         <div class="row">
-            <nav class="mobile-category mb-4"
-                style="width:100%; background-color:#F8F8F0; padding:20px; border-radius:10px;">
-                <ul class="mobile-category__list" style="width:1000px; margin:0 auto;">
-                    {{#if Project}}
-                    {{#each Project}}
-                    <li class="mobile-category__item">
-                        <a href="/project/detail/{{this.IdProject}}"
-                            class="mobile-category__link">{{this.NameProject}}</a>
-                    </li>
-                    {{/each}}
-                    {{else}}
-                    <h1 class="display-center" style="width:100%; font-weight:400;">Make your Project </h1>
-                    {{/if}}
-                </ul>
-            </nav>
+            <div class="container__project">
+                <div class="btn__createProject">
+                    <button id="createProjectBtn">Create Project</button>
+                </div>
+                <nav class="mobile-category mb-4"
+                    style="width:100%; background-color:#F8F8F0; padding:20px; border-radius:10px;">
+                    <ul class="mobile-category__list" style="width:1000px; margin:0 auto;">
+                        {{#if Project}}
+                        {{#each Project}}
+                        <li class="mobile-category__item">
+                            <a href="/project/detail/{{this.IdProject}}"
+                                class="mobile-category__link">{{this.NameProject}}</a>
+                        </li>
+                        {{/each}}
+                        {{else}}
+                        <h1 class="display-center" style="width:100%; font-weight:400;">Make your Project </h1>
+                        {{/if}}
+                    </ul>
+                </nav>
+            </div>
         </div>
-        <div class="btn__createProject">
-            <button id="createProjectBtn">Create Project</button>
-        </div>
+
         <div class="row justify-content-center mb-4">
             <div class="col-md-7 text-center">
                 <h3 class="mb-3 text-big">{{Group.GroupName}}</h3>
@@ -95,244 +98,5 @@
         <button type="button" id="closeMemberFormBtn" class="submit-btn bg-red">Close</button>
     </form>
 </div>
-
-
-
-
-<script>
-    document.getElementById('createProjectBtn').addEventListener('click', function () {
-        document.getElementById('overlay').style.display = 'flex';
-        document.getElementById('projectForm').style.display = 'block';
-    });
-
-    document.getElementById('closeFormBtn').addEventListener('click', function () {
-        document.getElementById('overlay').style.display = 'none';
-        document.getElementById('projectForm').style.display = 'none';
-    });
-
-    document.getElementById('addJobBtn').addEventListener('click', function () {
-        const jobsContainer = document.getElementById('jobsContainer');
-
-        const jobDiv = document.createElement('div');
-        jobDiv.innerHTML = `
-        <div>
-            <label for="jobName">Job Name:</label>
-            <input type="text" placeholder="Job Name" required />
-        </div>
-        <div>
-            <label for="jobDescription">Job Description:</label>
-            <textarea placeholder="Job Description" required></textarea>
-        </div>
-        <div>
-            <label for="jobDeadline">Deadline:</label>
-            <input type="date" required />
-        </div>
-        <button onclick="removeJob(this)">Remove Job</button>
-    `;
-        jobsContainer.appendChild(jobDiv);
-    });
-
-    function removeJob(button) {
-        button.parentElement.remove();
-    }
-
-    document.getElementById('submitProjectBtn').addEventListener('click', function () {
-        const projectName = document.getElementById('projectName').value.trim();
-        const projectInfo = document.getElementById('projectInfo').value.trim();
-        const jobsContainer = document.getElementById('jobsContainer');
-        const groupId = document.querySelector('.team4').getAttribute('data-group-id');
-
-        if (projectName === '') {
-            showToast('Project Name is required!', true);
-            return;
-        }
-
-        const jobs = [];
-        for (let job of jobsContainer.children) {
-            const jobName = job.children[0].children[1].value.trim();
-            const jobDescription = job.children[1].children[1].value.trim();
-            const jobDeadline = job.children[2].children[1].value;
-
-            if (jobName === '') {
-                showToast('Job Name is required!', true);
-                return;
-            }
-
-            if (jobDeadline) {
-                const currentDate = new Date().toISOString().split('T')[0];
-                if (jobDeadline < currentDate) {
-                    showToast('Job Deadline must be today or later!', true);
-                    return;
-                }
-                jobs.push({ NameJob: jobName, DescriptionJob: jobDescription, approximateTime: jobDeadline });
-            } else {
-                jobs.push({ NameJob: jobName, DescriptionJob: jobDescription });
-            }
-        }
-
-        const token = localStorage.getItem('authToken');
-        const projectData = {
-            NameProject: projectName,
-            Progress: 0,
-            InfoProject: projectInfo,
-            jobs: jobs
-        };
-        fetch(`/project/create/${groupId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-            },
-            body: JSON.stringify(projectData)
-        })
-            .then(response => {
-                if (response.ok) {
-                    showToast('Project created successfully!');
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1000);
-                } else {
-                    showToast('Error creating project!',true);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('An error occurred!',true);
-            });
-    });
-
-    function removeMember(groupId, userId) {
-        if (confirm('Bạn có chắc chắn muốn xóa thành viên này?')) {
-            const token = localStorage.getItem('authToken');
-
-            fetch(`/group/removeMember/${groupId}/${userId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            })
-                .then(response => {
-                    if (response.ok) {
-                        showToast('Đã xóa thành viên thành công!');
-                        setTimeout(() => {  
-                            location.reload(); 
-                        }, 1000);
-                        
-                    } else {
-                        showToast('Lỗi khi xóa thành viên!',true);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Đã xảy ra lỗi!',true);
-                });
-        }
-    }
-</script>
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const emailInput = document.getElementById('emailInput');
-        const emailList = document.getElementById('emailList');
-        const submitBtn = document.getElementById('submitBtn');
-        const addMemberLink = document.querySelector('.add-member-link');
-        const addMemberForm = document.querySelector('.add-member-form');
-        const memberOverlay = document.querySelector('.add-member-overlay');
-        const closeMemberButton = document.getElementById('closeMemberFormBtn');
-        let emails = [];
-
-
-
-        function addEmail(email) {
-            if (email && !emails.includes(email)) {
-                emails.push(email);
-                const li = document.createElement('li');
-                li.className = 'email-item';
-                li.innerHTML = `  
-                        <span>${email}</span>  
-                        <button class="remove-btn" aria-label="Xóa ${email}">X</button>  
-                    `;
-                emailList.appendChild(li);
-                emailInput.value = '';
-            } else if (emails.includes(email)) {
-                showToast('Email đã được chọn.', true);
-            }
-        }
-
-        emailInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                addEmail(emailInput.value.trim());
-            }
-        });
-
-        emailList.addEventListener('click', (event) => {
-            if (event.target.classList.contains('remove-btn')) {
-                const email = event.target.previousElementSibling.textContent;
-                emails = emails.filter(e => e !== email);
-                event.target.parentElement.remove();
-            }
-        });
-
-        submitBtn.addEventListener('click', async (event) => {
-            event.preventDefault();
-
-            if (emails.length === 0) {
-                showToast('Vui lòng chọn ít nhất một địa chỉ email.', true);
-                return;
-            }
-
-            try {
-                const token = localStorage.getItem('authToken');
-                const groupId = document.querySelector('.team4').getAttribute('data-group-id');
-                const response = await fetch('/api/group/addMember', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ emails, groupId })
-                });
-
-                if (!response.ok) {
-                    throw new Error('Lỗi mạng, mã trạng thái: ' + response.status);
-                }
-
-                const data = await response.json();
-                if (data.success) {
-                    showToast('Thêm thành viên thành công!');
-                    setTimeout(() => {
-                        window.location.href = `/group/detail/${groupId}`;
-                    }, 1000);
-                } else {
-                    throw new Error('Có lỗi xảy ra!');
-                }
-            } catch (error) {
-                console.error('Lỗi:', error);
-                showToast('Có lỗi xảy ra: ' + error.message, true);
-            }
-        });
-
-        addMemberLink.addEventListener('click', function (event) {
-            event.preventDefault();
-            addMemberForm.style.display = 'block';
-            memberOverlay.style.display = 'block';
-        });
-
-        memberOverlay.addEventListener('click', function () {
-            addMemberForm.style.display = 'none';
-            memberOverlay.style.display = 'none';
-        });
-
-        if (closeMemberButton) {
-            closeMemberButton.addEventListener('click', function () {
-                addMemberForm.style.display = 'none';
-                memberOverlay.style.display = 'none';
-            });
-        }
-
-        emailInput.focus();
-    });  
-</script>
+<script src="/js/Group_CreateProject.js"></script>
+<script src="/js/Group_AddMembers.js"></script>

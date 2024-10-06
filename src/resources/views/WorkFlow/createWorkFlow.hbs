@@ -108,44 +108,29 @@
 
     ..stageRecipient {
         border-radius: 0.25rem;
-        /* Rounded corners */
         border: 1px solid #ced4da;
-        /* Border color */
         background-color: #ffffff;
-        /* Background color */
         padding: 0.375rem 0.75rem;
-        /* Padding */
         font-size: 1rem;
-        /* Font size */
         line-height: 1.5;
-        /* Line height */
         transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        /* Transition effects */
     }
 
     .stageRecipient:focus {
         border-color: #80bdff;
-        /* Border color on focus */
         outline: 0;
-        /* Remove default outline */
         box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
-        /* Shadow effect */
     }
 
     .stageRecipient option {
         padding: 0.5rem;
-        /* Padding for options */
     }
 
     .stageRecipient optgroup {
         font-weight: bold;
-        /* Bold font for optgroup labels */
         background-color: #f8f9fa;
-        /* Background color for optgroup */
         border-bottom: 1px solid #e9ecef;
-        /* Border for optgroup */
         padding: 0.25rem 0;
-        /* Padding for optgroup */
     }
 </style>
 
@@ -195,10 +180,9 @@
             $('#stagesContainer').append(stageHtml);
         });
 
-        // Gán sự kiện change cho checkbox thông qua event delegation
         $('#stagesContainer').on('change', '.show-recipient', function () {
             const recipientFieldId = `#recipientField${$(this).closest('.stage').data('stage-id')}`;
-            $(recipientFieldId).slideToggle(this.checked);  // Hiện/ẩn trường người nhận tương ứng  
+            $(recipientFieldId).slideToggle(this.checked);  
         });
 
         $('#saveWorkflowBtn').click(async function () {
@@ -221,7 +205,7 @@
                 if (!stageName) {
                     showToast('Vui lòng nhập tên cho tất cả các stage.', true);
                     valid = false;
-                    return false; // Dừng lại khi gặp lỗi  
+                    return false; 
                 }
 
                 stages.push({
@@ -234,7 +218,6 @@
 
             if (!valid) return;
 
-            // Xác định mối quan hệ giữa các stage dựa trên thứ tự tạo  
             stages.forEach((stage, index) => {
                 if (index > 0) {
                     stage.previousStage = stages[index - 1].name;
@@ -250,7 +233,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-
+                         'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({
                         name: workflowName,
