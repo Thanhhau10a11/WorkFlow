@@ -40,6 +40,10 @@ Stage.belongsToMany(Job, { through: JobStage, as: 'Jobs', foreignKey: 'IDStage' 
 AppUser.belongsToMany(Notify, { through: UserNotify, as: 'ReceivedNotifies', foreignKey: 'IDUser' });
 Notify.belongsToMany(AppUser, { through: UserNotify, as: 'Users', foreignKey: 'IDNotify' });
 
+//  quan hệ một-nhiều giữa Group và Workflow
+Group.hasMany(Workflow, { foreignKey: 'GroupID', as: 'GroupWorkFlow', onDelete: 'CASCADE' });
+Workflow.belongsTo(Group, { foreignKey: 'GroupID', as: 'WorkFlowGroup' });
+
 module.exports = {
   sequelize,
   Invitation,

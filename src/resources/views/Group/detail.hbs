@@ -4,6 +4,27 @@
     <div class="container">
         <div class="row">
             <div class="container__project">
+                <div class="btn__createWorkFlow">
+                    <a id="createWorkFlowBtn" href="/workFLow/create/{{Group.GroupID}}" style="color: aliceblue; text-decoration:none;">Create WorkFlow</a>
+                </div>
+                <nav class="mobile-category mb-4"
+                    style="width:100%; background-color:#F8F8F0; padding:20px; border-radius:10px;">
+                    <ul class="mobile-category__list" style="width:1000px; margin:0 auto;">
+                        {{#if workflows}}
+                        {{#each workflows}}
+                        <li class="mobile-category__item">
+                            <a href="/workflow/detail/{{this.IDWorkFlow}}"
+                                class="mobile-category__link">{{this.Name}}
+                            </a>
+                        </li>
+                        {{/each}}
+                        {{else}}
+                        <h1 class="display-center" style="width:100%; font-weight:400;">Create your WorkFlow </h1>
+                        {{/if}}
+                    </ul>
+                </nav>
+            </div>
+            <div class="container__project">
                 <div class="btn__createProject">
                     <button id="createProjectBtn">Create Project</button>
                 </div>
@@ -18,7 +39,7 @@
                         </li>
                         {{/each}}
                         {{else}}
-                        <h1 class="display-center" style="width:100%; font-weight:400;">Make your Project </h1>
+                        <h1 class="display-center" style="width:100%; font-weight:400;">Create your Project </h1>
                         {{/if}}
                     </ul>
                 </nav>

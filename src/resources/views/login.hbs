@@ -155,8 +155,9 @@
                 .then(data => {
                     if (data.success) {
                         localStorage.setItem('authToken', data.token);
-                        const token = localStorage.getItem('authToken');
                         localStorage.setItem('DOMAIN',data.DOMAIN);
+                        localStorage.setItem('IDUser',data.IDUser);
+                        const token = localStorage.getItem('authToken');
                         const DOMAIN = localStorage.getItem('DOMAIN');;
                         fetch(`${DOMAIN}`, {
                             method: 'GET',

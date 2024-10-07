@@ -75,7 +75,6 @@ class testController {
     const { stageId, jobs } = req.body;
 
     try {
-      // Tìm stage theo ID
       const stage = await Stage.findByPk(stageId);
       if (!stage) {
         return res.status(404).json({ message: 'Stage not found' });
@@ -83,7 +82,6 @@ class testController {
 
       const jobsAdded = [];
       const jobCreationPromises = jobs.map(async (jobData) => {
-        // Tạo job mới từ dữ liệu
         const newJob = await Job.create({
           Status: jobData.Status,
           IDUserAssign: jobData.IDUserAssign,
@@ -98,21 +96,17 @@ class testController {
           IDProject: jobData.IDProject
         });
 
-        // Thêm job vào JobStage
         await JobStage.create({ IDJob: newJob.IDJob, IDStage: stageId });
 
-        // Lưu đối tượng job mới đã thêm vào danh sách
-        jobsAdded.push(newJob.toJSON()); // Lưu thông tin job
+        jobsAdded.push(newJob.toJSON()); 
       });
 
-      // Chờ tất cả job được tạo
       await Promise.all(jobCreationPromises);
 
-      // Xuất thông tin chi tiết về stage và jobs đã thêm
       return res.status(201).json({
         message: 'Jobs created and added to stage successfully',
         stage: stage.toJSON(),
-        jobsAdded: jobsAdded // Trả về thông tin chi tiết về jobs
+        jobsAdded: jobsAdded 
       });
     } catch (error) {
       return res.status(500).json({ error: error.errors ? error.errors.map(e => e.message) : error.message });

@@ -2,6 +2,7 @@
 const WorkFlow = require('../../models/WorkFlow_Model');
 const Stage = require('../../models/Stage_Model');
 const Job = require('../../models/Job_Model');
+const Group = require('../../models/Group_Model');
 const nodemailer = require('nodemailer');
 const axios = require('axios');
 
@@ -71,13 +72,22 @@ class workFlowController {
     async saveWorkFLow(req, res) {
         const { GroupID,name, description, stages } = req.body;
         const IDCreator = req.session.user.IDUser;
-        const token = req.session.user.token
+        //const token = req.session.user.token
+        const authHeader = req.headers['authorization'];
+        const tokenHeader = authHeader && authHeader.split(' ')[1];
+        const token = tokenHeader;
+        
+        const group = await Group.findByPk(GroupID);
+        if (!group) {
+            throw new Error('Group not found');
+        }
 
         try {
             const workflow = await WorkFlow.create({
                 Name: name,
                 Description: description,
-                IDCreator: IDCreator
+                IDCreator: IDCreator,
+                GroupID:GroupID,
             });
 
             const stageIds = [];
@@ -153,13 +163,11 @@ class workFlowController {
                 return res.status(404).json({ error: 'Không tìm thấy workflow' });
             }
 
-            // Lấy các stages hiện có cho workflow này
             const existingStages = await Stage.findAll({
                 where: { IDWorkFlow: workflowId },
                 order: [['IdStage', 'ASC']]
             });
 
-            // Tạo các stage mới
             const newStages = await Promise.all(stages.map(async (stage) => {
                 return await Stage.create({
                     NameStage: stage.NameStage,
@@ -171,10 +179,8 @@ class workFlowController {
                 });
             }));
 
-            // Kết hợp các stage cũ và mới
             const allStages = [...existingStages, ...newStages];
 
-            // Cập nhật các trường previousStage và nextStage
             for (let i = 0; i < allStages.length; i++) {
                 const currentStage = allStages[i];
                 const previousStageId = i > 0 ? allStages[i - 1].IdStage : null;
@@ -198,7 +204,26 @@ class workFlowController {
             res.status(500).json({ error: 'Lỗi máy chủ nội bộ' });
         }
     }
-
+    async createForGroup(req, res) {
+        try {
+            const workFlow = await WorkFlow.create({
+                ...req.body,
+            });
+            res.status(201).json(workFlow);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+    async getWorkflowsInGroup(req, res) {
+        const GroupID = req.params.GroupID;
+        const group = await Group.findByPk(GroupID, {
+            include: [{ model: WorkFlow, as: 'GroupWorkFlow' }]
+        });
+        if (!group) {
+            throw new Error('Group not found');
+        }
+        return res.status(201).json(group.GroupWorkFlow);
+    }
 
 }
 

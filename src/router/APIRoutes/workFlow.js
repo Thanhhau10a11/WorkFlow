@@ -5,7 +5,10 @@ const workFlowController = require('../../app/controllers/APIController/workFlow
 
 router.get('/getAll', workFlowController.getALl)
 router.get('/:id', workFlowController.getById)
+router.get('/:GroupID/WorkFlows', workFlowController.getWorkflowsInGroup)
+
 router.post('/create', workFlowController.create)
+router.post('/createWorkFLow', workFlowController.createForGroup)
 router.post('/update/:id', workFlowController.update)
 router.post('/delete/:id', workFlowController.delete)
 router.post('/saveWorkFLow', workFlowController.saveWorkFLow)

@@ -1,6 +1,7 @@
 const WorkFlow = require('../../models/WorkFlow_Model');
 const Stage = require('../../models/Stage_Model');
 const Job = require('../../models/Job_Model');
+const Group = require('../../models/Group_Model');
 
 class userWorkFlowController {
     async getByUserId(req, res) {
@@ -14,7 +15,8 @@ class userWorkFlowController {
                         model: Job,
                         as: 'Jobs'
                     }]
-                }]
+                }],
+                order: [['createdAt', 'DESC']]
             });
 
             res.json(workflows);
@@ -113,7 +115,6 @@ class userWorkFlowController {
             res.status(500).json({ success: false, message: 'Lỗi server' });
         }
     }
-
 }
 
 module.exports = new userWorkFlowController();

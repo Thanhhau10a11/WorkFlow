@@ -49,12 +49,16 @@ class GroupController {
     async detail(req, res) {
         const GroupID = req.params.id
         const token = req.session.user.token
+        const IDUser = req.session.user.IDUser
         const headers = {
             Authorization: `Bearer ${token}`
         };
         const response = await axios.get(`${process.env.DOMAIN}/api/group/getMember/${GroupID}`, { headers });
         const responseGroup = await axios.get(`${process.env.DOMAIN}/api/group/${GroupID}`, { headers })
         const Group = responseGroup.data
+
+        const responseWorkFlow = await axios.get(`${process.env.DOMAIN}/api/userWorkFlow/${IDUser}`, { headers });
+        const workflows = responseWorkFlow.data;
 
         const responseProject = await axios.get(`${process.env.DOMAIN}/api/project/getProjectInGroup/${GroupID}`,{headers});
         const Project = responseProject.data;
@@ -63,6 +67,7 @@ class GroupController {
         res.render('Group/detail', {
             Group,
             members,
+            workflows,
             Project,
             layout: 'main.hbs'
         })

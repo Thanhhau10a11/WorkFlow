@@ -17,12 +17,35 @@
         float: right;
         margin: 10px 10px 0px 0px;
     }
+    .btn__createWorkFlow {
+        height: 40px;
+        width: 140px;
+        background: linear-gradient(to right, #2F80ED, #56CCF2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        float: right;
+        margin: 10px 10px 0px 0px;
+    }
 
+    .btn__createWorkFlow:hover {
+        background: linear-gradient(to right, #56CCF2, #2F80ED);
+    }
     .btn__createProject:hover {
         background: linear-gradient(to right, #56CCF2, #2F80ED);
     }
 
     .btn__createProject button {
+        background-color: transparent;
+        border: none;
+        color: inherit;
+        cursor: pointer;
+        color: white;
+        height: 100%;
+    }
+    
+    .btn__createWorkFlow button {
         background-color: transparent;
         border: none;
         color: inherit;

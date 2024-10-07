@@ -19,28 +19,21 @@ class WorkFlowController {
     }
 
     async createWorkFLow(req, res) {
+        const GroupID = req.params.GroupID;
         const token = req.session.user.token
         const IDUser = req.session.user.IDUser
         const headers = {
             'Authorization': `Bearer ${token}`
         }
-        const response = await axios.get(`${process.env.DOMAIN}/api/group/getDetailAllGroup/${IDUser}`, { headers })
-        const groups = response.data
-        res.render('WorkFLow/createWorkFlow', { layout: 'main.hbs', groups });
+        // const response = await axios.get(`${process.env.DOMAIN}/api/group/getDetailAllGroup/${IDUser}`, { headers })
+        // const groups = response.data
+        // res.render('WorkFLow/createWorkFlow', { layout: 'main.hbs', groups });
+        const response = await axios.get(`${process.env.DOMAIN}/api/group/getMember/${GroupID}`, { headers });
+        const responseGroup = await axios.get(`${process.env.DOMAIN}/api/group/${GroupID}`, { headers });
+        const Group = responseGroup.data;
+        const members = response.data;
+        res.render('WorkFLow/createWorkFlow', { layout: 'main.hbs', members,Group });
     }
-    // async detailWorkFlow(req,res) {
-    //     const IDWorkFlow = req.params.id;
-    //     const token = req.session.user.token
-    //     const headers = {
-    //         'Authorization':`Bearer ${token}`
-    //     }
-    //     const response = await axios.get(`${process.env.DOMAIN}/api/userWorkFlow/detail/${IDWorkFlow}`,{headers});
-    //     const workflow = response.data;
-    //     res.render('WorkFlow/detailWorkFlow',{ 
-    //         workflow,
-    //         layout: 'main.hbs' 
-    //     });
-    // }
     async detailWorkFlow(req, res) {
         const IDWorkFlow = req.params.id;
         const token = req.session.user.token;

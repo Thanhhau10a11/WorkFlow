@@ -1,24 +1,30 @@
+<!-- views/createWorkflow.hbs -->
 <div class="app-body-main-content">
     <div class="container">
         <div class="form-container">
-            <h2>Tạo mới Workflow</h2>
-            <div class="form-group">
-                <label for="workflowName" class="required">Tên Workflow <span class="required-star">*</span></label>
-                <input type="text" class="form-control" id="workflowName" placeholder="Nhập tên workflow" required>
-            </div>
-            <div class="form-group">
-                <label for="workflowDescription">Mô tả Workflow</label>
-                <input type="text" class="form-control" id="workflowDescription" placeholder="Nhập mô tả">
-            </div>
-            <h5>Stages</h5>
-            <div id="stagesContainer"></div>
-            <div class="btn-container">
-                <button class="btn btn-secondary" id="addStageBtn">Thêm Stage</button>
-                <button class="btn btn-primary" id="saveWorkflowBtn">Lưu Workflow</button>
-            </div>
+            <h2>Tạo mới Workflow cho Nhóm: {{Group.GroupName}}</h2>
+            <form id="workflowForm">
+                <input type="hidden" id="groupId" value="{{Group.GroupID}}">
+
+                <div class="form-group">
+                    <label for="workflowName" class="required">Tên Workflow <span class="required-star">*</span></label>
+                    <input type="text" class="form-control" id="workflowName" placeholder="Nhập tên workflow" required>
+                </div>
+                <div class="form-group">
+                    <label for="workflowDescription">Mô tả Workflow</label>
+                    <input type="text" class="form-control" id="workflowDescription" placeholder="Nhập mô tả">
+                </div>
+                <h5>Stages</h5>
+                <div id="stagesContainer"></div>
+                <div class="btn-container">
+                    <button type="button" class="btn btn-secondary" id="addStageBtn">Thêm Stage</button>
+                    <button type="button" class="btn btn-primary bg" id="saveWorkflowBtn">Lưu Workflow</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
 
 <style>
     .container {
@@ -163,13 +169,14 @@
                     <div class="col">  
                         <label for="stageRecipient${stageCount}">Người nhận</label>  
                         <select class="form-control stageRecipient" id="stageRecipient${stageCount}">  
-                            <option value="" class="display-center">Chọn người nhận</option>  
-                            {{#each groups}}  
-                                <optgroup label="{{this.GroupName}}">  
+                            <option value="" class="display-center">Chọn người nhận trong group {{Group.GroupName}}</option>  
+                            {{#each members}}  
+                                {{!-- <optgroup label="{{this.GroupName}}">  
                                     {{#each this.Members}}  
                                         <option value="{{Username}}">{{Username}}</option>  
                                     {{/each}}  
-                                </optgroup>  
+                                </optgroup>   --}}
+                                    <option value="{{Username}}">{{Username}}</option>  
                             {{/each}}  
                         </select>  
                     </div>  
@@ -182,12 +189,13 @@
 
         $('#stagesContainer').on('change', '.show-recipient', function () {
             const recipientFieldId = `#recipientField${$(this).closest('.stage').data('stage-id')}`;
-            $(recipientFieldId).slideToggle(this.checked);  
+            $(recipientFieldId).slideToggle(this.checked);
         });
 
         $('#saveWorkflowBtn').click(async function () {
             const workflowName = $('#workflowName').val();
             const workflowDescription = $('#workflowDescription').val();
+            const GroupID = $('#groupId').val();
 
             if (!workflowName) {
                 showToast('Vui lòng nhập tên workflow.', true);
@@ -205,7 +213,7 @@
                 if (!stageName) {
                     showToast('Vui lòng nhập tên cho tất cả các stage.', true);
                     valid = false;
-                    return false; 
+                    return false;
                 }
 
                 stages.push({
@@ -233,9 +241,10 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                         'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({
+                        GroupID: GroupID,
                         name: workflowName,
                         description: workflowDescription,
                         stages: stages
@@ -249,7 +258,7 @@
                         $('#workflowName').val('');
                         $('#workflowDescription').val('');
                         $('#stagesContainer').empty();
-                        window.location.href = '/workFlow/';
+                        window.location.href = document.referrer;
                     }, 1000);
                 } else {
                     const errorData = await response.json();

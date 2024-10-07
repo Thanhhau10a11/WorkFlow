@@ -119,7 +119,10 @@ class ProjectController {
         include: [{
           model: Project,
           as: 'Projects',
-        }]
+        }],
+        order: [
+          [{ model: Project, as: 'Projects' }, 'createdAt', 'DESC'] 
+      ]
       });
 
       if (!group) {

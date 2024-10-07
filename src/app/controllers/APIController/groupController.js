@@ -86,7 +86,6 @@ class GroupController {
         where: { IDUser: req.params.id },
         attributes: {
           include: [
-            // Đếm số lượng thành viên cho mỗi nhóm
             [Sequelize.fn('COUNT', Sequelize.col('Members.IDUser')), 'memberCount'],
           ],
         },
