@@ -25,6 +25,27 @@ class userWorkFlowController {
         }
     }
 
+    async getByGroupId(req, res) {
+        try {
+            const workflows = await WorkFlow.findAll({
+                where: { GroupID: req.params.id },
+                include: [{
+                    model: Stage,
+                    as: 'Stages',
+                    include: [{
+                        model: Job,
+                        as: 'Jobs'
+                    }]
+                }],
+                order: [['createdAt', 'DESC']]
+            });
+
+            res.json(workflows);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
     async createForUser(req, res) {
         try {
             const workFlow = await WorkFlow.create({

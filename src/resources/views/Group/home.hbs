@@ -8,7 +8,7 @@
         {{#each groups}}
         <div class="col-md-3">
             <div class="card">
-                <a href="/group/detail/{{this.GroupID}}">
+                <a style="text-decoration:none!important" href="/group/detail/{{this.GroupID}}">
                     <div class="card-body">
                         <h5 class="card-title text">{{this.GroupName}}</h5>
                         <p class="card-text">Group for designers to collaborate on projects.</p>
@@ -205,23 +205,25 @@
                         if (response.ok) {
                             return response.json();
                         } else {
-                            throw new Error('Failed to create group');
+                            return response.json().then(err => { // Xử lý lỗi từ server
+                                throw new Error(err.error); // err.error là message từ server
+                            });
                         }
                     })
                     .then(data => {
                         showToast('Group created successfully!');
-                        setTimeout(() => {  
-                        if (data.redirect) {
-                            window.location.href = data.redirect; 
-                        }
-                        form.reset();
+                        setTimeout(() => {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                            }
+                            form.reset();
                         }, 1000);
                     })
                     .catch(error => {
-                        showToast('Error: ' + error.message , true);
+                        showToast('Error: ' + error.message, true);
                     });
             } else {
-                showToast('Please fill in all required fields.',true);
+                showToast('Please fill in all required fields.', true);
             }
         });
 

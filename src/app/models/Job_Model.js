@@ -16,6 +16,16 @@ const Job = sequelize.define('Job', {
     }
   },
   IDUserAssign: DataTypes.INTEGER,
+  // IDUserPerform: { // Người thực hiện công việc
+  //   type: DataTypes.INTEGER,
+  //   allowNull: false,
+  // },
+
+  //tam thoi cho null de pass qua project
+  IDUserPerform: { // Người thực hiện công việc
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
   IDCreator: DataTypes.INTEGER,
   TimeComplete: DataTypes.DATE,
   TimeStart: DataTypes.DATE,
@@ -25,7 +35,9 @@ const Job = sequelize.define('Job', {
   IDPriorityLevel: DataTypes.INTEGER,
   Priority: DataTypes.STRING,
   IDListFollower: DataTypes.STRING,
-  IDProject: DataTypes.INTEGER
+  IDProject: DataTypes.INTEGER,
+  IDWorkFLow: DataTypes.INTEGER,
+  GroupID: DataTypes.INTEGER,
 }, {
   tableName: 'job',
   timestamps: false

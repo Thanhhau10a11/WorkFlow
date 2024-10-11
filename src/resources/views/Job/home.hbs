@@ -1,0 +1,224 @@
+
+<link rel="stylesheet" href="/css/job.css">
+<script src="/js/job.js"></script>
+<div class="container my-5">
+    <h1 class="mb-4 text-center fw-bold text-v">Job Board Dashboard</h1>
+
+    <ul class="nav nav-tabs mb-4 justify-content-center" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active text" id="browse-tab" data-bs-toggle="tab" data-bs-target="#browse"
+                type="button" role="tab">Browse Jobs</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link text" id="post-tab" data-bs-toggle="tab" data-bs-target="#post" type="button"
+                role="tab">Post a Job</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="browse" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0 text">Job Listings</h5>
+                    <p class="card-text text-muted text-sm">Find your next opportunity</p>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-2 mb-md-0">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" placeholder="Search jobs..." id="searchInput">
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2 mb-md-0">
+                            <select class="form-select" id="filterType">
+                                <option value="All">All Types</option>
+                                <option value="Full-time">Full-time</option>
+                                <option value="Part-time">Part-time</option>
+                                <option value="Contract">Contract</option>
+                                <option value="Internship">Internship</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filterGroup">
+                                <option value="All">All Groups</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Design">Design</option>
+                                <option value="Data Science">Data Science</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="scroll-area">
+                        <div id="jobListings" class="row row-cols-1 row-cols-md-2 g-4">
+
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{!-- <div class="tab-pane fade" id="post" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0 text">Post a New Job</h5>
+                    <p class="card-text text-muted text-sm">Fill out the form to post a new job listing</p>
+                </div>
+                <div class="card-body">
+                    <form id="postJobForm">
+                        <div class="mb-3">
+                            <label for="title" class="form-label text-sm">Job Title</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="company" class="form-label text-sm">Company</label>
+                            <input type="text" class="form-control" id="company" name="company" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="location" class="form-label text-sm">Location</label>
+                            <input type="text" class="form-control" id="location" name="location" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label text-sm">Job Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label text-sm">Contact Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tags" class="form-label text-sm">Tags (comma-separated)</label>
+                            <input type="text" class="form-control" id="tags" name="tags">
+                        </div>
+                        <div class="mb-3">
+                            <label for="type" class="form-label text-sm">Job Type</label>
+                            <select class="form-select" id="type" name="type">
+                                <option value="Full-time">Full-time</option>
+                                <option value="Part-time">Part-time</option>
+                                <option value="Contract">Contract</option>
+                                <option value="Internship">Internship</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="group" class="form-label text-sm">Job Group</label>
+                            <select class="form-select" id="group" name="group">
+                                <option value="Technology">Technology</option>
+                                <option value="Design">Design</option>
+                                <option value="Data Science">Data Science</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Post Job</button>
+                    </form>
+                </div>
+            </div>
+        </div> --}}
+
+        <div class="tab-pane fade" id="post" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0 text">Post a New Job</h5>
+                    <p class="card-text text-muted text-sm">Fill out the form to post a new job listing</p>
+                </div>
+                <div class="card-body">
+                    <form id="postJobForm">
+                        <!-- Job Name -->
+                        <div class="mb-3">
+                            <label for="nameJob" class="form-label text-sm">Job Name</label>
+                            <input type="text" class="form-control" id="nameJob" name="nameJob" required>
+                        </div>
+
+                        <!-- Priority Level -->
+                        {{!-- <div class="mb-3">
+                            <label for="priorityLevel" class="form-label text-sm">Priority Level</label>
+                            <select class="form-select" id="priorityLevel" name="priorityLevel" required>
+                                <option value="">-- Chọn Mức Độ Ưu Tiên --</option>
+                                <option value="1">Cao</option>
+                                <option value="2">Trung Bình</option>
+                                <option value="3">Thấp</option>
+                            </select>
+                        </div> --}}
+
+                        <!-- Priority -->
+                        {{!-- <div class="mb-3">
+                            <label for="priority" class="form-label text-sm">Priority</label>
+                            <select class="form-select" id="priority" name="priority" required>
+                                <option value="">-- Chọn Priority --</option>
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div> --}}
+
+                        <!-- Group Selection -->
+                        <div class="mb-3">
+                            <label for="groupSelect" class="form-label text-sm">Job Group</label>
+                            <select class="form-select" id="groupSelect" name="groupId" required>
+                                <option value="">-- Chọn Group --</option>
+                                <!-- Các Group sẽ được điền vào đây từ API hoặc server-side -->
+                            </select>
+                        </div>
+
+                        <!-- WorkFlow Selection -->
+                        <div class="mb-3">
+                            <label for="workflowSelect" class="form-label text-sm">WorkFlow</label>
+                            <select class="form-select" id="workflowSelect" name="workflowId" required>
+                                <option value="">-- Chọn WorkFlow --</option>
+                                <!-- WorkFlow sẽ được load dựa trên Group đã chọn -->
+                            </select>
+                        </div>
+
+                        <!-- Project Selection -->
+                        <div class="mb-3">
+                            <label for="projectSelect" class="form-label text-sm">Project</label>
+                            <select class="form-select" id="projectSelect" name="projectId">
+                                <option value="">-- Chọn Project --</option>
+                                <!-- Project sẽ được load dựa trên Group đã chọn -->
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="memberSelect" class="form-label text-sm">Member</label>
+                            <select class="form-select" id="memberSelect" name="IDUserPerform" required>
+                                <option value="">-- Chọn Thành Viên --</option>
+                                <!-- Danh sách thành viên sẽ được điền vào đây từ API -->
+                            </select>
+                        </div>
+
+                        <!-- Time Start -->
+                        {{!-- <div class="mb-3">
+                            <label for="timeStart" class="form-label text-sm">Time Start</label>
+                            <input type="datetime-local" class="form-control" id="timeStart" name="timeStart" required>
+                        </div> --}}
+
+                        <!-- Time Complete -->
+                        {{!-- <div class="mb-3">
+                            <label for="timeComplete" class="form-label text-sm">Time Complete</label>
+                            <input type="datetime-local" class="form-control" id="timeComplete" name="timeComplete">
+                        </div> --}}
+
+                        <!-- Approximate Time -->
+                        <div class="mb-3">
+                            <label for="approximateTime" class="form-label text-sm">Approximate Time</label>
+                            <input type="datetime-local" class="form-control" id="approximateTime"
+                                name="approximateTime">
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label for="description" class="form-label text-sm">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary">Post Job</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+

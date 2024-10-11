@@ -10,6 +10,7 @@ const AppUser = sequelize.define('AppUser', {
   Birthday: DataTypes.DATE,
   RequestCompleteTime: DataTypes.DATE,
   InfoFollower: DataTypes.STRING,
+  Role:DataTypes.STRING,
   RequestDescription: DataTypes.TEXT,
   Phone: DataTypes.STRING,
   Name: DataTypes.STRING,

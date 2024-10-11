@@ -13,6 +13,9 @@ const UserNotify = require('./UserNotify_Model');
 const Workflow = require('./WorkFlow_Model');
 const Invitation = require('./Invitation_Model');
 const JobStage = require('./JobStage_Model'); 
+const Role = require('./Role_Model');
+const UserRole = require('./UserRole_Model');
+const RolePermission = require('./RolePermission_Model');
 
 // Định nghĩa các mối quan hệ
 Group.belongsToMany(AppUser, { through: GroupMember, as: 'Members', foreignKey: 'GroupID' });
@@ -24,7 +27,7 @@ Dates.belongsToMany(Job, { through: JobDates, as: 'Jobs', foreignKey: 'IDDate' }
 Job.belongsToMany(Notify, { through: JobNotify, as: 'Notifies', foreignKey: 'IDJob' });
 Notify.belongsToMany(Job, { through: JobNotify, as: 'Jobs', foreignKey: 'IDNotify' });
 
-Project.hasMany(Job, { foreignKey: 'IDProject' ,as: 'JobsInProject'});
+Project.hasMany(Job, { foreignKey: 'IDProject', as: 'JobsInProject' });
 Job.belongsTo(Project, { foreignKey: 'IDProject' });
 
 Group.hasMany(Project, { foreignKey: 'GroupID', as: 'Projects', onDelete: 'CASCADE' });
@@ -40,9 +43,19 @@ Stage.belongsToMany(Job, { through: JobStage, as: 'Jobs', foreignKey: 'IDStage' 
 AppUser.belongsToMany(Notify, { through: UserNotify, as: 'ReceivedNotifies', foreignKey: 'IDUser' });
 Notify.belongsToMany(AppUser, { through: UserNotify, as: 'Users', foreignKey: 'IDNotify' });
 
-//  quan hệ một-nhiều giữa Group và Workflow
+// Quan hệ một-nhiều giữa Group và Workflow
 Group.hasMany(Workflow, { foreignKey: 'GroupID', as: 'GroupWorkFlow', onDelete: 'CASCADE' });
 Workflow.belongsTo(Group, { foreignKey: 'GroupID', as: 'WorkFlowGroup' });
+
+// Quan hệ một-nhiều giữa AppUser và Job cho người thực hiện công việc
+AppUser.hasMany(Job, { foreignKey: 'IDUserPerform', as: 'PerformedJobs' });
+Job.belongsTo(AppUser, { foreignKey: 'IDUserPerform', as: 'Performer' });
+
+Role.belongsToMany(AppUser, { through: UserRole, foreignKey: 'RoleID', as: 'UsersRole' });
+AppUser.belongsToMany(Role, { through: UserRole, foreignKey: 'IDUser', as: 'Roles' });
+
+Role.hasMany(RolePermission, { foreignKey: 'IDRole', as: 'Permissions' });
+RolePermission.belongsTo(Role, { foreignKey: 'IDRole' });
 
 module.exports = {
   sequelize,
@@ -59,5 +72,8 @@ module.exports = {
   Stage,
   UserNotify,
   Workflow,
-  JobStage // Xuất khẩu model JobStage
-};
+  JobStage ,
+  Role,
+  UserRole,
+  RolePermission,
+};  

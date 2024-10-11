@@ -1,12 +1,12 @@
 
-// const Group = require('../../models/Group_Model'); 
-// const AppUser = require('../../models/User_Model');
-// const GroupMember = require('../../models/GroupMember_Model');
-const { AppUser, GroupMember, Group } = require('../../models/index')
+const { AppUser, GroupMember, Group,Workflow,Project } = require('../../models/index')
 const axios = require('axios');
 const bcrypt = require('bcryptjs');
 const { request } = require('express');
 const Sequelize = require('sequelize')
+const { Op } = require('sequelize');
+const checkUser = require('../../../util/checkInGroup');
+
 const crypto = require('crypto');
 
 
@@ -21,6 +21,7 @@ class GroupController {
   }
   async getById(req, res) {
     try {
+     
       const group = await Group.findByPk(req.params.id);
       if (Group) {
         res.json(group);
@@ -81,12 +82,46 @@ class GroupController {
     }
   }
   async getGroupsByIDUser(req, res) {
+    // try {
+    //   const groups = await Group.findAll({
+    //     where: { IDUser: req.params.id },
+    //     attributes: {
+    //       include: [
+    //         // Đếm số lượng thành viên cho mỗi nhóm
+    //         [Sequelize.fn('COUNT', Sequelize.col('Members.IDUser')), 'memberCount'],
+    //       ],
+    //     },
+    //     include: [
+    //       {
+    //         model: AppUser,
+    //         as: 'Members',
+    //         attributes: [],
+    //         through: { attributes: [] },
+    //       },
+    //     ],
+    //     group: ['Group.GroupID'],
+    //     order: [['updatedAt', 'DESC']],
+    //   });
+
+    //   if (groups) {
+    //     res.json(groups);
+    //   } else {
+    //     res.status(500).json({ message: 'Group not found' });
+    //   }
+    // } catch (error) {
+    //   res.status(500).json({ error: error.message });
+    // }
     try {
       const groups = await Group.findAll({
-        where: { IDUser: req.params.id },
         attributes: {
           include: [
-            [Sequelize.fn('COUNT', Sequelize.col('Members.IDUser')), 'memberCount'],
+            [Sequelize.literal(`(SELECT COUNT(*) FROM GroupMember WHERE GroupMember.GroupID = Group.GroupID)`), 'memberCount'],
+          ],
+        },
+        where: {
+          [Op.or]: [
+            { IDUser: req.params.id },
+            { '$Members.IDUser$': req.params.id },
           ],
         },
         include: [
@@ -94,21 +129,26 @@ class GroupController {
             model: AppUser,
             as: 'Members',
             attributes: [],
-            through: { attributes: [] },
+            through: {
+              model: GroupMember,
+              attributes: [],
+            },
           },
         ],
-        group: ['Group.GroupID'],
         order: [['updatedAt', 'DESC']],
       });
 
-      if (groups) {
-        res.json(groups);
-      } else {
-        res.status(500).json({ message: 'Group not found' });
+      if (!groups || groups.length === 0) {
+        res.status(404).json({ message: 'Không tìm thấy nhóm nào cho người dùng này' });
+        return;
       }
+
+      res.json(groups);
     } catch (error) {
+      console.error('Lỗi khi lấy nhóm:', error);
       res.status(500).json({ error: error.message });
     }
+
   }
 
   async addMember(req, res) {
@@ -259,6 +299,8 @@ class GroupController {
 
   async getMemberByGroupID(req, res) {
     const GroupID = req.params.id;
+    
+
     try {
       const groups = await Group.findAll({
         where: { GroupID: GroupID },
@@ -311,6 +353,28 @@ class GroupController {
     } catch (error) {
       console.error('Error load details from groups:', error);
       res.status(500).json({ message: 'Failed to load details from groups.' });
+    }
+  }
+  async getDatailInGroup(req,res) {
+    try {
+      const groupId = req.params.GroupID;
+      const token = req.headers['authorization'];
+      const response =await axios.get(`${process.env.DOMAIN}/api/group/getMember/${groupId}`, {
+        headers: {
+          Authorization: token, 
+        },
+      });
+      const members =  response.data;
+      const workflows = await Workflow.findAll({ where: { groupId } });
+      const projects = await Project.findAll({ where: { groupId } });
+      
+      res.json({
+        workflows,
+        projects,
+        members
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Error fetching workflows and projects' });
     }
   }
 }

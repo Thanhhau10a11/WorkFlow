@@ -24,6 +24,7 @@ class UserLoginController {
                 IDUser: user.IDUser,
                 Name: user.Name,
                 Username: user.Username,
+                Role:user.Role,
                 token: token
             };
 
@@ -32,6 +33,8 @@ class UserLoginController {
                 success: true,
                 message: 'Đăng nhập thành công',
                 IDUser: user.IDUser,
+                Username: user.Username,
+                Role:user.Role,
                 token: token,
             });
         } catch (error) {

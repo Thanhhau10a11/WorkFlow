@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Thanhhau10a11/WorkFlow#readme",
   "dependencies": {
+    "@casl/ability": "^6.7.1",
     "axios": "^1.7.4",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
@@ -37,6 +38,7 @@
   "devDependencies": {
     "morgan": "^1.10.0",
     "node-sass": "^9.0.0",
-    "nodemon": "^3.1.4"
+    "nodemon": "^3.1.4",
+    "sequelize-cli": "^6.6.2"
   }
 }

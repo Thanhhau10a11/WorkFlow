@@ -1,29 +1,68 @@
 const axios = require('axios');
 const { Group, GroupMember } = require('../../models/index');
-const session = require('express-session');
-//const { response } = require('express');
 class GroupController {
-    async index(req, res) {
-        const token = req.session.user.token
-        const IDUser = req.session.user.IDUser
-        const response = await axios.get(`${process.env.DOMAIN}/api/group/get/${IDUser}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            }
-        });
-        const groups = response.data
-        res.render('Group/home', {
-            groups,
-            layout: 'main.hbs'
-        });
+    // async index(req, res) {
+    //     const token = req.session.user.token
+    //     const IDUser = req.session.user.IDUser
+    //     const response = await axios.get(`${process.env.DOMAIN}/api/group/get/${IDUser}`, {
+    //         headers: {
+    //             'Authorization': `Bearer ${token}`,
+    //         }
+    //     });
+    //     const groups = response.data
+    //     res.render('Group/home', {
+    //         groups,
+    //         layout: 'main.hbs'
+    //     });
+    // }
+    async index(req, res) {  
+        const token = req.session.user.token;  
+        const IDUser = req.session.user.IDUser;  
+    
+        try {  
+            const response = await axios.get(`${process.env.DOMAIN}/api/group/get/${IDUser}`, {  
+                headers: {  
+                    'Authorization': `Bearer ${token}`,  
+                }  
+            });  
+    
+            const groups = response.data; 
+            res.render('Group/home', {  
+                groups,  
+                layout: 'main.hbs'  
+            });  
+        } catch (error) {  
+            console.error('Lỗi khi gọi API:', error);  
+    
+            if (error.response) {  
+                if (error.response.status === 404) {  
+                    return res.status(404).render('Group/home', {  
+                        message: 'Không tìm thấy nhóm nào cho người dùng này',  
+                        layout: 'main.hbs'  
+                    });  
+                }  
+    
+                return res.status(500).render('Group/home', {  
+                    message: 'Có lỗi xảy ra khi lấy thông tin nhóm.',  
+                    layout: 'main.hbs'  
+                });  
+            }  
+    
+            return res.status(500).render('Group/home', {  
+                message: 'Có lỗi xảy ra khi kết nối tới API.',  
+                layout: 'main.hbs'  
+            });  
+        }  
     }
     async formCreate(req, res) {
         res.render('Group/create', { layout: 'main.hbs' });
     }
     async create(req, res) {
         try {
+            
             const GroupName = req.body.GroupName
             const IDUser = req.session.user.IDUser
+
             const groupData = {
                 groupName: GroupName,
                 IDUser: IDUser,
@@ -54,16 +93,17 @@ class GroupController {
             Authorization: `Bearer ${token}`
         };
         const response = await axios.get(`${process.env.DOMAIN}/api/group/getMember/${GroupID}`, { headers });
+        const members = response.data
+
         const responseGroup = await axios.get(`${process.env.DOMAIN}/api/group/${GroupID}`, { headers })
         const Group = responseGroup.data
 
-        const responseWorkFlow = await axios.get(`${process.env.DOMAIN}/api/userWorkFlow/${IDUser}`, { headers });
+        const responseWorkFlow = await axios.get(`${process.env.DOMAIN}/api/userWorkFlow/getByGroupID/${GroupID}`, { headers });
         const workflows = responseWorkFlow.data;
 
         const responseProject = await axios.get(`${process.env.DOMAIN}/api/project/getProjectInGroup/${GroupID}`,{headers});
         const Project = responseProject.data;
 
-        const members = response.data
         res.render('Group/detail', {
             Group,
             members,

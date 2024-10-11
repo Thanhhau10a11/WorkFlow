@@ -4,6 +4,7 @@ const router = express.Router()
 const userWorkFlowController = require('../../app/controllers/APIController/userWorkFlowController.js')
 
 router.get('/:id', userWorkFlowController.getByUserId)
+router.get('/getByGroupID/:id', userWorkFlowController.getByGroupId)
 router.get('/detail/:id', userWorkFlowController.getStagesByWorkFlowID)
 router.post('/saveStageOrder', userWorkFlowController.saveStageOrder)
 router.post('/create/:id', userWorkFlowController.createForUser)

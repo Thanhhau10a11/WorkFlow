@@ -9,7 +9,8 @@ const Group = sequelize.define('Group', {
     primaryKey: true
   },
   GroupName: DataTypes.STRING,
-  IDUser: DataTypes.INTEGER
+  IDUser: DataTypes.INTEGER,
+  IDLeader:DataTypes.INTEGER,
 }, {
   tableName: 'group',
   timestamps: true

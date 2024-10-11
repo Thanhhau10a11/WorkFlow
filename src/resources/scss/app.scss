@@ -557,13 +557,15 @@ a {
   aspect-ratio: 3/2;
   flex-shrink: 0;
   border-radius: 6px;
-  color: var(--c-gray-800);
+  //color: var(--c-gray-800);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 400;
 }
+
+
 .card.green {
   background-color: var(--c-green-500);
 }
