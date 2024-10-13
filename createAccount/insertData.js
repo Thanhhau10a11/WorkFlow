@@ -43,7 +43,7 @@ const seedData = async () => {
     const roles = [
       { RoleName: 'admin', createdAt: new Date(), updatedAt: new Date() },
       { RoleName: 'LeaderGroup', createdAt: new Date(), updatedAt: new Date() },
-      { RoleName: 'aser', createdAt: new Date(), updatedAt: new Date() },
+      { RoleName: 'user', createdAt: new Date(), updatedAt: new Date() },
     ];
 
     // Thêm quyền vào bảng Role

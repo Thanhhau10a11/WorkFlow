@@ -112,7 +112,7 @@
         display: none;
     }
 
-    ..stageRecipient {
+    .stageRecipient {
         border-radius: 0.25rem;
         border: 1px solid #ced4da;
         background-color: #ffffff;
@@ -144,7 +144,8 @@
     $(document).ready(function () {
         let stageCount = 0;
 
-        $('#addStageBtn').click(function () {
+        // Hàm thêm một stage
+        function addStage() {
             stageCount++;
             const stageHtml = `  
             <div class="stage" data-stage-id="${stageCount}">  
@@ -171,12 +172,7 @@
                         <select class="form-control stageRecipient" id="stageRecipient${stageCount}">  
                             <option value="" class="display-center">Chọn người nhận trong group {{Group.GroupName}}</option>  
                             {{#each members}}  
-                                {{!-- <optgroup label="{{this.GroupName}}">  
-                                    {{#each this.Members}}  
-                                        <option value="{{Username}}">{{Username}}</option>  
-                                    {{/each}}  
-                                </optgroup>   --}}
-                                    <option value="{{Username}}">{{Username}}</option>  
+                                <option value="{{Username}}">{{Username}}</option>  
                             {{/each}}  
                         </select>  
                     </div>  
@@ -185,13 +181,23 @@
         `;
 
             $('#stagesContainer').append(stageHtml);
+        }
+
+        // Tự động thêm một stage khi trang tải lần đầu
+        addStage();
+
+        // Sự kiện khi nhấn nút thêm stage
+        $('#addStageBtn').click(function () {
+            addStage();
         });
 
+        // Hiển thị hoặc ẩn trường người nhận khi checkbox được thay đổi
         $('#stagesContainer').on('change', '.show-recipient', function () {
             const recipientFieldId = `#recipientField${$(this).closest('.stage').data('stage-id')}`;
             $(recipientFieldId).slideToggle(this.checked);
         });
 
+        // Sự kiện khi lưu workflow
         $('#saveWorkflowBtn').click(async function () {
             const workflowName = $('#workflowName').val();
             const workflowDescription = $('#workflowDescription').val();
@@ -252,7 +258,6 @@
                 });
 
                 if (response.ok) {
-
                     showToast('Workflow đã được lưu thành công!');
                     setTimeout(() => {
                         $('#workflowName').val('');

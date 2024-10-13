@@ -14,5 +14,9 @@ router.post('/delete/:id', jobController.delete)
 router.post('/markJobComplete/:JobID', jobController.markJobComplete)
 router.post('/createForGroup', jobController.createJobForGroup)
 
+// api test chuyen job <-> stage
+router.post('/:jobId/stages/:stageId/review', jobController.reviewStage)
+
+
 
 module.exports = router

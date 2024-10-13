@@ -187,8 +187,8 @@ function populateProjects(projects) {
     projectSelect.innerHTML = '<option value="">-- Chọn Project --</option>';
     projects.forEach(project => {
         const option = document.createElement('option');
-        option.value = project.IDProject; // Thay đổi trường IDProject nếu khác
-        option.textContent = project.Name; // Thay đổi trường Name nếu khác
+        option.value = project.IdProject; // Thay đổi trường IDProject nếu khác
+        option.textContent = project.NameProject; // Thay đổi trường Name nếu khác
         projectSelect.appendChild(option);
     });
 }
@@ -224,7 +224,7 @@ async function handlePostJob(e) {
         //IDPriorityLevel: parseInt(formData.get('priorityLevel')),
         //Priority: formData.get('priority'),
         GroupID: parseInt(formData.get('groupId')),
-        IDWorkFLow: parseInt(formData.get('workflowId')),
+        IDWorkFlow: parseInt(formData.get('workflowId')),
         IDProject: parseInt(formData.get('projectId')),
         //TimeStart: formData.get('timeStart') ? new Date(formData.get('timeStart')) : null,
         //TimeComplete: formData.get('timeComplete') ? new Date(formData.get('timeComplete')) : null,
@@ -257,6 +257,9 @@ async function handlePostJob(e) {
             e.target.reset();  // Reset the form
             document.getElementById('browse-tab').click();  // Optionally switch tabs
             showToast('Job created successfully!');
+            setTimeout(()=>{
+                window.location.reload();
+            },(1000));
         } else {
             // If the request failed, handle the error
             const errorData = await response.json();

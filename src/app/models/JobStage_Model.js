@@ -32,10 +32,14 @@ const JobStage = sequelize.define('JobStage', {
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE'
   },
+  
   status: {
-    type: DataTypes.ENUM('completed', 'in_progress', 'cancel'),
+    type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'in_progress'
+    defaultValue: 'pending', 
+    validate: {
+      isIn: [['pending', 'completed', 'canceled']] 
+    }
   },
   completedAt: {
     type: DataTypes.DATE,

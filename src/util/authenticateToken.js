@@ -37,10 +37,7 @@ async function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
-    console.log('Received Token:', token);
-
     if (!token) {
-        console.log("Không có token. Chuyển hướng đến /login");
         return res.redirect('/login');
     }
 
@@ -56,7 +53,6 @@ async function authenticateToken(req, res, next) {
         });
 
         if (!user) {
-            console.log("Người dùng không tồn tại. Chuyển hướng đến /login");
             return res.redirect('/login');
         }
 
