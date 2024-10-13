@@ -1,4 +1,5 @@
 
+
 <link rel="stylesheet" href="/css/job.css">
 <script src="/js/job.js"></script>
 <div class="container my-5">
@@ -8,6 +9,10 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link active text" id="browse-tab" data-bs-toggle="tab" data-bs-target="#browse"
                 type="button" role="tab">Browse Jobs</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link text" id="review-tab" data-bs-toggle="tab" data-bs-target="#review" type="button"
+                role="tab">Review Jobs</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link text" id="post-tab" data-bs-toggle="tab" data-bs-target="#post" type="button"
@@ -51,69 +56,12 @@
 
                     <div class="scroll-area">
                         <div id="jobListings" class="row row-cols-1 row-cols-md-2 g-4">
-
-                            
+                            <!-- Job listings will be populated here -->
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        {{!-- <div class="tab-pane fade" id="post" role="tabpanel">
-            <div class="card shadow-sm">
-                <div class="card-header bg-white">
-                    <h5 class="card-title mb-0 text">Post a New Job</h5>
-                    <p class="card-text text-muted text-sm">Fill out the form to post a new job listing</p>
-                </div>
-                <div class="card-body">
-                    <form id="postJobForm">
-                        <div class="mb-3">
-                            <label for="title" class="form-label text-sm">Job Title</label>
-                            <input type="text" class="form-control" id="title" name="title" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="company" class="form-label text-sm">Company</label>
-                            <input type="text" class="form-control" id="company" name="company" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="location" class="form-label text-sm">Location</label>
-                            <input type="text" class="form-control" id="location" name="location" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label text-sm">Job Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3"
-                                required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label text-sm">Contact Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tags" class="form-label text-sm">Tags (comma-separated)</label>
-                            <input type="text" class="form-control" id="tags" name="tags">
-                        </div>
-                        <div class="mb-3">
-                            <label for="type" class="form-label text-sm">Job Type</label>
-                            <select class="form-select" id="type" name="type">
-                                <option value="Full-time">Full-time</option>
-                                <option value="Part-time">Part-time</option>
-                                <option value="Contract">Contract</option>
-                                <option value="Internship">Internship</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="group" class="form-label text-sm">Job Group</label>
-                            <select class="form-select" id="group" name="group">
-                                <option value="Technology">Technology</option>
-                                <option value="Design">Design</option>
-                                <option value="Data Science">Data Science</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Post Job</button>
-                    </form>
-                </div>
-            </div>
-        </div> --}}
 
         <div class="tab-pane fade" id="post" role="tabpanel">
             <div class="card shadow-sm">
@@ -129,34 +77,12 @@
                             <input type="text" class="form-control" id="nameJob" name="nameJob" required>
                         </div>
 
-                        <!-- Priority Level -->
-                        {{!-- <div class="mb-3">
-                            <label for="priorityLevel" class="form-label text-sm">Priority Level</label>
-                            <select class="form-select" id="priorityLevel" name="priorityLevel" required>
-                                <option value="">-- Chọn Mức Độ Ưu Tiên --</option>
-                                <option value="1">Cao</option>
-                                <option value="2">Trung Bình</option>
-                                <option value="3">Thấp</option>
-                            </select>
-                        </div> --}}
-
-                        <!-- Priority -->
-                        {{!-- <div class="mb-3">
-                            <label for="priority" class="form-label text-sm">Priority</label>
-                            <select class="form-select" id="priority" name="priority" required>
-                                <option value="">-- Chọn Priority --</option>
-                                <option value="High">High</option>
-                                <option value="Medium">Medium</option>
-                                <option value="Low">Low</option>
-                            </select>
-                        </div> --}}
-
                         <!-- Group Selection -->
                         <div class="mb-3">
                             <label for="groupSelect" class="form-label text-sm">Job Group</label>
                             <select class="form-select" id="groupSelect" name="groupId" required>
                                 <option value="">-- Chọn Group --</option>
-                                <!-- Các Group sẽ được điền vào đây từ API hoặc server-side -->
+                                <!-- Job Groups will be populated here -->
                             </select>
                         </div>
 
@@ -165,7 +91,7 @@
                             <label for="workflowSelect" class="form-label text-sm">WorkFlow</label>
                             <select class="form-select" id="workflowSelect" name="workflowId" required>
                                 <option value="">-- Chọn WorkFlow --</option>
-                                <!-- WorkFlow sẽ được load dựa trên Group đã chọn -->
+                                <!-- Workflows will be populated based on selected group -->
                             </select>
                         </div>
 
@@ -174,7 +100,7 @@
                             <label for="projectSelect" class="form-label text-sm">Project</label>
                             <select class="form-select" id="projectSelect" name="projectId">
                                 <option value="">-- Chọn Project --</option>
-                                <!-- Project sẽ được load dựa trên Group đã chọn -->
+                                <!-- Projects will be populated based on selected group -->
                             </select>
                         </div>
 
@@ -182,21 +108,9 @@
                             <label for="memberSelect" class="form-label text-sm">Member</label>
                             <select class="form-select" id="memberSelect" name="IDUserPerform" required>
                                 <option value="">-- Chọn Thành Viên --</option>
-                                <!-- Danh sách thành viên sẽ được điền vào đây từ API -->
+                                <!-- Members will be populated here -->
                             </select>
                         </div>
-
-                        <!-- Time Start -->
-                        {{!-- <div class="mb-3">
-                            <label for="timeStart" class="form-label text-sm">Time Start</label>
-                            <input type="datetime-local" class="form-control" id="timeStart" name="timeStart" required>
-                        </div> --}}
-
-                        <!-- Time Complete -->
-                        {{!-- <div class="mb-3">
-                            <label for="timeComplete" class="form-label text-sm">Time Complete</label>
-                            <input type="datetime-local" class="form-control" id="timeComplete" name="timeComplete">
-                        </div> --}}
 
                         <!-- Approximate Time -->
                         <div class="mb-3">
@@ -218,7 +132,12 @@
             </div>
         </div>
 
+        <div class="tab-pane fade" id="review" role="tabpanel">
+            <h5>Đánh giá công việc</h5>
+            <div id="jobReviews" class="mb-3"></div>
+            <form id="reviewForm">
+                
+            </form>
+        </div>
     </div>
 </div>
-
-

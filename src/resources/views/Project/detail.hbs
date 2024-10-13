@@ -149,9 +149,6 @@
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({
-                    status: 'completed'
-                })
             });
 
             const jobData = await jobResponse.json();

@@ -38,7 +38,7 @@ const JobStage = sequelize.define('JobStage', {
     allowNull: false,
     defaultValue: 'pending', 
     validate: {
-      isIn: [['pending', 'completed', 'canceled']] 
+      isIn: [['pending', 'completed','submitted', 'canceled']] 
     }
   },
   completedAt: {

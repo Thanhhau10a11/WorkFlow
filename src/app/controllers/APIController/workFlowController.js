@@ -2,6 +2,7 @@
 const WorkFlow = require('../../models/WorkFlow_Model');
 const Stage = require('../../models/Stage_Model');
 const Job = require('../../models/Job_Model');
+const AppUser = require('../../models/User_Model');
 const Group = require('../../models/Group_Model');
 const nodemailer = require('nodemailer');
 const axios = require('axios');
@@ -69,48 +70,136 @@ class workFlowController {
             res.status(500).json({ error: error.message });
         }
     }
+    // async saveWorkFLow(req, res) {
+    //     const { GroupID,name, description, stages } = req.body;
+    //     const IDCreator = req.session.user.IDUser;
+    //     //const token = req.session.user.token
+    //     const authHeader = req.headers['authorization'];
+    //     const tokenHeader = authHeader && authHeader.split(' ')[1];
+    //     const token = tokenHeader;
+        
+    //     const group = await Group.findByPk(GroupID);
+    //     if (!group) {
+    //         throw new Error('Group not found');
+    //     }
+
+    //     try {
+    //         const workflow = await WorkFlow.create({
+    //             Name: name,
+    //             Description: description,
+    //             IDCreator: IDCreator,
+    //             GroupID:GroupID,
+    //         });
+
+    //         const stageIds = [];
+    //         const createdStages = [];
+
+    //         for (const stage of stages) {
+    //             const createdStage = await Stage.create({
+    //                 NameStage: stage.name,
+    //                 DescriptionStatus: stage.description,
+    //                 IDWorkFlow: workflow.IDWorkFlow,
+    //                 approximateTime: stage.approxTime,
+    //                 timecompletedState: stage.timeCompleted,
+    //                 EmailRecipient: stage.recipient
+    //             });
+    //             stageIds.push(createdStage.IdStage);
+    //             createdStages.push(createdStage);
+    //         }
+
+    //         for (let i = 0; i < createdStages.length; i++) {
+    //             const stage = createdStages[i];
+    //             const previousStageId = i > 0 ? createdStages[i - 1].IdStage : null;
+    //             const nextStageId = i < createdStages.length - 1 ? createdStages[i + 1].IdStage : null;
+
+    //             await Stage.update({
+    //                 previousStage: previousStageId,
+    //                 nextStage: nextStageId
+    //             }, {
+    //                 where: { IdStage: stage.IdStage }
+    //             });
+    //         }
+
+    //         for (const stage of createdStages) {
+    //             if (stage.EmailRecipient) {
+    //                 const email = stage.EmailRecipient;
+    //                 const invitationUrl = `${process.env.DOMAIN}/api/email/sendEmailNoti`;
+
+    //                 axios.post(invitationUrl, {
+    //                     email: email,
+    //                     type: 'stage',
+    //                     username: email,
+    //                     stageName: stage.NameStage,
+    //                 }, {
+    //                     headers: {
+    //                         'Content-Type': 'application/json',
+    //                         'Authorization': `Bearer ${token}`
+    //                     }
+    //                 });
+    //             }
+    //         }
+
+    //         res.status(201).json({
+    //             message: 'Workflow created and invitations sent successfully!',
+    //             workflowId: workflow.IDWorkFlow,
+    //             stageIds: stageIds
+    //         });
+    //     } catch (error) {
+    //         console.error('Error creating workflow and sending invitations:', error);
+    //         res.status(500).json({ error: error.message });
+    //     }
+    // }
     async saveWorkFLow(req, res) {
-        const { GroupID,name, description, stages } = req.body;
+        const { GroupID, name, description, stages } = req.body;
         const IDCreator = req.session.user.IDUser;
-        //const token = req.session.user.token
         const authHeader = req.headers['authorization'];
         const tokenHeader = authHeader && authHeader.split(' ')[1];
         const token = tokenHeader;
-        
-        const group = await Group.findByPk(GroupID);
-        if (!group) {
-            throw new Error('Group not found');
-        }
-
+    
         try {
+            const group = await Group.findByPk(GroupID);
+            if (!group) {
+                return res.status(404).json({ message: 'Group not found' });
+            }
+    
             const workflow = await WorkFlow.create({
                 Name: name,
                 Description: description,
                 IDCreator: IDCreator,
-                GroupID:GroupID,
+                GroupID: GroupID,
             });
-
+    
             const stageIds = [];
             const createdStages = [];
-
+    
             for (const stage of stages) {
+                // Tìm ID người nhận từ email
+                const recipient = await AppUser.findOne({ where: { Username: stage.recipient } });
+                if (!recipient) {
+                    return res.status(404).json({ message: `Recipient not found for email: ${stage.recipient}` });
+                }
+    
+                // Tạo stage với ID người nhận
                 const createdStage = await Stage.create({
                     NameStage: stage.name,
                     DescriptionStatus: stage.description,
                     IDWorkFlow: workflow.IDWorkFlow,
                     approximateTime: stage.approxTime,
                     timecompletedState: stage.timeCompleted,
-                    EmailRecipient: stage.recipient
+                    IDRecipient: recipient.IDUser, // Lưu ID người nhận vào trường IDRecipient
+                    EmailRecipient: stage.recipient // Vẫn lưu email nếu cần thiết
                 });
+    
                 stageIds.push(createdStage.IdStage);
                 createdStages.push(createdStage);
             }
-
+    
+            // Cập nhật previousStage và nextStage cho các stage đã tạo
             for (let i = 0; i < createdStages.length; i++) {
                 const stage = createdStages[i];
                 const previousStageId = i > 0 ? createdStages[i - 1].IdStage : null;
                 const nextStageId = i < createdStages.length - 1 ? createdStages[i + 1].IdStage : null;
-
+    
                 await Stage.update({
                     previousStage: previousStageId,
                     nextStage: nextStageId
@@ -118,12 +207,13 @@ class workFlowController {
                     where: { IdStage: stage.IdStage }
                 });
             }
-
+    
+            // Gửi email thông báo đến người nhận
             for (const stage of createdStages) {
                 if (stage.EmailRecipient) {
                     const email = stage.EmailRecipient;
                     const invitationUrl = `${process.env.DOMAIN}/api/email/sendEmailNoti`;
-
+    
                     axios.post(invitationUrl, {
                         email: email,
                         type: 'stage',
@@ -137,7 +227,7 @@ class workFlowController {
                     });
                 }
             }
-
+    
             res.status(201).json({
                 message: 'Workflow created and invitations sent successfully!',
                 workflowId: workflow.IDWorkFlow,
@@ -148,6 +238,7 @@ class workFlowController {
             res.status(500).json({ error: error.message });
         }
     }
+    
 
     async saveStageByWorkFlowID(req, res) {
         try {
