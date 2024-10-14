@@ -390,51 +390,88 @@ async function loadJobsForReview() {
 
 // Hàm hiển thị các job cần duyệt
 function renderJobsForReview(filteredJobs) {
-    const reviewJobListings = document.getElementById('reviewJobListings'); // Đảm bảo có phần tử này trong HTML
-    reviewJobListings.innerHTML = '';
+    const reviewJobListings = document.getElementById('reviewJobListings');
+    reviewJobListings.innerHTML = ''; // Clear previous listings
+
     if (filteredJobs.length === 0) {
-        reviewJobListings.innerHTML = '<p>Không có công việc nào cần duyệt.</p>';
+        reviewJobListings.innerHTML = '<p class="no-jobs">Không có công việc nào cần duyệt.</p>';
         return;
     }
-    filteredJobs.forEach(job => {
+
+    const jobGrid = document.createElement('div');
+    jobGrid.className = 'job-grid';
+
+    filteredJobs.forEach(jobStage => {
+        const job = jobStage.JobStage_Job;
+        const stage = jobStage.JobStage_Stage;
+
         const jobCard = document.createElement('div');
-        jobCard.className = 'col';
+        jobCard.className = 'job-card';
+
         jobCard.innerHTML = `
-        <div class="card job-card">
-            <div class="card-body d-flex flex-column">
-                <h5 class="card-title text">${job.NameJob}</h5>
-                <h6 class="card-subtitle mb-2 text-muted text-sm">Group: ${job.GroupName}</h6>
-                <p class="card-text flex-grow-1 text-sm">Mô tả: ${job.DescriptionJob || 'Không có mô tả'}</p>
-                <div class="d-flex justify-content-between">
-                    <button class="btn btn-success" onclick="approveJob(${job.IDJob})">Duyệt</button>
-                    <button class="btn btn-danger" onclick="rejectJob(${job.IDJob})">Từ chối</button>
-                </div>
+            <h3 class="job-title">${job.NameJob}</h3>
+            <div class="job-group"><i class="fa-solid fa-users-viewfinder"></i> Nhóm: ${stage.Workflow.WorkFlowGroup.GroupName || 'N/A'}</div>
+            <div class="job-group"><i class="ph-swap"></i> WorkFlow: ${stage.Workflow.Name || 'N/A'}</div>
+            <p class="job-description"><i class="bi bi-journal-text"></i> Mô tả :${job.DescriptionJob || 'Không có mô tả'}</p>
+            <div class="job-info">
+                <span class="job-stage">
+                    <i class="bi bi-diagram-3"></i> Giai đoạn: ${stage.NameStage || 'N/A'}
+                </span>
+                <span class="job-status ${jobStage.status}">
+                    <i class="bi bi-check-circle"></i> ${getStatusText(jobStage.status)}
+                </span>
             </div>
-        </div>
+            <div class="job-created">
+                <i class="bi bi-envelope"></i> Người gửi: ${job.Performer.Username}
+            </div>
+            <div class="job-created">
+                <i class="bi bi-calendar"></i> Nhận lúc: ${new Date(jobStage.createdAt).toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </div>
+            <div class="job-actions">
+                <button class="btn btn-approve" onclick="approveJob(${job.IDJob},${stage.IdStage})" ${jobStage.status !== 'pending' ? 'disabled' : ''}>Duyệt</button>
+                <button class="btn btn-reject" onclick="rejectJob(${job.IDJob},${stage.IdStage})" ${jobStage.status !== 'pending' ? 'disabled' : ''}>Từ chối</button>
+            </div>
         `;
-        reviewJobListings.appendChild(jobCard);
+
+        jobGrid.appendChild(jobCard);
     });
+
+    reviewJobListings.appendChild(jobGrid);
+}
+
+function getStatusText(status) {
+    switch (status) {
+        case 'pending': return 'Chờ duyệt';
+        case 'approved': return 'Đã duyệt';
+        case 'rejected': return 'Từ chối';
+        default: return 'Không xác định';
+    }
 }
 
 
+
 // Hàm duyệt job
-async function approveJob(jobId) {
+async function approveJob(jobId,IdStage) {
     if (!confirm('Bạn có chắc chắn muốn duyệt job này?')) return;
 
     try {
-        const response = await fetch(`/api/jobs/${jobId}/approve`, {
-            method: 'PUT',
+        const bodyData = {
+            accepted: true
+        };
+        const response = await fetch(`/api/job/${jobId}/stages/${IdStage}/review`, {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` // Gửi token để xác thực
-            }
+                'Authorization': `Bearer ${token}` 
+            },
+            body: JSON.stringify(bodyData)
         });
 
         if (response.ok) {
-            // Cập nhật danh sách jobs đã duyệt
-            jobsForReview = jobsForReview.filter(job => job.IDJob !== jobId);
-            renderJobsForReview(jobsForReview); // Cập nhật giao diện
             showToast('Job đã được duyệt.');
+            setTimeout(()=>{
+                window.location.reload();
+            },1000)
         } else {
             const errorData = await response.json();
             showToast(`Không thể duyệt job: ${errorData.error}`, true);
@@ -446,23 +483,27 @@ async function approveJob(jobId) {
 }
 
 // Hàm từ chối job
-async function rejectJob(jobId) {
+async function rejectJob(jobId,IdStage) {
     if (!confirm('Bạn có chắc chắn muốn từ chối job này?')) return;
 
     try {
-        const response = await fetch(`/api/jobs/${jobId}/reject`, {
-            method: 'PUT',
+        const bodyData = {
+            accepted: false
+        };
+        const response = await fetch(`/api/job/${jobId}/stages/${IdStage}/review`, {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` // Gửi token để xác thực
-            }
+                'Authorization': `Bearer ${token}` 
+            },
+            body : JSON.stringify(bodyData)
         });
 
         if (response.ok) {
-            // Cập nhật danh sách jobs đã từ chối
-            jobsForReview = jobsForReview.filter(job => job.IDJob !== jobId);
-            renderJobsForReview(jobsForReview); // Cập nhật giao diện
-            showToast('Job đã được từ chối.');
+            showToast('Job đã được hoàn.');
+            setTimeout(()=>{
+                window.location.reload();
+            },1000)
         } else {
             const errorData = await response.json();
             showToast(`Không thể từ chối job: ${errorData.error}`, true);

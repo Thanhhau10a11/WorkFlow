@@ -2,20 +2,12 @@ const WorkFlow = require('../../models/WorkFlow_Model');
 const Stage = require('../../models/Stage_Model');
 const Job = require('../../models/Job_Model');
 const Group = require('../../models/Group_Model');
-
+const JobStage = require('../../models/JobStage_Model')
 class userWorkFlowController {
     async getByUserId(req, res) {
         try {
             const workflows = await WorkFlow.findAll({
                 where: { IDCreator: req.params.id },
-                include: [{
-                    model: Stage,
-                    as: 'Stages',
-                    include: [{
-                        model: Job,
-                        as: 'Jobs'
-                    }]
-                }],
                 order: [['createdAt', 'DESC']]
             });
 
@@ -29,14 +21,6 @@ class userWorkFlowController {
         try {
             const workflows = await WorkFlow.findAll({
                 where: { GroupID: req.params.id },
-                include: [{
-                    model: Stage,
-                    as: 'Stages',
-                    include: [{
-                        model: Job,
-                        as: 'Jobs'
-                    }]
-                }],
                 order: [['createdAt', 'DESC']]
             });
 

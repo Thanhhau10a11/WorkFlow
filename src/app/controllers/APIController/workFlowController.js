@@ -173,21 +173,26 @@ class workFlowController {
             const createdStages = [];
     
             for (const stage of stages) {
-                // Tìm ID người nhận từ email
-                const recipient = await AppUser.findOne({ where: { Username: stage.recipient } });
-                if (!recipient) {
-                    return res.status(404).json({ message: `Recipient not found for email: ${stage.recipient}` });
+                let recipientId = null;
+                let emailRecipient = null;
+    
+                // Nếu có người nhận, tìm ID người nhận từ email
+                if (stage.recipient) {
+                    const recipient = await AppUser.findOne({ where: { Username: stage.recipient } });
+                    
+                    recipientId = recipient.IDUser; // Lưu ID người nhận
+                    emailRecipient = stage.recipient; // Lưu email của người nhận
                 }
     
-                // Tạo stage với ID người nhận
+                // Tạo stage với ID người nhận (có thể là null)
                 const createdStage = await Stage.create({
                     NameStage: stage.name,
                     DescriptionStatus: stage.description,
                     IDWorkFlow: workflow.IDWorkFlow,
                     approximateTime: stage.approxTime,
                     timecompletedState: stage.timeCompleted,
-                    IDRecipient: recipient.IDUser, // Lưu ID người nhận vào trường IDRecipient
-                    EmailRecipient: stage.recipient // Vẫn lưu email nếu cần thiết
+                    IDRecipient: recipientId, // Có thể là null
+                    EmailRecipient: emailRecipient, // Có thể là null
                 });
     
                 stageIds.push(createdStage.IdStage);
@@ -202,9 +207,9 @@ class workFlowController {
     
                 await Stage.update({
                     previousStage: previousStageId,
-                    nextStage: nextStageId
+                    nextStage: nextStageId,
                 }, {
-                    where: { IdStage: stage.IdStage }
+                    where: { IdStage: stage.IdStage },
                 });
             }
     
@@ -222,8 +227,8 @@ class workFlowController {
                     }, {
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        }
+                            'Authorization': `Bearer ${token}`,
+                        },
                     });
                 }
             }
@@ -231,13 +236,14 @@ class workFlowController {
             res.status(201).json({
                 message: 'Workflow created and invitations sent successfully!',
                 workflowId: workflow.IDWorkFlow,
-                stageIds: stageIds
+                stageIds: stageIds,
             });
         } catch (error) {
             console.error('Error creating workflow and sending invitations:', error);
             res.status(500).json({ error: error.message });
         }
     }
+    
     
 
     async saveStageByWorkFlowID(req, res) {

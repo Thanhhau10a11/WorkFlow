@@ -3,7 +3,7 @@
 
 const { sequelize } = require('../src/app/models/index'); 
 const bcrypt = require('bcryptjs');
-const { AppUser, UserRole, Role, RolePermission } = require('../src/app/models/index'); 
+const { AppUser, UserRole, Role } = require('../src/app/models/index'); 
 
 const seedData = async () => {
   try {
@@ -16,18 +16,21 @@ const seedData = async () => {
     // Tạo người dùng
     const users = [
       {
-        Username: 'admin@gmail.com', // Sửa trường username thành Username nếu trường trong model là như vậy
-        Password: await bcrypt.hash('adminpassword', 10), // Sửa trường password thành Password
+        Name:'admin',
+        Username: 'admin@gmail.com', 
+        Password: await bcrypt.hash('adminpassword', 10), 
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
+        Name:'LeaderGroup',
         Username: 'LeaderGroup@gmail.com',
         Password: await bcrypt.hash('leaderpassword', 10),
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
+        Name:'user',
         Username: 'user@gmail.com',
         Password: await bcrypt.hash('userpassword', 10),
         createdAt: new Date(),
@@ -62,23 +65,23 @@ const seedData = async () => {
     console.log('User roles created successfully.');
 
     // Tạo quyền cho bảng RolePermission
-    const rolePermissions = [
-      { IDRole: createdRoles[0].RoleID, Permission: 'manage', createdAt: new Date(), updatedAt: new Date() }, // Admin
-      { IDRole: createdRoles[1].RoleID, Permission: 'manage', createdAt: new Date(), updatedAt: new Date(), Subject: 'Group' },
-      { IDRole: createdRoles[1].RoleID, Permission: 'manage', createdAt: new Date(), updatedAt: new Date(), Subject: 'Project' },
-      { IDRole: createdRoles[1].RoleID, Permission: 'manage', createdAt: new Date(), updatedAt: new Date(), Subject: 'Workflow' },
-      { IDRole: createdRoles[1].RoleID, Permission: 'manage', createdAt: new Date(), updatedAt: new Date(), Subject: 'User' },
-      { IDRole: createdRoles[2].RoleID, Permission: 'read', createdAt: new Date(), updatedAt: new Date(), Subject: 'Stage' },
-      { IDRole: createdRoles[2].RoleID, Permission: 'read', createdAt: new Date(), updatedAt: new Date(), Subject: 'Job' },
-      { IDRole: createdRoles[2].RoleID, Permission: 'read', createdAt: new Date(), updatedAt: new Date(), Subject: 'Project' },
-      { IDRole: createdRoles[2].RoleID, Permission: 'read', createdAt: new Date(), updatedAt: new Date(), Subject: 'Workflow' },
-      { IDRole: createdRoles[2].RoleID, Permission: 'complete', createdAt: new Date(), updatedAt: new Date(), Subject: 'Job' },
-      { IDRole: createdRoles[2].RoleID, Permission: 'complete', createdAt: new Date(), updatedAt: new Date(), Subject: 'Stage' }
-    ];
+    // const rolePermissions = [
+    //   { IDRole: createdRoles[0].RoleID, Permission: 'manage', createdAt: new Date(), updatedAt: new Date() }, // Admin
+    //   { IDRole: createdRoles[1].RoleID, Permission: 'manage', createdAt: new Date(), updatedAt: new Date(), Subject: 'Group' },
+    //   { IDRole: createdRoles[1].RoleID, Permission: 'manage', createdAt: new Date(), updatedAt: new Date(), Subject: 'Project' },
+    //   { IDRole: createdRoles[1].RoleID, Permission: 'manage', createdAt: new Date(), updatedAt: new Date(), Subject: 'Workflow' },
+    //   { IDRole: createdRoles[1].RoleID, Permission: 'manage', createdAt: new Date(), updatedAt: new Date(), Subject: 'User' },
+    //   { IDRole: createdRoles[2].RoleID, Permission: 'read', createdAt: new Date(), updatedAt: new Date(), Subject: 'Stage' },
+    //   { IDRole: createdRoles[2].RoleID, Permission: 'read', createdAt: new Date(), updatedAt: new Date(), Subject: 'Job' },
+    //   { IDRole: createdRoles[2].RoleID, Permission: 'read', createdAt: new Date(), updatedAt: new Date(), Subject: 'Project' },
+    //   { IDRole: createdRoles[2].RoleID, Permission: 'read', createdAt: new Date(), updatedAt: new Date(), Subject: 'Workflow' },
+    //   { IDRole: createdRoles[2].RoleID, Permission: 'complete', createdAt: new Date(), updatedAt: new Date(), Subject: 'Job' },
+    //   { IDRole: createdRoles[2].RoleID, Permission: 'complete', createdAt: new Date(), updatedAt: new Date(), Subject: 'Stage' }
+    // ];
 
-    // Thêm quyền vào bảng RolePermission
-    await RolePermission.bulkCreate(rolePermissions);
-    console.log('Role permissions created successfully.');
+    // // Thêm quyền vào bảng RolePermission
+    // await RolePermission.bulkCreate(rolePermissions);
+    // console.log('Role permissions created successfully.');
 
   } catch (error) {
     console.error('Unable to connect to the database:', error);

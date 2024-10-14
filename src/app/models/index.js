@@ -15,7 +15,6 @@ const Invitation = require('./Invitation_Model');
 const JobStage = require('./JobStage_Model'); 
 const Role = require('./Role_Model');
 const UserRole = require('./UserRole_Model');
-const RolePermission = require('./RolePermission_Model');
 
 // Định nghĩa các mối quan hệ
 Group.belongsToMany(AppUser, { through: GroupMember, as: 'Members', foreignKey: 'GroupID' });
@@ -37,8 +36,16 @@ Workflow.hasMany(Stage, { foreignKey: 'IDWorkFlow', as: 'Stages' });
 Stage.belongsTo(Workflow, { foreignKey: 'IDWorkFlow', as: 'Workflow' });
 
 // Định nghĩa quan hệ nhiều-nhiều giữa Job và Stage thông qua JobStage
-Job.belongsToMany(Stage, { through: JobStage, as: 'Stages', foreignKey: 'IDJob' });
-Stage.belongsToMany(Job, { through: JobStage, as: 'Jobs', foreignKey: 'IDStage' });
+// Job.belongsToMany(Stage, { through: JobStage, unique:false,as: 'Stages', foreignKey: 'IDJob' });
+// Stage.belongsToMany(Job, { through: JobStage, unique:false,as: 'Jobs', foreignKey: 'IDStage' });
+
+// Định nghĩa quan hệ một-nhiều giữa Job và JobStage
+Job.hasMany(JobStage, { foreignKey: 'IDJob', as: 'Job_JobStage' });
+JobStage.belongsTo(Job, { foreignKey: 'IDJob', as: 'JobStage_Job' });
+
+// Định nghĩa quan hệ một-nhiều giữa Stage và JobStage
+Stage.hasMany(JobStage, { foreignKey: 'IDStage', as: 'Stage_JobStages' });
+JobStage.belongsTo(Stage, { foreignKey: 'IDStage', as: 'JobStage_Stage' });
 
 AppUser.belongsToMany(Notify, { through: UserNotify, as: 'ReceivedNotifies', foreignKey: 'IDUser' });
 Notify.belongsToMany(AppUser, { through: UserNotify, as: 'Users', foreignKey: 'IDNotify' });
@@ -54,8 +61,6 @@ Job.belongsTo(AppUser, { foreignKey: 'IDUserPerform', as: 'Performer' });
 Role.belongsToMany(AppUser, { through: UserRole, foreignKey: 'RoleID', as: 'UsersRole' });
 AppUser.belongsToMany(Role, { through: UserRole, foreignKey: 'IDUser', as: 'Roles' });
 
-Role.hasMany(RolePermission, { foreignKey: 'IDRole', as: 'Permissions' });
-RolePermission.belongsTo(Role, { foreignKey: 'IDRole' });
 
 module.exports = {
   sequelize,
@@ -75,5 +80,4 @@ module.exports = {
   JobStage ,
   Role,
   UserRole,
-  RolePermission,
 };  
