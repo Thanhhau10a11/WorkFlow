@@ -94,9 +94,9 @@ const JobStage = sequelize.define('JobStage', {
   status: {  
     type: DataTypes.STRING,  
     allowNull: false,  
-    defaultValue: 'pending',   
+    defaultValue: 'processing',   
     validate: {  
-      isIn: [['pending', 'completed', 'submitted', 'canceled']]   
+      isIn: [[ 'processing','pending', 'completed', 'submitted', 'canceled']]   
     }  
   },  
   completedAt: {  

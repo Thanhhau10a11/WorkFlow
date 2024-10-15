@@ -148,7 +148,7 @@ class JobCOntroller {
       return res.status(201).json({
         message: 'Job được tạo và gửi vào Stage đầu tiên.',
         job: newJob,
-        jobStage: newJobStage
+        jobStage: newJobStage,
       });
     } catch (error) {
       console.error('Error creating job:', error);
@@ -157,292 +157,214 @@ class JobCOntroller {
   }
 
   async getAllJobs(req, res) {
+    const userId = req.user.IDUser;
+    const userRoles = req.user.roles;
+    const isAdmin = userRoles.includes('admin');
+  
     try {
-      const user = req.user;
-      let groupIDs = [];
-      let userJobs = [];
-
-      // Kiểm tra vai trò admin
-      if (user.roles.includes('admin')) {
-        console.log("Đã vào admin");
-        const managedGroups = await Group.findAll({
-          where: { IDUser: user.IDUser },
-          attributes: ['GroupID']
+      let jobs;
+  
+      if (isAdmin) {
+        // Admin retrieves all jobs with 'processing' status
+        jobs = await JobStage.findAll({
+          where: { status: 'processing' },
+          include: [
+            {
+              model: Job,
+              as: 'JobStage_Job',
+              include: [
+                {
+                  model: AppUser,
+                  as: 'Performer',
+                  attributes: ['IDUser', 'Username'],
+                },
+              ],
+            },
+            {
+              model: Stage,
+              as: 'JobStage_Stage',
+              include: [
+                {
+                  model: Workflow,
+                  as: 'Workflow',
+                  include: [
+                    {
+                      model: Group,
+                      as: 'WorkFlowGroup',
+                      attributes: ['GroupID', 'GroupName'],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
         });
-        groupIDs = managedGroups.map(group => group.GroupID);
-      }
-
-      // Kiểm tra vai trò LeaderGroup
-      if (user.roles.includes('LeaderGroup')) {
-        console.log("Đã vào LeaderGroup");
-        const managedGroups = await Group.findAll({
-          where: { IDLeader: user.IDUser },
-          attributes: ['GroupID']
+      } else {
+        // Non-admin users retrieve jobs where they are the recipient and status is 'processing'
+        const stages = await Stage.findAll({
+          where: { IDRecipient: userId },
+          attributes: ['IdStage'],
         });
-        groupIDs = [...groupIDs, ...managedGroups.map(group => group.GroupID)];
+  
+        if (stages.length === 0) {
+          return res.status(404).json({ message: 'Không tìm thấy stage nào cho người dùng này' });
+        }
+  
+        const stageIds = stages.map(stage => stage.IdStage);
+  
+        jobs = await JobStage.findAll({
+          where: {
+            IDStage: stageIds,
+            status: 'processing',
+          },
+          include: [
+            {
+              model: Job,
+              as: 'JobStage_Job',
+              include: [
+                {
+                  model: AppUser,
+                  as: 'Performer',
+                  attributes: ['IDUser', 'Username'],
+                },
+              ],
+            },
+            {
+              model: Stage,
+              as: 'JobStage_Stage',
+              include: [
+                {
+                  model: Workflow,
+                  as: 'Workflow',
+                  include: [
+                    {
+                      model: Group,
+                      as: 'WorkFlowGroup',
+                      attributes: ['GroupID', 'GroupName'],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
       }
-
-      // Lấy tất cả jobs mà người dùng được chỉ định
-      userJobs = await Job.findAll({
-        where: { IDUserPerform: user.IDUser },
-        order: [['timeStart', 'DESC']] // Sắp xếp theo timeStart giảm dần (mới nhất ở đầu)
-      });
-
-      // Nếu không có nhóm nào và không có job nào, trả về lỗi
-      if (groupIDs.length === 0 && userJobs.length === 0) {
-        return res.status(404).json({ message: 'Không tìm thấy nhóm quản lý hoặc job được chỉ định.' });
-      }
-
-      // Lấy tất cả các job từ các groupIDs đã lấy được
-      const groupJobs = await Job.findAll({
-        where: { GroupID: groupIDs },
-        order: [['timeStart', 'DESC']] // Sắp xếp theo timeStart giảm dần (mới nhất ở đầu)
-      });
-
-      // Lấy thông tin nhóm cho các jobs trong group
-      const groups = await Group.findAll({
-        where: { GroupID: groupIDs },
-        attributes: ['GroupID', 'GroupName']
-      });
-
-      // Lấy thông tin người dùng (user) cho từng job
-      const userIDs = [...new Set([...userJobs.map(job => job.IDUserPerform), ...groupJobs.map(job => job.IDUserPerform)])]; // Lấy tất cả IDUserPerform duy nhất
-      const users = await AppUser.findAll({
-        where: { IDUser: userIDs }
-      });
-
-      const usersMap = {};
-      users.forEach(user => {
-        usersMap[user.IDUser] = user; // Tạo map cho dễ dàng truy cập
-      });
-
-      // Kết hợp jobs từ group với thông tin nhóm
-      const jobsFromGroups = groupJobs.map(job => {
-        const group = groups.find(g => g.GroupID === job.GroupID);
-        const user = usersMap[job.IDUserPerform] || {}; // Lấy thông tin người nhận
-        return {
-          ...job.toJSON(),
-          GroupName: group ? group.GroupName : null,
-          Username: user.Username || 'Không có tên người nhận',
-        };
-      });
-
-      // Kết hợp jobs từ user
-      const allJobs = [
-        ...jobsFromGroups,
-        ...userJobs.map(job => {
-          const user = usersMap[job.IDUserPerform] || {}; // Lấy thông tin người nhận
-          return {
-            ...job.toJSON(),
-            GroupName: null, // Giả sử jobs của user không có GroupName
-            Username: user.Username || 'Không có tên người nhận',
-          };
-        })
-      ];
-
-      // Sắp xếp các job cuối cùng theo timeStart mới nhất
-      allJobs.sort((a, b) => new Date(b.timeStart) - new Date(a.timeStart));
-
-      return res.json(allJobs);
-
+  
+      return res.status(200).json(jobs);
+  
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'Lỗi server', error: error.message });
+      console.error('Lỗi khi lấy danh sách job:', error);
+      return res.status(500).json({ message: error.message });
     }
   }
+  
 
 
 
   //Job và Stageeeeeee
 
   // Duyệt Job tại Stage
-  // async reviewStage(req, res) {
-  //   const { jobId, stageId } = req.params;
-  //   const { accepted } = req.body;
 
-  //   console.log(`Received request to review stage. Job ID: ${jobId}, Stage ID: ${stageId}, Accepted: ${accepted}`);
+async reviewStage(req, res) {
+  const { jobId, stageId } = req.params;
+  const { accepted } = req.body;
 
-  //   const transaction = await sequelize.transaction();
+  console.log(`Received request to review stage. Job ID: ${jobId}, Stage ID: ${stageId}, Accepted: ${accepted}`);
 
-  //   try {
-  //     const jobStage = await JobStage.findOne({
-  //       where: {
-  //         IDJob: jobId,
-  //         IDStage: stageId,
-  //       },
-  //       transaction,
-  //     });
+  try {
+    if (accepted) {
+      // Tìm jobStage hiện tại với trạng thái "pending"
+      const jobStage = await JobStage.findOne({
+        where: {
+          IDJob: jobId,
+          IDStage: stageId,
+          status: 'pending'
+        }
+      });
 
-  //     if (!jobStage) {
-  //       await transaction.rollback();
-  //       console.error(`JobStage not found for Job ID: ${jobId}, Stage ID: ${stageId}`);
-  //       return res.status(404).json({ message: 'JobStage không tìm thấy' });
-  //     }
+      if (!jobStage) {
+        console.error(`JobStage not found for Job ID: ${jobId}, Stage ID: ${stageId}`);
+        return res.status(404).json({ message: 'JobStage không tìm thấy' });
+      }
 
-  //     console.log(`JobStage found: ${JSON.stringify(jobStage)}`);
+      // Cập nhật trạng thái thành "completed"
+      jobStage.status = 'completed';
+      jobStage.updatedAt = sequelize.literal('CURRENT_TIMESTAMP'); 
+      await jobStage.save();
 
-  //     if (accepted) {
-  //       jobStage.status = 'completed';
-  //       await jobStage.save({ transaction });
-  //       console.log("AAAAAAAAAAAAAAA",jobStage)
-  //       console.log(`JobStage status updated to 'completed': ${JSON.stringify(jobStage)}`);
-
-  //       // Tìm Stage tiếp theo
-  //       const nextStage = await getNextStage(stageId);
-  //       console.log(`Next Stage: ${JSON.stringify(nextStage)}`);
-
-  //       if (nextStage) {
-  //         // Tạo bản ghi JobStage cho Stage tiếp theo
-  //         await JobStage.create({
-  //           IDJob: jobId,
-  //           IDStage: nextStage.IdStage,
-  //           status: 'pending',
-  //         }, { transaction });
-  //         await transaction.commit();
-  //         console.log(`Job approved and moved to next stage: ${nextStage.IdStage}`);
-  //         return res.status(200).json({ message: 'Job được duyệt và chuyển đến Stage tiếp theo' });
-  //       } else {
-  //         const job = await Job.findByPk(jobId, { transaction });
-  //         console.log(`Job found: ${JSON.stringify(job)}`);
-
-  //         if (job) {
-  //           job.status = 'completed';
-  //           await job.save({ transaction });
-  //           await jobStage.save({ transaction });
-  //           await transaction.commit();
-
-  //           console.log(`Job completed: ${jobId}`);
-  //           return res.status(200).json({ message: 'Job đã hoàn thành' });
-  //         } else {
-  //           await transaction.rollback();
-  //           console.error(`Job not found for Job ID: ${jobId}`);
-  //           return res.status(404).json({ message: 'Không tìm thấy Job' });
-  //         }
-  //       }
-  //     } else {
-  //       // Nếu không chấp nhận, chuyển Job về Stage trước đó
-  //       const previousStage = await getPreviousStage(stageId);
-  //       console.log(`Previous Stage: ${JSON.stringify(previousStage)}`);
-
-  //       if (previousStage) {
-  //         // Cập nhật trạng thái của JobStage hiện tại thành 'cancel'
-  //         await JobStage.update(
-  //           { status: 'canceled' }, // cập nhật trạng thái thành 'cancel'
-  //           { where: { IDJob: jobId, IDStage: stageId }, transaction }
-  //         );
-
-  //         // Tạo bản ghi JobStage cho Stage trước đó
-  //         await JobStage.create({
-  //           IDJob: jobId,
-  //           IDStage: previousStage.IdStage,
-  //           status: 'pending', // trạng thái mới của job trong stage trước đó
-  //         }, { transaction });
-
-  //         await transaction.commit();
-  //         console.log(`Job rejected and moved back to previous stage: ${previousStage.IdStage}`);
-  //         return res.status(200).json({ message: 'Job bị từ chối và chuyển về Stage trước đó' });
-  //       } else {
-  //         await transaction.rollback();
-  //         console.error(`Cannot move back to previous stage for Stage ID: ${stageId}`);
-  //         return res.status(400).json({ message: 'Không thể chuyển về Stage trước đó' });
-  //       }
-  //     }
-
-  //   } catch (error) {
-  //     await transaction.rollback();
-  //     console.error('Lỗi khi duyệt Job:', error);
-  //     return res.status(500).json({ message: error.message });
-  //   }
-  // }
-  async reviewStage(req, res) {
-    const { jobId, stageId } = req.params;
-    const { accepted } = req.body;
-
-    console.log(`Received request to review stage. Job ID: ${jobId}, Stage ID: ${stageId}, Accepted: ${accepted}`);
-
-    try {
-        const jobStage = await JobStage.findOne({
-            where: {
-                IDJob: jobId,
-                IDStage: stageId,
-                status:'pending'
-            }
+      // Tìm Stage tiếp theo
+      const nextStage = await getNextStage(stageId);
+      if (nextStage) {
+        // Tạo một bản ghi JobStage cho Stage tiếp theo
+        await JobStage.create({
+          IDJob: jobId,
+          IDStage: nextStage.IdStage,
+          status: 'pending',
         });
 
-        if (!jobStage) {
-            console.error(`JobStage not found for Job ID: ${jobId}, Stage ID: ${stageId}`);
-            return res.status(404).json({ message: 'JobStage không tìm thấy' });
-        }
-
-        console.log(`JobStage found: ${JSON.stringify(jobStage)}`);
-
-        if (accepted) {
-            // Thay đổi trạng thái và cập nhật thời gian
-            jobStage.status = 'completed';
-            jobStage.updatedAt = sequelize.literal('CURRENT_TIMESTAMP'); // Cập nhật thời gian
-
-            await jobStage.save();
-
-            console.log("Status after save:", jobStage.status);
-            console.log("Changed fields:", jobStage._changed);
-
-            // Tìm Stage tiếp theo
-            const nextStage = await getNextStage(stageId);
-            console.log(`Next Stage: ${JSON.stringify(nextStage)}`);
-
-            if (nextStage) {
-                await JobStage.create({
-                    IDJob: jobId,
-                    IDStage: nextStage.IdStage,
-                    status: 'pending',
-                });
-
-                console.log(`Job approved and moved to next stage: ${nextStage.IdStage}`);
-                return res.status(200).json({ message: 'Job được duyệt và chuyển đến Stage tiếp theo' });
-            } else {
-                const job = await Job.findByPk(jobId);
-                console.log(`Job found: ${JSON.stringify(job)}`);
-
-                if (job) {
-                    job.status = 'completed';
-                    job.updatedAt = sequelize.literal('CURRENT_TIMESTAMP'); // Cập nhật thời gian
-                    await job.save();
-                    console.log(`Job completed: ${jobId}`);
-                    return res.status(200).json({ message: 'Job đã hoàn thành' });
-                } else {
-                    console.error(`Job not found for Job ID: ${jobId}`);
-                    return res.status(404).json({ message: 'Không tìm thấy Job' });
-                }
-            }
+        return res.status(200).json({ message: 'Job được duyệt và chuyển đến Stage tiếp theo' });
+      } else {
+        // Nếu không có Stage tiếp theo, hoàn thành Job
+        const job = await Job.findByPk(jobId);
+        if (job) {
+          job.Status = 'completed';
+          job.updatedAt = sequelize.literal('CURRENT_TIMESTAMP'); 
+          await job.save();
+          return res.status(200).json({ message: 'Job đã hoàn thành' });
         } else {
-            const previousStage = await getPreviousStage(stageId);
-            console.log(`Previous Stage: ${JSON.stringify(previousStage)}`);
-
-            if (previousStage) {
-                await JobStage.update(
-                    { status: 'canceled' },
-                    { where: { IDJob: jobId, IDStage: stageId } }
-                );
-
-                await JobStage.create({
-                    IDJob: jobId,
-                    IDStage: previousStage.IdStage,
-                    status: 'pending',
-                });
-
-                console.log(`Job rejected and moved back to previous stage: ${previousStage.IdStage}`);
-                return res.status(200).json({ message: 'Job bị từ chối và chuyển về Stage trước đó' });
-            } else {
-                console.error(`Cannot move back to previous stage for Stage ID: ${stageId}`);
-                return res.status(400).json({ message: 'Không thể chuyển về Stage trước đó' });
-            }
+          return res.status(404).json({ message: 'Không tìm thấy Job' });
         }
-    } catch (error) {
-        console.error('Lỗi khi duyệt Job:', error);
-        return res.status(500).json({ message: error.message });
-    }
-}
+      }
+    } else {
+      // Tìm jobStage hiện tại với trạng thái "pending"
+      const jobStage = await JobStage.findOne({
+        where: {
+          IDJob: jobId,
+          IDStage: stageId,
+          status: 'pending'
+        }
+      });
 
+      if (!jobStage) {
+        return res.status(404).json({ message: 'JobStage không tìm thấy' });
+      }
+
+      // Tìm Stage trước đó
+      const previousStage = await getPreviousStage(stageId);
+      if (previousStage) {
+        // Cập nhật trạng thái thành "canceled" cho Stage hiện tại
+        jobStage.status = 'canceled';
+        jobStage.updatedAt = sequelize.literal('CURRENT_TIMESTAMP'); 
+        await jobStage.save();
+
+        // Tạo một bản ghi JobStage mới cho Stage trước đó
+        await JobStage.create({
+          IDJob: jobId,
+          IDStage: previousStage.IdStage,
+          status: 'processing',
+        });
+
+        return res.status(200).json({ message: 'Job bị từ chối và chuyển về Stage trước đó' });
+      } else {
+        // Nếu không có Stage trước đó, chỉ cập nhật trạng thái hiện tại
+        jobStage.status = 'canceled';
+        jobStage.updatedAt = sequelize.literal('CURRENT_TIMESTAMP');
+        await jobStage.save();
+
+        await JobStage.create({
+          IDJob: jobId,
+          IDStage: stageId, 
+          status: 'processing', 
+        });
+
+        return res.status(200).json({ message: 'Không có Stage trước đó. Job giữ nguyên.' });
+      }
+    }
+  } catch (error) {
+    console.error('Lỗi khi duyệt Job:', error);
+    return res.status(500).json({ message: error.message });
+  }
+}
 
 
 
@@ -458,26 +380,24 @@ class JobCOntroller {
         where: {
           IDJob: jobId,
           IDStage: stageId,
+          status:'processing'
         },
       });
-  
       if (!jobStage) {
         console.error(`JobStage not found for Job ID: ${jobId}, Stage ID: ${stageId}`);
         return res.status(404).json({ message: 'JobStage không tìm thấy' });
       }
   
       // Kiểm tra trạng thái hiện tại của JobStage
-      if (jobStage.status !== 'pending') {
+      if (jobStage.status !== 'processing') {
         return res.status(400).json({ message: 'Job không thể nộp lên stage vì trạng thái không hợp lệ' });
       }
   
-      // Kiểm tra nếu người dùng hiện tại là admin hoặc là người nhận stage
       const user = req.user;
       const stage = await Stage.findOne({ where: { IdStage: stageId } });
   
       if (user.roles.includes('admin') || user.IDUser === stage.IDRecipient) {
-        // Đánh dấu JobStage là 'submitted'
-        jobStage.status = 'submitted';
+        jobStage.status = 'pending';
         await jobStage.save();
   
         console.log(`Job submitted to stage: ${stageId}`);
