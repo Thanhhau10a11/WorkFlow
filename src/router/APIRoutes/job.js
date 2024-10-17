@@ -15,6 +15,7 @@ router.post('/delete/:id', jobController.delete)
 router.post('/markJobComplete/:JobID', jobController.markJobComplete)
 router.post('/createForGroup', jobController.createJobForGroup)
 router.post('/submitJob/:jobId/:stageId', jobController.submitJobToStage);
+router.post('/updateProgress', jobController.updateJobProgress);
 
 // api test chuyen job <-> stage
 router.post('/:jobId/stages/:stageId/review', jobController.reviewStage)

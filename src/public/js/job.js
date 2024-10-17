@@ -182,12 +182,21 @@ async function approveJob(jobId,IdStage) {
 }
 
 // Hàm từ chối job
+
+
 async function rejectJob(jobId,IdStage) {
     if (!confirm('Bạn có chắc chắn muốn từ chối job này?')) return;
 
+    const reason = prompt('Vui lòng nhập lý do hoàn:');
+    if (!reason) {
+        showToast('Lý do hoàn không được để trống.', true);
+        return;
+    }
+
     try {
         const bodyData = {
-            accepted: false
+            accepted: false,
+            description: reason
         };
         const response = await fetch(`/api/job/${jobId}/stages/${IdStage}/review`, {
             method: 'POST',
@@ -226,45 +235,67 @@ function renderJobs(filteredJobs) {
         const jobCard = document.createElement('div');
         jobCard.className = 'col';
         jobCard.innerHTML = `
-            <div class="card job-card position-relative">
-                <div class="card-body d-flex flex-column" style="position: relative;">
-                    <h5 class="card-title text">${job.JobStage_Job.NameJob}</h5>
-                    <h6 class="card-subtitle mb-2 text-muted text-sm">Group: ${job.JobStage_Stage.Workflow.WorkFlowGroup.GroupName}</h6>
-                    
-                    <!-- Thêm tên Workflow -->
-                    <p class="card-text text-sm">Workflow: ${job.JobStage_Stage.Workflow.Name}</p>
+  <div class="card job-card position-relative">
+    <div class="card-body d-flex flex-column" style="position: relative;">
+      <h5 class="card-title text mb-3">${job.JobStage_Job.NameJob}</h5> <!-- Thêm khoảng cách dưới -->
+      <h6 class="card-subtitle mb-2 text-muted text-sm">Group: ${job.JobStage_Stage.Workflow.WorkFlowGroup.GroupName}</h6>
+      
+      <!-- Tên Workflow -->
+      <p class="card-text text-sm mb-2">Workflow: ${job.JobStage_Stage.Workflow.Name}</p>
 
-                    <!-- Thêm tên giai đoạn (Stage) -->
-                    <p class="card-text text-sm">Stage: ${job.JobStage_Stage.NameStage}</p>
+      <p class="card-text text-sm mb-2">Stage: ${job.JobStage_Stage.NameStage}</p>
 
-                    <!-- Thêm ngày bắt đầu -->
-                    <div class="mb-2">
-                        <i class="bi bi-calendar me-2 text-sm"></i>
-                        <span class="text-sm">Ngày bắt đầu: ${job.JobStage_Job.TimeStart ? new Date(job.JobStage_Job.TimeStart).toLocaleDateString('vi-VN') : 'Không có ngày bắt đầu'}</span>
-                    </div>
-                    
-                    <!-- Thêm người nhận công việc -->
-                    <div class="d-flex align-items-center mb-2">
-                        <i class="bi bi-envelope me-2 text-sm"></i>
-                        <span class="text-sm">Người nhận: ${job.JobStage_Job.Performer.Username}</span>
-                    </div>
-                    <div class="position-absolute top-0 end-0 p-2">
-                    <span style="background-color: ${job.status === 'completed' ? '#28a745' : 
-                                job.status === 'processing' ? '#007bff' : 
-                                job.status === 'canceled' ? '#dc3545' : 
-                                '#f8f9fa'}; color: white; padding: 0.5em; border-radius: 0.25em;">
-                        ${job.status}
-                    </span>
-                </div>
+      <div class="mb-3"> <!-- Thêm khoảng cách dưới -->
+        <i class="bi bi-calendar me-2 text-sm"></i>
+        <span class="text-sm">Ngày bắt đầu: ${job.JobStage_Job.TimeStart ? new Date(job.JobStage_Job.TimeStart).toLocaleDateString('vi-VN') : 'Không có ngày bắt đầu'}</span>
+      </div>
 
-                    <!-- Nút hoàn thành công việc -->
-                    <button class="btn btn-outline-primary mt-auto bg" style="color:white;!important" onclick="finishJob(${job.IDJob},${job.IDStage})">Finish</button>
-                </div>
+      <!-- Người nhận công việc -->
+      <div class="d-flex align-items-center mb-3"> <!-- Thêm khoảng cách dưới -->
+        <i class="bi bi-envelope me-2 text-sm"></i>
+        <span class="text-sm">Người nhận: ${job.JobStage_Job.Performer.Username}</span>
+      </div>
 
-                <!-- Trạng thái ở góc trên bên phải -->
-                
-            </div>
-        `;
+      ${job.description ? `
+        <div class="d-flex align-items-center mb-3 p-2" style="background-color: #fff3cd; border-left: 5px solid #ffc107;">
+          <i class="bi bi-info-circle me-2 text-sm" style="color: #856404;"></i>
+          <span class="text-sm" style="font-weight: bold; color: #856404;">Lý do hoàn task: ${job.description}</span>
+        </div>` : ''}
+
+      <label for="progressInput" class="form-label text-sm mb-2">Tiến trình:</label>
+      <div class="progress mb-3" style="height: 15px; border-radius: 5px;"> <!-- Thêm khoảng cách dưới -->
+        <div class="progress-bar bg" role="progressbar" style="width: ${job.progress || 0}%;"
+             aria-valuenow="${job.JobStage_Job.Progress || 0}" aria-valuemin="0" aria-valuemax="100">
+          <span style="position: absolute; left: 50%; transform: translateX(-50%); color: white;">${job.progress || 0}%</span>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center justify-content-between mt-4">
+        <input type="number" class="form-control form-control-sm w-25" id="progressInput" value="${job.JobStage_Job.Progress || 0}" min="0" max="100" step="1">
+        
+        <button class="btn btn-sm btn-primary ms-2" onclick="updateProgress(${job.IDJob}, ${job.IDStage})">
+          Cập nhật
+        </button>
+        
+        <button class="btn btn-sm btn-success ms-2 bg" onclick="finishJob(${job.IDJob}, ${job.IDStage})">
+          Hoàn thành
+        </button>
+      </div>
+      
+      <div class="position-absolute top-0 end-0 p-2">
+        <span style="background-color: ${job.status === 'completed' ? '#28a745' : 
+                      job.status === 'processing' ? '#007bff' : 
+                      job.status === 'canceled' ? '#dc3545' : '#f8f9fa'}; 
+                      color: white; padding: 0.5em; border-radius: 0.25em;">
+          ${job.status}
+        </span>
+      </div>
+    </div>
+  </div>
+`;
+
+
+
 
 
 
@@ -461,3 +492,44 @@ async function finishJob(jobId,IdStage) {
         showToast('Đã xảy ra lỗi khi hoàn thành job.', true);
     }
 }
+
+//cap nhat tien trinh 
+function updateProgress(jobId, stageId) {
+    if (!confirm('Bạn có chắc chắn muốn cập nhật tiến trình job này?')) return;
+    const progressValue = document.getElementById('progressInput').value;
+  
+    if (progressValue < 0 || progressValue > 100) {
+      showToast('Tiến trình phải nằm trong khoảng 0-100',true);
+      return;
+    }
+  
+    const updateData = {
+      IDJob: jobId,
+      IDStage: stageId,
+      progress: progressValue,
+    };
+  
+    fetch('/api/job/updateProgress', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(updateData)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        showToast('Cập nhật tiến trình thành công');
+        setTimeout(() => {
+            location.reload();
+          }, 1000);
+      } else {
+        alert('Cập nhật tiến trình thất bại: ' + data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  }
+  

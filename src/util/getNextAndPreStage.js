@@ -17,7 +17,18 @@ async function getPreviousStage(stageId) {
     return previousStage;
 }
 
+async function checkIfStageAssigned(stageId) {
+    const stage = await Stage.findOne({ where: { IdStage: stageId } });
+  
+    if (stage && (stage.IDRecipient || stage.EmailRecipient)) {
+      return stage.IDRecipient || stage.EmailRecipient;
+    }
+  
+    return null;
+  }
+  
 module.exports = {
     getNextStage,
     getPreviousStage,
+    checkIfStageAssigned
 };
