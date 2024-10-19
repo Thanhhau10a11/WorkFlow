@@ -57,7 +57,6 @@ async function loadJobs() {
         if (!response.ok) throw new Error('Failed to fetch jobs');
         const jobs = await response.json();
         allJobs = jobs;
-        console.log("AAAAAAAAAAAAAAAA",allJobs)
         renderJobs(allJobs);
     } catch (error) {
         console.error('Error loading jobs:', error);
@@ -107,11 +106,12 @@ function renderJobsForReview(filteredJobs) {
         const jobCard = document.createElement('div');
         jobCard.className = 'job-card';
 
+        // Khởi tạo nội dung cho card
         jobCard.innerHTML = `
             <h3 class="job-title">${job.NameJob}</h3>
             <div class="job-group"><i class="fa-solid fa-users-viewfinder"></i> Nhóm: ${stage.Workflow.WorkFlowGroup.GroupName || 'N/A'}</div>
             <div class="job-group"><i class="ph-swap"></i> WorkFlow: ${stage.Workflow.Name || 'N/A'}</div>
-            <p class="job-description"><i class="bi bi-journal-text"></i> Mô tả :${job.DescriptionJob || 'Không có mô tả'}</p>
+            <p class="job-description"><i class="bi bi-journal-text"></i> Mô tả: ${job.DescriptionJob || 'Không có mô tả'}</p>
             <div class="job-info">
                 <span class="job-stage">
                     <i class="bi bi-diagram-3"></i> Giai đoạn: ${stage.NameStage || 'N/A'}
@@ -126,9 +126,29 @@ function renderJobsForReview(filteredJobs) {
             <div class="job-created">
                 <i class="bi bi-calendar"></i> Nhận lúc: ${new Date(jobStage.createdAt).toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })}
             </div>
+            <div class="job-attachments">`;
+
+        // Kiểm tra nếu có tệp đính kèm
+        if (jobStage.attachmentFile) {
+            jobCard.innerHTML += `
+                <div>
+                    <a href="${jobStage.attachmentFile}" class="btn btn-file bg white-color" target="_blank">Xem tệp</a>
+                </div>`;
+        }
+
+        // Kiểm tra nếu có liên kết đính kèm
+        if (jobStage.attachmentLink) {
+            jobCard.innerHTML += `
+                <div>
+                    <a href="${jobStage.attachmentLink}" class="btn btn-link bg white-color" style="text-decoration:none" target="_blank">Xem liên kết</a>
+                </div>`;
+        }
+
+        jobCard.innerHTML += `
+            </div>
             <div class="job-actions">
-                <button class="btn btn-approve" onclick="approveJob(${job.IDJob},${stage.IdStage})" ${jobStage.status !== 'pending' ? 'disabled' : ''}>Duyệt</button>
-                <button class="btn btn-reject" onclick="rejectJob(${job.IDJob},${stage.IdStage})" ${jobStage.status !== 'pending' ? 'disabled' : ''}>Từ chối</button>
+                <button class="btn btn-approve" onclick="approveJob(${job.IDJob}, ${stage.IdStage})" ${jobStage.status !== 'pending' ? 'disabled' : ''}>Duyệt</button>
+                <button class="btn btn-reject" onclick="rejectJob(${job.IDJob}, ${stage.IdStage})" ${jobStage.status !== 'pending' ? 'disabled' : ''}>Từ chối</button>
             </div>
         `;
 
@@ -137,6 +157,7 @@ function renderJobsForReview(filteredJobs) {
 
     reviewJobListings.appendChild(jobGrid);
 }
+
 
 function getStatusText(status) {
     switch (status) {
@@ -235,23 +256,20 @@ function renderJobs(filteredJobs) {
         const jobCard = document.createElement('div');
         jobCard.className = 'col';
         jobCard.innerHTML = `
-  <div class="card job-card position-relative">
+  <form class="card job-card position-relative" enctype="multipart/form-data">
     <div class="card-body d-flex flex-column" style="position: relative;">
-      <h5 class="card-title text mb-3">${job.JobStage_Job.NameJob}</h5> <!-- Thêm khoảng cách dưới -->
+      <h5 class="card-title text mb-3">${job.JobStage_Job.NameJob}</h5>
       <h6 class="card-subtitle mb-2 text-muted text-sm">Group: ${job.JobStage_Stage.Workflow.WorkFlowGroup.GroupName}</h6>
       
-      <!-- Tên Workflow -->
       <p class="card-text text-sm mb-2">Workflow: ${job.JobStage_Stage.Workflow.Name}</p>
-
       <p class="card-text text-sm mb-2">Stage: ${job.JobStage_Stage.NameStage}</p>
 
-      <div class="mb-3"> <!-- Thêm khoảng cách dưới -->
+      <div class="mb-3">
         <i class="bi bi-calendar me-2 text-sm"></i>
         <span class="text-sm">Ngày bắt đầu: ${job.JobStage_Job.TimeStart ? new Date(job.JobStage_Job.TimeStart).toLocaleDateString('vi-VN') : 'Không có ngày bắt đầu'}</span>
       </div>
 
-      <!-- Người nhận công việc -->
-      <div class="d-flex align-items-center mb-3"> <!-- Thêm khoảng cách dưới -->
+      <div class="d-flex align-items-center mb-3">
         <i class="bi bi-envelope me-2 text-sm"></i>
         <span class="text-sm">Người nhận: ${job.JobStage_Job.Performer.Username}</span>
       </div>
@@ -262,26 +280,36 @@ function renderJobs(filteredJobs) {
           <span class="text-sm" style="font-weight: bold; color: #856404;">Lý do hoàn task: ${job.description}</span>
         </div>` : ''}
 
+      <div class="mt-4">
+        <label for="attachment" class="form-label">Đính kèm tệp tin:</label>
+        <input type="file" class="form-control form-control-sm" id="attachment" name="attachment">
+      </div>
+      
+      <div class="mt-3">
+        <label for="attachmentLink" class="form-label">Hoặc đính kèm link:</label>
+        <input type="text" class="form-control form-control-sm" id="attachmentLink" name="attachmentLink" placeholder="Nhập link">
+      </div>
+
       <label for="progressInput" class="form-label text-sm mb-2">Tiến trình:</label>
-      <div class="progress mb-3" style="height: 15px; border-radius: 5px;"> <!-- Thêm khoảng cách dưới -->
+      <div class="progress mb-3" style="height: 15px; border-radius: 5px;">
         <div class="progress-bar bg" role="progressbar" style="width: ${job.progress || 0}%;"
              aria-valuenow="${job.JobStage_Job.Progress || 0}" aria-valuemin="0" aria-valuemax="100">
           <span style="position: absolute; left: 50%; transform: translateX(-50%); color: white;">${job.progress || 0}%</span>
         </div>
       </div>
-
+      
       <div class="d-flex align-items-center justify-content-between mt-4">
-        <input type="number" class="form-control form-control-sm w-25" id="progressInput" value="${job.JobStage_Job.Progress || 0}" min="0" max="100" step="1">
+        <input type="number" class="form-control form-control-sm w-25" id="progressInput" name="progressInput" value="${job.JobStage_Job.Progress || 0}" min="0" max="100" step="1">
         
-        <button class="btn btn-sm btn-primary ms-2" onclick="updateProgress(${job.IDJob}, ${job.IDStage})">
+        <button type="button" class="btn btn-sm btn-primary ms-2" onclick="updateProgress(${job.IDJob}, ${job.IDStage})">
           Cập nhật
         </button>
         
-        <button class="btn btn-sm btn-success ms-2 bg" onclick="finishJob(${job.IDJob}, ${job.IDStage})">
+        <button type="button" class="btn btn-sm btn-success ms-2 bg" onclick="finishJob(${job.IDJob}, ${job.IDStage})">
           Hoàn thành
         </button>
       </div>
-      
+
       <div class="position-absolute top-0 end-0 p-2">
         <span style="background-color: ${job.status === 'completed' ? '#28a745' : 
                       job.status === 'processing' ? '#007bff' : 
@@ -291,17 +319,12 @@ function renderJobs(filteredJobs) {
         </span>
       </div>
     </div>
-  </div>
+  </form>
 `;
-
-
-
-
-
-
         jobListings.appendChild(jobCard);
     });
 }
+
 
 
 
@@ -464,33 +487,49 @@ async function handlePostJob(e) {
 
 }
 
+
 // Hàm để xử lý khi nhấn nút Finish (ví dụ: cập nhật status job)
-async function finishJob(jobId,IdStage) {
-    if (!confirm('Bạn có chắc chắn muốn hoàn thành job này?')) return;
+async function finishJob(jobId, IdStage) {  
+    if (!confirm('Bạn có chắc chắn muốn hoàn thành job này?')) return;  
 
-    try {
-        const response = await fetch(`/api/job/submitJob/${jobId}/${IdStage}`, { 
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json' ,
-                'Authorization': `Bearer ${token}`
-            }
-        });
+    // Lấy dữ liệu từ form  
+    const formData = new FormData();  
+    const attachmentInput = document.getElementById('attachment');  
+    const attachmentLinkInput = document.getElementById('attachmentLink');  
 
-        if (response.ok) {
-            
-            showToast('Job đã được nộp.');
-            setTimeout(()=>{
-                window.location.reload();
-            },(1000))
-        } else {
-            const errorData = await response.json();
-            showToast(`Không thể hoàn thành job: ${errorData.error}`, true);
-        }
-    } catch (error) {
-        console.error('Error finishing job:', error);
-        showToast('Đã xảy ra lỗi khi hoàn thành job.', true);
-    }
+    // Thêm tệp vào FormData nếu có  
+    if (attachmentInput.files.length > 0) {  
+        formData.append('attachment', attachmentInput.files[0]);  
+    }  
+
+    // Thêm link vào FormData nếu có  
+    if (attachmentLinkInput.value) {  
+        formData.append('attachmentLink', attachmentLinkInput.value);  
+    }  
+
+    // Gửi yêu cầu đến API  
+    try {  
+        const response = await fetch(`/api/job/submitJob/${jobId}/${IdStage}`, {  
+            method: 'POST',  
+            body: formData, // Gửi FormData thay vì JSON  
+            headers: {  
+                'Authorization': `Bearer ${token}` // Xác thực  
+            }  
+        });  
+
+        if (response.ok) {  
+            showToast('Job đã được nộp.');  
+            setTimeout(() => {  
+                window.location.reload();  
+            }, 1000);  
+        } else {  
+            const errorData = await response.json();  
+            showToast(`Không thể hoàn thành job: ${errorData.error}`, true);  
+        }  
+    } catch (error) {  
+        console.error('Error finishing job:', error);  
+        showToast('Đã xảy ra lỗi khi hoàn thành job.', true);  
+    }  
 }
 
 //cap nhat tien trinh 

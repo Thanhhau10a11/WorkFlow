@@ -116,6 +116,8 @@ app.use(username);
 app.use('/api', router);
 app.use('/login', routerLoggin);
 app.use('/register', routerRegister);
+app.use('/uploads', express.static(path.join(__dirname,"..", 'uploads')));
+
 //app.get('/update-info',appUserController.index)
 app.use('/', UserRouter);
 

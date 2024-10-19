@@ -1,6 +1,6 @@
-const express = require('express')
-const router = express.Router()
-
+const express = require('express');
+const router = express.Router();
+const upload = require('../../config/multer/index.js');
 const jobController = require('../../app/controllers/APIController/jobController.js');
 const authorize = require('../../util/authorize.js')
 
@@ -14,7 +14,7 @@ router.post('/update/:id', jobController.update)
 router.post('/delete/:id', jobController.delete)
 router.post('/markJobComplete/:JobID', jobController.markJobComplete)
 router.post('/createForGroup', jobController.createJobForGroup)
-router.post('/submitJob/:jobId/:stageId', jobController.submitJobToStage);
+router.post('/submitJob/:jobId/:stageId',upload.single('attachment'), jobController.submitJobToStage);
 router.post('/updateProgress', jobController.updateJobProgress);
 
 // api test chuyen job <-> stage
