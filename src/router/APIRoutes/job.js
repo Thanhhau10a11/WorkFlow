@@ -4,16 +4,16 @@ const upload = require('../../config/multer/index.js');
 const jobController = require('../../app/controllers/APIController/jobController.js');
 const authorize = require('../../util/authorize.js')
 
-router.get('/getAll', jobController.getALl)
+router.get('/getAll', authorize(['admin']),jobController.getALl)
 router.get('/getAllJobs', authorize(['admin', 'LeaderGroup', 'user']),jobController.getAllJobs)
 router.get('/getForRecipient', jobController.getJobsForRecipient);
 router.get('/:id', jobController.getById)
 router.get('/', jobController.getById)
-router.post('/create', jobController.create)
-router.post('/update/:id', jobController.update)
-router.post('/delete/:id', jobController.delete)
+router.post('/create',  authorize(['admin']),jobController.create)
+router.post('/update/:id', authorize(['admin']), jobController.update)
+router.post('/delete/:id',  authorize(['admin']),jobController.delete)
 router.post('/markJobComplete/:JobID', jobController.markJobComplete)
-router.post('/createForGroup', jobController.createJobForGroup)
+router.post('/createForGroup',  authorize(['admin','LeaderGroup']),jobController.createJobForGroup)
 router.post('/submitJob/:jobId/:stageId',upload.single('attachment'), jobController.submitJobToStage);
 router.post('/updateProgress', jobController.updateJobProgress);
 

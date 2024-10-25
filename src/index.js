@@ -107,6 +107,7 @@ app.set("views", path.join(__dirname, "resources", "views"));
 
 const router = require('./router/APIRoutes');
 const routerLoggin = require('./router/userLoggin');
+const routerLogout=require('./router/userLogout');
 const routerRegister = require('./router/userRegister');
 const UserRouter = require('./router/UserRoutes');
 const username = require('./util/exportUserName');
@@ -115,6 +116,7 @@ const username = require('./util/exportUserName');
 app.use(username);
 app.use('/api', router);
 app.use('/login', routerLoggin);
+app.use('/logout', routerLogout);
 app.use('/register', routerRegister);
 app.use('/uploads', express.static(path.join(__dirname,"..", 'uploads')));
 

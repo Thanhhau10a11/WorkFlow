@@ -1,5 +1,5 @@
 
-const { AppUser, GroupMember, Group,Workflow,Project } = require('../../models/index')
+const { AppUser, GroupMember, Group,Workflow,Project ,UserRole ,Role} = require('../../models/index')
 const axios = require('axios');
 const bcrypt = require('bcryptjs');
 const { request } = require('express');
@@ -82,35 +82,6 @@ class GroupController {
     }
   }
   async getGroupsByIDUser(req, res) {
-    // try {
-    //   const groups = await Group.findAll({
-    //     where: { IDUser: req.params.id },
-    //     attributes: {
-    //       include: [
-    //         // Đếm số lượng thành viên cho mỗi nhóm
-    //         [Sequelize.fn('COUNT', Sequelize.col('Members.IDUser')), 'memberCount'],
-    //       ],
-    //     },
-    //     include: [
-    //       {
-    //         model: AppUser,
-    //         as: 'Members',
-    //         attributes: [],
-    //         through: { attributes: [] },
-    //       },
-    //     ],
-    //     group: ['Group.GroupID'],
-    //     order: [['updatedAt', 'DESC']],
-    //   });
-
-    //   if (groups) {
-    //     res.json(groups);
-    //   } else {
-    //     res.status(500).json({ message: 'Group not found' });
-    //   }
-    // } catch (error) {
-    //   res.status(500).json({ error: error.message });
-    // }
     try {
       const groups = await Group.findAll({
         attributes: {
@@ -208,6 +179,18 @@ class GroupController {
             Username: email,
             Password: hashedPassword
           });
+
+          //add role defailt
+          const defaultRole = await Role.findOne({ where: { RoleName: 'user' } });
+
+          if (!defaultRole) {
+            throw new Error('Vai trò mặc định không tồn tại');
+          }
+      
+          // Gán vai trò mặc định cho người dùng
+          await newUser.addRole(defaultRole);
+
+
 
           const token = crypto.randomBytes(20).toString('hex');
           const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);

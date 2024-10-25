@@ -20,7 +20,7 @@ const testStageJob = require('./testApi');
 
 router.use('/login', userLogginRouter);
 router.use('/register', userRegisterRouter);
-router.use('/appUser', checkToken, appUserRouter);
+router.use('/appUser', appUserRouter);
 router.use('/notify', checkToken, notifyRouter);
 router.use('/workFlow', checkToken, workFlowRouter);
 router.use('/stage', checkToken, stageRouter);

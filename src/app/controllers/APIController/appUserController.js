@@ -87,8 +87,7 @@ class UserLoginController {
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         user.Password = hashedPassword;
       }
-
-      await user.save();
+      await user.save(user.Password);
 
       res.status(200).json({ message: 'User information updated successfully' });
     } catch (error) {

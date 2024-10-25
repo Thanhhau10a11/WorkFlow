@@ -61,10 +61,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ emails, groupId })
             });
 
-            if (!response.ok) {
+            if (response.status === 403) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Bạn không có quyền truy cập!');
+            } else if (!response.ok) {
                 throw new Error('Lỗi mạng, mã trạng thái: ' + response.status);
             }
-
             const data = await response.json();
             if (data.success) {
                 showToast('Thêm thành viên thành công!');

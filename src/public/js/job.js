@@ -60,7 +60,6 @@ async function loadJobs() {
         renderJobs(allJobs);
     } catch (error) {
         console.error('Error loading jobs:', error);
-        showToast('Không thể tải danh sách công việc.', true);
     }
 }
 
@@ -82,7 +81,6 @@ async function loadJobsForReview() {
         renderJobsForReview(jobsForReview); // Hiển thị các job để duyệt
     } catch (error) {
         console.error('Error loading jobs for review:', error);
-        showToast('Không thể tải danh sách công việc để duyệt.', true);
     }
 }
 

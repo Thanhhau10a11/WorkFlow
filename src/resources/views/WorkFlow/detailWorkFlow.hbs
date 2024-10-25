@@ -148,7 +148,6 @@
                     const stageDescription = stageGroup.querySelector('[name="stageDescription"]').value;
                     const showRecipient = stageGroup.querySelector('[name="showRecipient"]').checked;
                     const stageRecipient = showRecipient ? stageGroup.querySelector('[name="stageRecipient"]').value : null;
-                    const stageApproxTime = stageGroup.querySelector('[name="stageApproxTime"]').value;
 
                     if (!stageName) {
                         showToast('Please enter a stage name.',true);
@@ -158,7 +157,6 @@
                         NameStage: stageName,
                         DescriptionStatus: stageDescription,
                         EmailRecipient: stageRecipient,
-                        approximateTime: stageApproxTime
                     });
                 });
                 const token = localStorage.getItem('authToken');
