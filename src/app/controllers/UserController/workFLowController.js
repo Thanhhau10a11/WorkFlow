@@ -45,6 +45,8 @@ class WorkFlowController {
 
             const response = await axios.get(`${process.env.DOMAIN}/api/userWorkFlow/detail/${IDWorkFlow}`, { headers });
             const workflow = response.data;
+            
+            const GroupID = workflow.GroupID;
 
             const stages = await Stage.findAll({
                 where: { IDWorkFlow: IDWorkFlow },
@@ -85,13 +87,18 @@ class WorkFlowController {
 
             // Lay du lieu nguoi dung trong nhom
             const IDUser = req.session.user.IDUser
-            const responseGroups = await axios.get(`${process.env.DOMAIN}/api/group/getDetailAllGroup/${IDUser}`, { headers })
-            const groups = responseGroups.data
+            // const responseGroups = await axios.get(`${process.env.DOMAIN}/api/group/getDetailAllGroup/${IDUser}`, { headers })
+            // const groups = responseGroups.data
+            const responseMember = await axios.get(`${process.env.DOMAIN}/api/group/getMember/${GroupID}`, { headers });
+            const responseGroup = await axios.get(`${process.env.DOMAIN}/api/group/${GroupID}`, { headers });
+            const Group = responseGroup.data;
+            const members = responseMember.data;
 
             res.render('WorkFlow/detailWorkFlow', {
                 workflow,
                 stages: sortedStages,
-                groups,
+                Group,
+                members,
                 layout: 'main.hbs'
             });
 

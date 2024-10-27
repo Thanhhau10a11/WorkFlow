@@ -46,7 +46,7 @@ class InvitationController {
         }
     }
     async sendEmail(req, res) {
-        const { email, type, username, stageName, groupName, token } = req.body;
+        const { email, type, username, stageName, groupName,jobName, token } = req.body;
 
         try {
             let subject, template, context;
@@ -70,6 +70,10 @@ class InvitationController {
                     //inviteLink: `http://localhost:3000/api/email/accept-invitation?token=${token}`
                     inviteLink: `${process.env.DOMAIN}/api/email/accept-invitation?token=${token}`
                 };
+            } else if (type === 'job') { 
+                subject = 'Thông báo nhận job';
+                template = 'jobNotification'; // Đảm bảo bạn có template này
+                context = { username, jobName };
             } else {
                 return res.status(400).json({ message: 'Loại email không hợp lệ.' });
             }

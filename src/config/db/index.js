@@ -15,7 +15,7 @@ sequelize.authenticate()
   .then(() => {
     console.log('Kết nối đến cơ sở dữ liệu MySQL thành công.');
     // Đồng bộ hóa cơ sở dữ liệu
-    return sequelize.sync({ force: false,alter:true}); // Hoặc sử dụng { force: true } nếu muốn xóa và tạo lại bảng { alter: true } khong tao lai
+    return sequelize.sync({ force: false,alter:false}); // Hoặc sử dụng { force: true } nếu muốn xóa và tạo lại bảng { alter: true } khong tao lai
   })
   .then(() => {
     console.log('Cơ sở dữ liệu đã được đồng bộ hóa.');

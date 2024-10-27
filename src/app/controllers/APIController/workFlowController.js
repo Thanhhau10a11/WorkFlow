@@ -5,6 +5,7 @@ const Job = require('../../models/Job_Model');
 const AppUser = require('../../models/User_Model');
 const Group = require('../../models/Group_Model');
 const nodemailer = require('nodemailer');
+const sendNotification = require('../../../util/notifyService');
 const axios = require('axios');
 
 class workFlowController {
@@ -77,7 +78,7 @@ class workFlowController {
     //     const authHeader = req.headers['authorization'];
     //     const tokenHeader = authHeader && authHeader.split(' ')[1];
     //     const token = tokenHeader;
-        
+
     //     const group = await Group.findByPk(GroupID);
     //     if (!group) {
     //         throw new Error('Group not found');
@@ -151,39 +152,39 @@ class workFlowController {
     // }
     async saveWorkFLow(req, res) {
         const { GroupID, name, description, stages } = req.body;
-        const IDCreator = req.session.user.IDUser;
+        const IDCreator = req.user?.IDUser;
         const authHeader = req.headers['authorization'];
         const tokenHeader = authHeader && authHeader.split(' ')[1];
         const token = tokenHeader;
-    
+
         try {
             const group = await Group.findByPk(GroupID);
             if (!group) {
                 return res.status(404).json({ message: 'Group not found' });
             }
-    
+
             const workflow = await WorkFlow.create({
                 Name: name,
                 Description: description,
                 IDCreator: IDCreator,
                 GroupID: GroupID,
             });
-    
+
             const stageIds = [];
             const createdStages = [];
-    
+
             for (const stage of stages) {
                 let recipientId = null;
                 let emailRecipient = null;
-    
+
                 // Nếu có người nhận, tìm ID người nhận từ email
                 if (stage.recipient) {
                     const recipient = await AppUser.findOne({ where: { Username: stage.recipient } });
-                    
+
                     recipientId = recipient.IDUser; // Lưu ID người nhận
                     emailRecipient = stage.recipient; // Lưu email của người nhận
                 }
-    
+
                 // Tạo stage với ID người nhận (có thể là null)
                 const createdStage = await Stage.create({
                     NameStage: stage.name,
@@ -194,17 +195,17 @@ class workFlowController {
                     IDRecipient: recipientId, // Có thể là null
                     EmailRecipient: emailRecipient, // Có thể là null
                 });
-    
+
                 stageIds.push(createdStage.IdStage);
                 createdStages.push(createdStage);
             }
-    
+
             // Cập nhật previousStage và nextStage cho các stage đã tạo
             for (let i = 0; i < createdStages.length; i++) {
                 const stage = createdStages[i];
                 const previousStageId = i > 0 ? createdStages[i - 1].IdStage : null;
                 const nextStageId = i < createdStages.length - 1 ? createdStages[i + 1].IdStage : null;
-    
+
                 await Stage.update({
                     previousStage: previousStageId,
                     nextStage: nextStageId,
@@ -212,13 +213,13 @@ class workFlowController {
                     where: { IdStage: stage.IdStage },
                 });
             }
-    
+
             // Gửi email thông báo đến người nhận
             for (const stage of createdStages) {
                 if (stage.EmailRecipient) {
                     const email = stage.EmailRecipient;
                     const invitationUrl = `${process.env.DOMAIN}/api/email/sendEmailNoti`;
-    
+
                     axios.post(invitationUrl, {
                         email: email,
                         type: 'stage',
@@ -230,9 +231,13 @@ class workFlowController {
                             'Authorization': `Bearer ${token}`,
                         },
                     });
+                    // Gửi thông báo qua socket
+                    const notificationTitle = `Bạn đã nhận được một stage mới: ${stage.NameStage}`;
+                    const notificationMessage = `Bạn đã được nhận Stage "${stage.NameStage}" trong workflow "${name}".`;
+                    await sendNotification(stage.IDRecipient, notificationTitle, notificationMessage, req.app.locals.io);
                 }
             }
-    
+
             res.status(201).json({
                 message: 'Workflow created and invitations sent successfully!',
                 workflowId: workflow.IDWorkFlow,
@@ -243,8 +248,8 @@ class workFlowController {
             res.status(500).json({ error: error.message });
         }
     }
-    
-    
+
+
 
     async saveStageByWorkFlowID(req, res) {
         try {
@@ -289,6 +294,43 @@ class workFlowController {
                 }, {
                     where: { IdStage: currentStage.IdStage }
                 });
+            }
+
+            // Gửi email thông báo và thông báo qua socket cho người nhận stage
+            console.log(newStages)
+            for (const stage of newStages) {
+                if (stage.EmailRecipient) {
+                    const email = stage.EmailRecipient;
+            
+                    // Lấy IDUser từ AppUser dựa trên email
+                    const user = await AppUser.findOne({ where: { Username: email } });
+                    
+                    if (user) {
+                        const IDRecipient = user.IDUser; 
+            
+                        const invitationUrl = `${process.env.DOMAIN}/api/email/sendEmailNoti`;
+            
+                        // Gửi email thông báo
+                        axios.post(invitationUrl, {
+                            email: email,
+                            type: 'stage',
+                            username: email,
+                            stageName: stage.NameStage,
+                        }, {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${req.headers['authorization'].split(' ')[1]}`,
+                            },
+                        });
+            
+                        // Gửi thông báo qua socket
+                        const notificationTitle = `Bạn đã nhận được một stage mới: ${stage.NameStage}`;
+                        const notificationMessage = `Bạn đã được nhận Stage "${stage.NameStage}" trong workflow "${workflow.Name}".`;
+                        await sendNotification(IDRecipient, notificationTitle, notificationMessage, req.app.locals.io);
+                    } else {
+                        console.error(`Không tìm thấy người dùng với email: ${email}`);
+                    }
+                }
             }
 
             res.status(201).json({

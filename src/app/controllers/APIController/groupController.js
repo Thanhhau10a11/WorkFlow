@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const { request } = require('express');
 const Sequelize = require('sequelize')
 const { Op } = require('sequelize');
+const sendNotification = require('../../../util/notifyService');
 const checkUser = require('../../../util/checkInGroup');
 
 const crypto = require('crypto');
@@ -259,6 +260,17 @@ class GroupController {
         await Promise.all(membersToInvite.map(async (member) => {
           await GroupMember.upsert(member);
         }));
+
+
+        // gui thong bao cho nhung nguoi duoc them vao nhom
+        const notificationTitle = "Bạn đã được thêm vào nhóm";
+        const notificationMessage = `Bạn đã được thêm vào nhóm "${group.GroupName}".`;
+
+        // Gửi thông báo cho tất cả thành viên được thêm
+        await Promise.all(membersToInvite.map(async (member) => {
+            await sendNotification(member.IDUser, notificationTitle, notificationMessage, req.app.locals.io);
+        }));
+
 
         const addedMembers = await GroupMember.findAll({
           where: {

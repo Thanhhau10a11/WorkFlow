@@ -5,7 +5,8 @@ const groupController = require('../../app/controllers/APIController/groupContro
 const checkToken = require('../../util/authenticateToken.js');
 const authorize = require('../../util/authorize.js')
 
-router.get('/getDetailAllGroup/:id',authorize(['admin']), groupController.getDetailAllGroup)
+//router.get('/getDetailAllGroup/:id',authorize(['admin']), groupController.getDetailAllGroup)
+router.get('/getDetailAllGroup/:id', groupController.getDetailAllGroup)
 router.get('/getAll', authorize(['admin']),checkToken, groupController.getALl)
 router.get('/:id', groupController.getById)
 router.get('/get/:id', groupController.getGroupsByIDUser)

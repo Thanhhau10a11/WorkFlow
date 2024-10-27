@@ -1,5 +1,6 @@
 
-const Notify = require('../../models/Notify_Model');
+const {Notify,UserNotify,AppUser} = require('../../models/index');
+const sendNotification = require('../../../util/notifyService');
 
 class NotifyController {
   async getALl(req, res) {
@@ -59,6 +60,47 @@ class NotifyController {
       res.status(500).json({ error: error.message });
     }
   }
+  // Trong controller
+  async getNotifications(req, res) {  
+    const userId = req.user.IDUser;   
+    try {  
+        const userWithNotifications = await AppUser.findOne({  
+            where: { IDUser: userId },   
+            include: [{  
+                model: Notify,  
+                as: 'ReceivedNotifies',   
+                attributes: ['NotifyTitle', 'NotifyMessage', 'NotifyCreatedAt'],
+                order: [['NotifyCreatedAt', 'DESC']]  
+            }]  
+        });  
+
+        if (!userWithNotifications || !userWithNotifications.ReceivedNotifies || userWithNotifications.ReceivedNotifies.length === 0) {  
+            return res.status(200).json({ message: 'No notifications found.' });  
+        }  
+
+        res.json(userWithNotifications.ReceivedNotifies);  
+    } catch (error) {  
+        console.error('Error fetching notifications:', error);  
+        res.status(500).json({ error: 'Failed to fetch notifications.' });  
+    }  
+}
+
+
+
+
+  async sendNotify(req, res) {
+    const { IDUser, title, message } = req.body;
+    try {
+        
+        await sendNotification(IDUser, title, message, req.app.locals.io);
+
+        return res.status(200).json({ message: 'Notification sent!' });
+        
+    } catch (error) {
+        console.error('Error in sendNotify:', error); 
+        return res.status(500).json({ error: 'Failed to send notification.' });
+    }
+}
 }
 
 module.exports = new NotifyController();

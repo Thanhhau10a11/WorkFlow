@@ -1,6 +1,7 @@
-const http = require('http');
-const path = require('path');
 const express = require('express');
+const http = require('http'); // Tạo server HTTP
+const socketIO = require('socket.io');
+const path = require('path');
 const morgan = require('morgan');
 const { engine } = require('express-handlebars');
 require('dotenv').config();
@@ -98,31 +99,53 @@ app.engine("hbs", engine({
     json: function (context) {
       return JSON.stringify(context);
     },
-    
   }
 }));
 
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "resources", "views"));
 
+// Import router
 const router = require('./router/APIRoutes');
 const routerLoggin = require('./router/userLoggin');
-const routerLogout=require('./router/userLogout');
+const routerLogout = require('./router/userLogout');
 const routerRegister = require('./router/userRegister');
 const UserRouter = require('./router/UserRoutes');
 const username = require('./util/exportUserName');
-//const appUserController = require('./app/controllers/UserController/AppUserController')
 
+// Sử dụng router
 app.use(username);
 app.use('/api', router);
 app.use('/login', routerLoggin);
 app.use('/logout', routerLogout);
 app.use('/register', routerRegister);
 app.use('/uploads', express.static(path.join(__dirname,"..", 'uploads')));
-
-//app.get('/update-info',appUserController.index)
 app.use('/', UserRouter);
 
-http.createServer(app).listen(port, () => {
+// Tạo HTTP server và khởi tạo Socket.IO
+const server = http.createServer(app);
+const io = socketIO(server);
+
+// Lưu Socket.IO vào app.locals để có thể truy cập trong các file khác
+app.locals.io = io;
+
+// Cấu hình sự kiện kết nối
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
+
+   // Tham gia phòng riêng dựa trên userId
+   socket.on('joinRoom', (userId) => {
+    socket.join(`user_${userId}`);
+    console.log(`User ${userId} joined room user_${userId}`);
+  });
+  
+  // Lắng nghe các sự kiện cần thiết từ client (nếu có)
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+});
+
+// Khởi động server
+server.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
-});  
+});
