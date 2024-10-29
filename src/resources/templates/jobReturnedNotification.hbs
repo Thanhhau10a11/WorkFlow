@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông báo Job Bị Hoàn Lại</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            color: #555;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Thông báo Job Bị Hoàn Lại</h1>
+        <p>Xin chào {{username}},</p>
+        <p>Job <strong>{{jobName}}</strong> đã bị hoàn lại từ stage <strong>{{stageName}}</strong>.</p>
+        <p>Vui lòng kiểm tra lại job và thực hiện các bước cần thiết để nộp lại.</p>
+        <div class="footer">
+            <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</p>
+        </div>
+    </div>
+</body>
+</html>

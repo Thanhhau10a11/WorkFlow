@@ -46,6 +46,15 @@ class GroupController {
         GroupName: groupName,
         IDUser: IDUser
       });
+      console.log("AAAAAAAAAAAAAAAAA",newGroup)
+       // Tạo project mặc định cho group mới
+       const defaultProject = await Project.create({
+        NameProject: 'Default Project',
+        IDCreator: IDUser,
+        InfoProject: 'This is the default project for this group.',
+        GroupID: newGroup.GroupID, 
+        isDefault: true
+    });
 
       return res.status(201).json({ message: 'Nhóm đã được tạo thành công.', group: newGroup });
     } catch (error) {

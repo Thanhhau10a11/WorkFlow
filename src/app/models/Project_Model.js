@@ -21,7 +21,11 @@ const Project = sequelize.define('Project', {
       model: Group, 
       key: 'GroupID'
     }
-  }
+  },
+  isDefault: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+}
 }, {
   tableName: 'project',
   timestamps: true

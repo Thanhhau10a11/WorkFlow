@@ -72,7 +72,19 @@ class InvitationController {
                 };
             } else if (type === 'job') { 
                 subject = 'Thông báo nhận job';
-                template = 'jobNotification'; // Đảm bảo bạn có template này
+                template = 'jobNotification';
+                context = { username, jobName };
+            } else if (type === 'job-submitted') {
+                subject = 'Thông báo job đã được nộp';
+                template = 'jobSubmittedNotification';
+                context = { username, jobName, stageName };
+            } else if (type === 'job-rejected') { 
+                subject = 'Thông báo job đã được hoàn lại';
+                template = 'jobReturnedNotification'; 
+                context = { username, jobName , stageName};
+            } else if (type === 'job-completed') { 
+                subject = 'Thông báo job đã hoàn tất';
+                template = 'jobCompletedNotification'; 
                 context = { username, jobName };
             } else {
                 return res.status(400).json({ message: 'Loại email không hợp lệ.' });
