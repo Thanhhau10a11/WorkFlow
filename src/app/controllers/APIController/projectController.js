@@ -49,18 +49,23 @@ class ProjectController {
   }
   async delete(req, res) {
     try {
-      const deleted = await Project.destroy({
-        where: { IDProject: req.params.id }
-      });
-      if (deleted) {
+        const project = await Project.findOne({
+            where: { IDProject: req.params.id }
+        });
+        if (!project) {
+            return res.status(404).json({ error: 'Project not found' });
+        }
+        if (project.isDefault) { 
+            return res.status(403).json({ error: 'Không thể xóa project mặc định' });
+        }
+        await Project.destroy({
+            where: { IDProject: req.params.id }
+        });
         res.status(200).json({ message: 'Xóa thành công' });
-      } else {
-        res.status(404).json({ error: 'project not found' });
-      }
     } catch (error) {
-      res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
-  }
+}
   async createByIDGroup(req, res) {
     try {
       const { GroupID, IDCreator } = req.params;
@@ -121,7 +126,8 @@ class ProjectController {
           as: 'Projects',
         }],
         order: [
-          [{ model: Project, as: 'Projects' }, 'createdAt', 'DESC'] 
+          [{ model: Project, as: 'Projects' }, 'isDefault', 'DESC'],  
+          [{ model: Project, as: 'Projects' }, 'createdAt', 'DESC']   
       ]
       });
 

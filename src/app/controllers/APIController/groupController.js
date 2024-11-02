@@ -46,7 +46,6 @@ class GroupController {
         GroupName: groupName,
         IDUser: IDUser
       });
-      console.log("AAAAAAAAAAAAAAAAA",newGroup)
        // Tạo project mặc định cho group mới
        const defaultProject = await Project.create({
         NameProject: 'Default Project',

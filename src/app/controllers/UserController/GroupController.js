@@ -104,6 +104,9 @@ class GroupController {
         const responseProject = await axios.get(`${process.env.DOMAIN}/api/project/getProjectInGroup/${GroupID}`,{headers});
         const Project = responseProject.data;
 
+
+        
+
         res.render('Group/detail', {
             Group,
             members,

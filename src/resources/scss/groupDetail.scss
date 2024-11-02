@@ -17,6 +17,7 @@
         float: right;
         margin: 10px 10px 0px 0px;
     }
+
     .btn__createWorkFlow {
         height: 40px;
         width: 140px;
@@ -32,6 +33,7 @@
     .btn__createWorkFlow:hover {
         background: linear-gradient(to right, #56CCF2, #2F80ED);
     }
+
     .btn__createProject:hover {
         background: linear-gradient(to right, #56CCF2, #2F80ED);
     }
@@ -44,7 +46,7 @@
         color: white;
         height: 100%;
     }
-    
+
     .btn__createWorkFlow button {
         background-color: transparent;
         border: none;
@@ -250,163 +252,243 @@
 
     /* mobile category */
     /* mobile category */
-    .mobile-category {  
-    display: block;  
-}  
+    .mobile-category {
+        display: block;
+    }
 
-.mobile-category__list {  
-    display: flex;  
-    list-style: none;  
-    padding: 0 0 10px 0;  
-    max-width: 100%;  
-    overflow-x: auto;  
-}  
+    .mobile-category__list {
+        display: flex;
+        list-style: none;
+        padding: 0 0 10px 0;
+        max-width: 100%;
+        overflow-x: auto;
+    }
 
-.mobile-category__list::-webkit-scrollbar {  
-    height: 10px;  
-}  
+    .mobile-category__list::-webkit-scrollbar {
+        height: 10px;
+    }
 
-.mobile-category__list::-webkit-scrollbar-thumb {  
-    background-color: #87AFD8;  
-    border-radius: 10px;  
-}  
+    .mobile-category__list::-webkit-scrollbar-thumb {
+        background-color: #87AFD8;
+        border-radius: 10px;
+    }
 
-.mobile-category__list::-webkit-scrollbar-track {  
-    background-color: #f1f1f1;  
-}  
+    .mobile-category__list::-webkit-scrollbar-track {
+        background-color: #f1f1f1;
+    }
 
-.mobile-category__item {  
-    flex-shrink: 0;  
-    margin-right: 15px;  
-}  
+    .mobile-category__item {
+        flex-shrink: 0;
+        margin-right: 15px;
+    }
 
-.mobile-category__item:nth-of-type(3n + 1) .mobile-category__link {  
-    background-color: #87AFD8;  
-}  
+    .mobile-category__item:nth-of-type(3n + 1) .mobile-category__link {
+        background-color: #87AFD8;
+    }
 
-.mobile-category__item:nth-of-type(3n + 2) .mobile-category__link {  
-    background-color: #76C9BD;  
-}  
+    .mobile-category__item:nth-of-type(3n + 2) .mobile-category__link {
+        background-color: #76C9BD;
+    }
 
-.mobile-category__item:nth-of-type(3n + 3) .mobile-category__link {  
-    background-color: #88CF81;  
-}  
+    .mobile-category__item:nth-of-type(3n + 3) .mobile-category__link {
+        background-color: #88CF81;
+    }
 
-.mobile-category__link {  
-    --line-height: 2rem;  
-    text-decoration: none;  
-    color: white;  
-    font-size: 1.4rem;  
-    line-height: var(--line-height);
-    height: calc(var(--line-height) * 2);  
-    overflow: hidden;  
-    width: 110px;  
-    display: block;  
-    display: -webkit-box;  
-    -webkit-box-orient: vertical;  
-    -webkit-line-clamp: 2;  
-    border-radius: 3px;  
-    font-weight: 300;  
-    user-select: none;  
-    -webkit-user-select: none;  
-    -webkit-tap-highlight-color: transparent;  
-    text-align: center;  
-    transition: opacity 0.3s;  
-}  
+    .mobile-category__link {
+        --line-height: 2rem;
+        text-decoration: none;
+        color: white;
+        font-size: 1.4rem;
+        line-height: var(--line-height);
+        height: calc(var(--line-height) * 2);
+        overflow: hidden;
+        width: 110px;
+        display: block;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        border-radius: 3px;
+        font-weight: 300;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        text-align: center;
+        transition: opacity 0.3s;
+    }
 
-.mobile-category__link:hover {  
-    opacity: 0.8;  
-}
+    .mobile-category__link:hover {
+        opacity: 0.8;
+    }
 
 
-// form addMember
-.wrapper {  
-    position: fixed;  
-    top: 50%;  
-    left: 50%;  
-    transform: translate(-50%, -50%);  
-    z-index: 1001;  
-    display: none;  
-    width: 90%;  
-    max-width: 500px;  
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);  
-}  
+    // form addMember
+    .wrapper {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1001;
+        display: none;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
 
-.overlay {  
-    position: fixed;  
-    top: 0;  
-    left: 0;  
-    width: 100%;  
-    height: 100%;  
-    background-color: rgba(0, 0, 0, 0.7);  
-    z-index: 1000;  
-    display: none;  
-}  
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        display: none;
+    }
 
-.addContainer {  
-    background-color: white;  
-    border-radius: 10px;  
-    padding: 20px;  
-}  
+    .addContainer {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+    }
 
-.submit-btn {  
-    background-color: #007BFF;  
-    color: white;  
-    border: none;  
-    border-radius: 5px;  
-    padding: 10px 15px;  
-    cursor: pointer;  
-    transition: background-color 0.3s;  
-}  
+    .submit-btn {
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
 
-.submit-btn:hover {  
-    background-color: #0056b3;  
-}  
+    .submit-btn:hover {
+        background-color: #0056b3;
+    }
 
- 
 
-.input-container {  
-    margin-bottom: 1rem;  
-}  
 
-input {  
-    width: 100%;  
-    padding: 0.5rem;  
-    font-size: 1rem;  
-    border: 1px solid #ccc;  
-    border-radius: 4px;  
-}  
+    .input-container {
+        margin-bottom: 1rem;
+    }
 
-.selected-emails {  
-    margin-top: 1rem;  
-}  
+    input {
+        width: 100%;
+        padding: 0.5rem;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
 
-.selected-emails h2 {  
-    font-size: 1rem;  
-    margin-bottom: 0.5rem;  
-}  
+    .selected-emails {
+        margin-top: 1rem;
+    }
 
-.email-list {  
-    list-style-type: none;  
-    padding: 0;  
-}  
+    .selected-emails h2 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
 
-.email-item {  
-    display: flex;  
-    justify-content: space-between;  
-    align-items: center;  
-    background-color: #f0f0f0;  
-    padding: 0.5rem;  
-    margin-bottom: 0.5rem;  
-    border-radius: 4px;  
-}  
+    .email-list {
+        list-style-type: none;
+        padding: 0;
+    }
 
-.remove-btn {  
-    background-color: #ff4d4d;  
-    color: white;  
-    border: none;  
-    padding: 0.25rem 0.5rem;  
-    border-radius: 4px;  
-    cursor: pointer;  
-}  
+    .email-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f0f0f0;
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+        border-radius: 4px;
+    }
 
+    .remove-btn {
+        background-color: #ff4d4d;
+        color: white;
+        border: none;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .edit-button,
+    .delete-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 20px;
+        margin-left: 10px;
+        color: #007bff;
+        /* Edit button color */
+    }
+
+    .delete-btn {
+        color: #dc3545;
+        /* Delete button color */
+    }
+
+    //form edit project and workflow
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 1000; /* Đảm bảo modal nằm trên các phần tử khác */
+    }
+    
+    .edit-form {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* Căn giữa */
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        width: 90%;
+        max-width: 500px; /* Giới hạn độ rộng tối đa */
+    }
+    
+    .modal-title {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 1.5em;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    
+    .btn__container {
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .btn {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold; /* Đậm chữ cho nút */
+    }
+    
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+    
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+    

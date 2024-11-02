@@ -8,28 +8,6 @@ document.getElementById('closeFormBtn').addEventListener('click', function () {
     document.getElementById('projectForm').style.display = 'none';
 });
 
-document.getElementById('addJobBtn').addEventListener('click', function () {
-    const jobsContainer = document.getElementById('jobsContainer');
-
-    const jobDiv = document.createElement('div');
-    jobDiv.innerHTML = `
-        <div>
-            <label for="jobName">Job Name:</label>
-            <input type="text" placeholder="Job Name" required />
-        </div>
-        <div>
-            <label for="jobDescription">Job Description:</label>
-            <textarea placeholder="Job Description" required></textarea>
-        </div>
-        <div>
-            <label for="jobDeadline">Deadline:</label>
-            <input type="date" required />
-        </div>
-        <button onclick="removeJob(this)">Remove Job</button>
-    `;
-    jobsContainer.appendChild(jobDiv);
-});
-
 function removeJob(button) {
     button.parentElement.remove();
 }

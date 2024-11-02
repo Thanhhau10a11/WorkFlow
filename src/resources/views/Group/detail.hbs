@@ -1,11 +1,13 @@
 <link rel="stylesheet" href="/css/groupDetail.css">
+
 <div class="py-4 team4" data-group-id="{{Group.GroupID}}">
 
     <div class="container">
         <div class="row">
             <div class="container__project">
                 <div class="btn__createWorkFlow">
-                    <a id="createWorkFlowBtn" href="/workFLow/create/{{Group.GroupID}}" style="color: aliceblue; text-decoration:none;">Create WorkFlow</a>
+                    <a id="createWorkFlowBtn" href="/workFLow/create/{{Group.GroupID}}"
+                        style="color: aliceblue; text-decoration:none;">Create WorkFlow</a>
                 </div>
                 <nav class="mobile-category mb-4"
                     style="width:100%; background-color:#F8F8F0; padding:20px; border-radius:10px;">
@@ -14,8 +16,13 @@
                         {{#each workflows}}
                         <li class="mobile-category__item">
                             <a href="/workflow/detail/{{this.IDWorkFlow}}"
-                                class="mobile-category__link">{{this.Name}}
-                            </a>
+                                class="mobile-category__link white-color">{{this.Name}}</a>
+                            <button class="edit-button" onclick="editWorkFlow({{this.IDWorkFlow}})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="delete-btn" onclick="deleteWorkFlow({{this.IDWorkFlow}})">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
                         </li>
                         {{/each}}
                         {{else}}
@@ -23,6 +30,29 @@
                         {{/if}}
                     </ul>
                 </nav>
+                <div class="overlay" id="editWorkFlowModal" style="display:none;">
+                    <div class="edit-form">
+                        <h4 class="modal-title">Sửa WorkFlow</h4>
+                        <form id="editWorkFlowForm">
+                            <div class="form-group">
+                                <label for="editWorkFlowName">Tên WorkFlow</label>
+                                <input type="text" id="editWorkFlowName" class="form-control"
+                                    placeholder="Nhập tên WorkFlow" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="editWorkFlowDescription">Mô tả WorkFlow</label>
+                                <textarea id="editWorkFlowDescription" class="form-control"
+                                    placeholder="Nhập mô tả WorkFlow" required></textarea>
+                            </div>
+                            <div class="btn__container">
+                                <button type="submit" id="saveWorkFlowChangesBtn" class="btn btn-primary">Lưu thay
+                                    đổi</button>
+                                <button type="button" id="closeWorkFlowModalBtn" class="btn btn-secondary">Đóng</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
             </div>
             <div class="container__project">
                 <div class="btn__createProject">
@@ -35,7 +65,13 @@
                         {{#each Project}}
                         <li class="mobile-category__item">
                             <a href="/project/detail/{{this.IdProject}}"
-                                class="mobile-category__link">{{this.NameProject}}</a>
+                                class="mobile-category__link white-color">{{this.NameProject}}</a>
+                            <button class="edit-button" onclick="editProject({{this.IdProject}})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="delete-btn" onclick="deleteProject({{this.IdProject}})">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
                         </li>
                         {{/each}}
                         {{else}}
@@ -43,7 +79,27 @@
                         {{/if}}
                     </ul>
                 </nav>
+                <div class="overlay" id="editProjectModal" style="display:none;">
+                    <div class="edit-form">
+                        <h4 class="modal-title">Sửa Project</h4>
+                        <form id="editProjectForm">
+                            <div class="form-group">
+                                <label for="editProjectName">Tên Project</label>
+                                <input type="text" id="editProjectName" class="form-control"
+                                    placeholder="Nhập tên Project" required />
+                            </div>
+                           
+                            <div class="btn__container">
+                                <button type="submit" id="saveProjectChangesBtn" class="btn btn-primary">Lưu thay
+                                    đổi</button>
+                                <button type="button" id="closeProjectModalBtn" class="btn btn-secondary">Đóng</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
             </div>
+
         </div>
 
         <div class="row justify-content-center mb-4">
@@ -121,3 +177,154 @@
 </div>
 <script src="/js/Group_CreateProject.js"></script>
 <script src="/js/Group_AddMembers.js"></script>
+<script>
+    let currentWorkFlowId;
+    let currentProjectId;
+
+    // Lấy token từ localStorage  
+    const token = localStorage.getItem('authToken');
+
+    function editWorkFlow(workflowId) {
+        fetch(`/api/workflow/${workflowId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('editWorkFlowName').value = data.Name;
+                document.getElementById('editWorkFlowDescription').value = data.Description;
+                currentWorkFlowId = workflowId;
+                document.getElementById('editWorkFlowModal').style.display = 'block';
+            })
+            .catch(error => console.error('Lỗi khi lấy dữ liệu workflow:', error));
+    }
+
+    function editProject(projectId) {
+        fetch(`/api/project/${projectId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('editProjectName').value = data.NameProject;
+                currentProjectId = projectId;
+                document.getElementById('editProjectModal').style.display = 'block';
+            })
+            .catch(error => console.error('Lỗi khi lấy dữ liệu project:', error));
+    }
+
+    // Lưu thay đổi cho WorkFlow  
+    document.getElementById('saveWorkFlowChangesBtn').addEventListener('click', () => {
+        event.preventDefault();
+        const name = document.getElementById('editWorkFlowName').value;
+        const description = document.getElementById('editWorkFlowDescription').value;
+
+        fetch(`/api/workflow/update/${currentWorkFlowId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ Name: name, Description: description }),
+        })
+            .then(response => {
+                if (response.ok) {
+                    showToast('Thay đổi đã được lưu thành công!');
+                    setTimeout(() => {
+                        location.reload();
+                    },1000);
+                } else {
+                    showToast('Lỗi khi lưu thay đổi.', true);
+                }
+            })
+            .catch(error => console.error('Lỗi cập nhật workflow:', error));
+    });
+
+    // Lưu thay đổi cho Project  
+    document.getElementById('saveProjectChangesBtn').addEventListener('click', () => {
+        event.preventDefault();
+        const name = document.getElementById('editProjectName').value;
+
+        fetch(`/api/project/update/${currentProjectId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,  
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ NameProject: name }),
+        })
+            .then(response => {
+                if (response.ok) {
+                    showToast('Thay đổi đã được lưu thành công!');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000); 
+                } else {
+                    showToast('Lỗi khi lưu thay đổi.', true);
+                }
+            })
+            .catch(error => console.error('Lỗi cập nhật project:', error));
+    });
+
+    // Đóng modal  
+    document.getElementById('closeWorkFlowModalBtn').addEventListener('click', () => {
+        document.getElementById('editWorkFlowModal').style.display = 'none';
+    });
+
+    document.getElementById('closeProjectModalBtn').addEventListener('click', () => {
+        document.getElementById('editProjectModal').style.display = 'none';
+    });
+
+    function deleteWorkFlow(workflowId) {
+        if (confirm('Bạn có chắc chắn muốn xóa workflow này không?')) {
+            fetch(`/api/workflow/delete/${workflowId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`  
+                }
+            }).then(response => {
+                if (response.ok) {
+                    showToast('Xóa thành công !');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+
+                } else {
+                    showToast('Lỗi khi xóa workflow.', true);
+                }
+            });
+        }
+    }
+
+    function deleteProject(projectId) {
+    if (confirm('Bạn có chắc chắn muốn xóa project này không?')) {
+        fetch(`/api/project/delete/${projectId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then(response => {
+            if (response.ok) {
+                showToast("Xóa thành công!");
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else if (response.status === 403) {
+                showToast('Không thể xóa project mặc định.', true);
+            } else {
+                showToast('Lỗi khi xóa project.', true);
+            }
+        }).catch(error => {
+            console.error('Lỗi:', error);
+            showToast('Có lỗi xảy ra trong quá trình xóa project.', true);
+        });
+    }
+}
+
+</script>
