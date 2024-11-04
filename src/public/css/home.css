@@ -163,7 +163,7 @@ body {
   font-size: 12px; }
 
 .task__stats span:not(:last-of-type) {
-  margin-right: 1rem; }
+  margin-right: 2rem; }
 
 .task__stats svg {
   margin-right: 5px; }

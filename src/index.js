@@ -99,8 +99,12 @@ app.engine("hbs", engine({
     json: function (context) {
       return JSON.stringify(context);
     },
+    isSelected: function (recipientID, username) {
+      return recipientID === username ? 'selected' : '';
+    }
   }
 }));
+
 
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "resources", "views"));

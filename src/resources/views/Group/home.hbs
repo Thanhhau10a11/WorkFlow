@@ -91,6 +91,87 @@
         });
     });
 
+    //create group
+     document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('createGroupForm');
+        const groupNameInput = document.getElementById('groupName');
+        const descriptionInput = document.getElementById('description');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            let isValid = true;
+
+            if (groupNameInput.value.trim() === '') {
+                groupNameInput.style.borderColor = 'var(--error-color)';
+                isValid = false;
+            } else {
+                groupNameInput.style.borderColor = '#bdc3c7';
+            }
+
+            if (descriptionInput.value.trim() === '') {
+
+            } else {
+                descriptionInput.style.borderColor = '#bdc3c7';
+            }
+
+            if (isValid) {
+                const formData = {
+                    GroupName: groupNameInput.value,
+                    description: descriptionInput.value
+                };
+
+                const token = localStorage.getItem('authToken');
+
+                fetch('/group/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+
+                    },
+                    body: JSON.stringify(formData)
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            return response.json().then(err => {
+                                // Xử lý lỗi từ server  
+                                if (response.status === 403) {
+                                    throw new Error(err.error || 'Có lỗi xảy ra!'); // Xử lý lỗi không có quyền truy cập  
+                                }
+                                throw new Error(err.message || 'Có lỗi xảy ra!'); // Xử lý các lỗi khác  
+                            });
+                        }
+                    })
+                    .then(data => {
+                        showToast('Group created successfully!');
+                        setTimeout(() => {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                            }
+                            form.reset();
+                        }, 1000);
+                    })
+                    .catch(error => {
+                        showToast('Error: ' + error.message, true);
+                    });
+            } else {
+                showToast('Please fill in all required fields.', true);
+            }
+        });
+
+        [groupNameInput, descriptionInput].forEach(input => {
+            input.addEventListener('focus', function () {
+                this.style.borderColor = 'var(--primary-color)';
+            });
+
+            input.addEventListener('blur', function () {
+                this.style.borderColor = '#bdc3c7';
+            });
+        });
+    });
+
     function editGroup(groupId) {
         const token = localStorage.getItem('authToken');
 

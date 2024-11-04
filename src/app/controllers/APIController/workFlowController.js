@@ -59,9 +59,21 @@ class workFlowController {
     }
     async delete(req, res) {
         try {
+            // Find all jobs related to the workflow
+            const jobs = await Job.findAll({
+                where: { IDWorkFlow: req.params.id }
+            });
+    
+            const incompleteJobs = jobs.some(job => job.Status !== 'completed');
+    
+            if (incompleteJobs) {
+                return res.status(400).json({ error: 'Cannot delete workflow as some jobs are not completed' });
+            }
+    
             const deleted = await WorkFlow.destroy({
                 where: { IDWorkFlow: req.params.id }
             });
+    
             if (deleted) {
                 res.status(200).json({ message: 'Xóa thành công' });
             } else {
@@ -256,6 +268,8 @@ class workFlowController {
             const workflowId = req.params.id;
             const { stages } = req.body;
 
+            console.log(stages);
+
             if (!Array.isArray(stages) || stages.length === 0) {
                 return res.status(400).json({ error: 'Dữ liệu stages không hợp lệ' });
             }
@@ -271,6 +285,11 @@ class workFlowController {
             });
 
             const newStages = await Promise.all(stages.map(async (stage) => {
+
+                // Lấy IDUser từ AppUser dựa trên email của người nhận
+                const user = await AppUser.findOne({ where: { Username: stage.EmailRecipient } });
+                const IDRecipient = user ? user.IDUser : null;
+
                 return await Stage.create({
                     NameStage: stage.NameStage,
                     DescriptionStatus: stage.DescriptionStatus,
@@ -278,6 +297,7 @@ class workFlowController {
                     approximateTime: stage.approximateTime,
                     //timecompletedState: stage.timecompletedState,
                     EmailRecipient: stage.EmailRecipient,
+                    IDRecipient: IDRecipient, 
                 });
             }));
 

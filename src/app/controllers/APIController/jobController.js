@@ -1,6 +1,7 @@
 
 const { sequelize, AppUser, Group, Workflow, Job, Project, JobStage, Stage } = require('../../models/index')
 const { getNextStage, getPreviousStage, checkIfStageAssigned } = require('../../../util/getNextAndPreStage');
+const updateProjectProgress = require('../../../util/updateProjectProgress');
 const axios = require('axios');
 const sendNotification = require('../../../util/notifyService');
 
@@ -223,12 +224,17 @@ class JobCOntroller {
         NameJob: NameJob,
         approximateTime: approximateTime,
         GroupID: GroupID,
-        IDWorkFlow,
-        IDProject: project.IdProject, // Sử dụng ID của project mặc định hoặc được cung cấp
+        IDWorkFLow:IDWorkFlow,
+        IDProject: project.IdProject, 
         IDUserPerform: IDUserPerform,
-        IDCreator: req.user.id,
+        IDCreator: req.user.IDUser,
         TimeStart: new Date()
       });
+      console.log(newJob);
+
+      //cập nhật prject progress
+      await updateProjectProgress(IDProject);
+
 
       // Tìm stage đầu tiên trong workflow
       const firstStage = await Stage.findOne({
@@ -513,6 +519,7 @@ class JobCOntroller {
 
         // Cập nhật trạng thái thành "completed"  
         jobStage.status = 'completed';
+        jobStage.signatoryId = req.user.IDUser;
         jobStage.updatedAt = sequelize.literal('CURRENT_TIMESTAMP');
         await jobStage.save();
 
@@ -538,6 +545,8 @@ class JobCOntroller {
             const job = await Job.findByPk(jobId);
             const notificationTitle = "Job đã được duyệt";
             const notificationMessage = `Job "${job.NameJob}" đã được duyệt và chuyển đến stage "${nextStage.NameStage}".`;
+
+            console.log("BBBBBBBBBBBBBBBBBBBBBBB" ,nextStage.IDRecipient)
             await sendNotification(nextStage.IDRecipient, notificationTitle, notificationMessage, req.app.locals.io);
 
             // Gửi email  
@@ -573,6 +582,9 @@ class JobCOntroller {
           job.Status = 'completed';
           job.updatedAt = sequelize.literal('CURRENT_TIMESTAMP');
           await job.save();
+
+          //update project progress
+          await updateProjectProgress(job.IDProject);
           return res.status(200).json({ message: 'Job đã hoàn thành' });
         } else {
           return res.status(404).json({ message: 'Không tìm thấy Job' });
@@ -774,7 +786,7 @@ class JobCOntroller {
 
         // Gửi thông báo cho người nhận stage
         const stage = await Stage.findOne({ where: { IdStage: stageId } }); // Tìm người nhận stage
-        if (stage) {
+        if (stage.EmailRecipient) {
           const notificationTitle = "Job đã được nộp";
           const notificationMessage = `Job "${job.NameJob}" đã được nộp lên stage "${stage.NameStage}".`;
           await sendNotification(stage.IDRecipient, notificationTitle, notificationMessage, req.app.locals.io);
@@ -813,11 +825,6 @@ class JobCOntroller {
       return res.status(500).json({ message: error.message });
     }
   }
-
-
-
-
-
 
 
   //Lay job<->stage da phan quyenn

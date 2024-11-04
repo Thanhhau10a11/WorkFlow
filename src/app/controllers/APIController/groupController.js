@@ -52,6 +52,7 @@ class GroupController {
         IDCreator: IDUser,
         InfoProject: 'This is the default project for this group.',
         GroupID: newGroup.GroupID, 
+        Progress:0,
         isDefault: true
     });
 

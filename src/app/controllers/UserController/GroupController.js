@@ -18,7 +18,6 @@ class GroupController {
     async index(req, res) {  
         const token = req.session.user.token;  
         const IDUser = req.session.user.IDUser;  
-    
         try {  
             const response = await axios.get(`${process.env.DOMAIN}/api/group/get/${IDUser}`, {  
                 headers: {  
@@ -27,6 +26,7 @@ class GroupController {
             });  
     
             const groups = response.data; 
+            console.log(groups);
             res.render('Group/home', {  
                 groups,  
                 layout: 'main.hbs'  

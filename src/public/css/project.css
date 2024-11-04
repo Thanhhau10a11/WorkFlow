@@ -1,0 +1,82 @@
+@charset "UTF-8";
+* {
+  font-family: 'Inter', sans-serif; }
+
+body {
+  background-color: #f0f8ff; }
+
+.container {
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px; }
+
+.card {
+  border: none; }
+
+.card-title {
+  font-weight: bold;
+  color: #343a40;
+  font-size: 1.25rem; }
+
+.card-text {
+  color: black;
+  font-size: 1rem;
+  font-weight: 100; }
+
+.btn-outline-primary {
+  border-radius: 0.5rem; }
+
+.progress {
+  height: 1.5rem; }
+
+.progress-bar {
+  background-color: #007bff;
+  border-radius: 0.5rem; }
+
+.btn-primary {
+  border-radius: 0.5rem; }
+
+.card {
+  margin-bottom: 1rem; }
+
+.list-unstyled {
+  color: #343a40; }
+
+.list-unstyled h6 {
+  color: #495057;
+  font-size: 1.1rem; }
+
+.text-muted {
+  color: #6c757d !important;
+  font-size: 0.9rem; }
+
+.card {
+  width: 100% !important; }
+
+.deadline {
+  display: flex; }
+
+.list-group-item {
+  margin: 5px 0;
+  border-radius: 10px; }
+
+.completed-job {
+  background-color: #e0f7fa !important;
+  color: white !important; }
+
+.btn-completed {
+  background-color: #28a745;
+  /* Màu nền xanh */
+  color: white;
+  /* Màu chữ trắng */
+  border: none;
+  /* Không có viền */
+  cursor: not-allowed;
+  /* Con trỏ không cho phép */ }
+
+.btn-completed.disabled {
+  opacity: 0.65;
+  /* Độ mờ cho nút không hoạt động */
+  pointer-events: none;
+  /* Không cho phép tương tác */ }

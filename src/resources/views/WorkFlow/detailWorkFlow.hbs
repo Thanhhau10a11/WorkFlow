@@ -1,57 +1,102 @@
+<link rel="stylesheet" href="/css/home.css">
+<style>
+    .task__owner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
+    .task__options,
+    .task__delete {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        margin: 0 5px;
+        color: #2d86ba;
+    }
 
-
-    <link rel="stylesheet" href="/css/home.css">
-
-    <div class='container-main container'>
-        <main class='project' style="max-width:100%">
-            <div class='project-info'>
-                <h1 id="WorkFlowID" class="text-v" data-id="{{workflow.IDWorkFlow}}">{{workflow.Name}}</h1>
-                <div class='project-participants'>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <button class='project-participants__save' title="Save Stages"><i class="fa-regular fa-floppy-disk"
-                            style="font-size:14px;color:white"></i></button>
-                    <button class='project-participants__add' title="Add Stages">Add Stages</button>
-                </div>
+    .task__options:hover,
+    .task__delete:hover {
+        color: #ceecfd;
+    }
+</style>
+<div class='container-main container'>
+    <main class='project' style="max-width:100%">
+        <div class='project-info'>
+            <h1 id="WorkFlowID" class="text-v" data-id="{{workflow.IDWorkFlow}}">{{workflow.Name}}</h1>
+            <div class='project-participants'>
+                <span></span>
+                <span></span>
+                <span></span>
+                <button class='project-participants__save' title="Save Stages"><i class="fa-regular fa-floppy-disk"
+                        style="font-size:14px;color:white"></i></button>
+                <button class='project-participants__add' title="Add Stages">Add Stages</button>
             </div>
-            <div class='project-tasks row'>
-                {{#each stages}}
-                <div class="task-container">
-                    <div class='task' data-id="{{this.IdStage}}" draggable='true'>
-                        <div class='task__tags'>
-                            <span class='task__tag task__tag--design'>{{this.NameStage}}</span>
-                            <button class='task__options'><i class="fas fa-ellipsis-h"></i></button>
-                        </div>
-                        <p>Người nhận: {{this.EmailRecipient}}</p>
-                        <div class='task__stats'>
-                            <span><time datetime="{{this.approximateTime}}"><i class="fas fa-flag"
-                                        style="margin-right: 5px;"></i>{{formatDate this.approximateTime}}</time></span>
-                            <span class='task__owner'></span>
-                        </div>
+        </div>
+        <div class='project-tasks row'>
+            {{#each stages}}
+            <div class="task-container">
+                <div class='task' data-email-recipient="{{this.EmailRecipient}}" data-id="{{this.IdStage}}"
+                    draggable='true'>
+                    <div class='task__tags'>
+                        <span class='task__tag task__tag--design'>{{this.NameStage}}</span>
+                    </div>
+                    <p>Người nhận: {{this.EmailRecipient}}</p>
+                    <div class='task__stats'>
+                        <span>
+                            <time datetime="{{this.approximateTime}}">
+                                <i class="fas fa-flag" style="margin-right: 5px;"></i>{{formatDate
+                                this.approximateTime}}
+                            </time>
+                        </span>
+                        <span class='task__owner'>
+                            <button class='task__options' onclick="editStage('{{this.IdStage}}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </span>
+                        <span class='task__owner'>
+                            <button class='task__delete' onclick="deleteStage('{{this.IdStage}}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </span>
                     </div>
                 </div>
-                {{/each}}
             </div>
-        </main>
-    </div>
+            {{/each}}
+        </div>
 
-    <div class="overlay"></div>
+    </main>
+</div>
 
-    <div class="form-container">
-        <form id="add-stage-form" style="position: relative;">
-            <h2 class="display-center" style="margin-bottom:10px">Add New Stage</h2>
-            <div id="stages-container">
-                <!-- Dynamic stage fields will be added here -->
-            </div>
-            <button type="submit">Add Stages</button>
-            <button type="button" id="cancel-button">Cancel</button>
-            <button type="button" class="add-more-stage-btn" id="add-more-stage" title="Add More Stage">+</button>
-        </form>
-    </div>
+<div class="overlay"></div>
 
-    <script>
+<!-- Form để thêm stage -->
+<div class="form-container">
+    <form id="add-stage-form" style="position: relative;">
+        <h2 class="display-center" style="margin-bottom:10px">Add New Stage</h2>
+        <div id="stages-container">
+            <!-- Dynamic stage fields will be added here -->
+        </div>
+        <button type="submit">Add Stages</button>
+        <button type="button" id="cancel-button">Cancel</button>
+        <button type="button" class="add-more-stage-btn" id="add-more-stage" title="Add More Stage">+</button>
+    </form>
+</div>
+
+<!-- Form để sửa stage -->
+<div class="form-container" id="edit-stage-form-container" style="display: none;">
+    <form id="edit-stage-form" style="position: relative;">
+        <h2 class="display-center" style="margin-bottom:10px">Edit Stage</h2>
+        <div id="edit-stages-container">
+            <!-- Dynamic stage fields will be added here -->
+        </div>
+        <button type="submit">Update Stage</button>
+        <button type="button" id="edit-cancel-button">Cancel</button>
+    </form>
+</div>
+
+<script src="/js/stage.js"></script>
+ <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             var workFlowIDElement = document.getElementById('WorkFlowID');
             var WorkFlowID = workFlowIDElement.getAttribute('data-id');
@@ -276,4 +321,131 @@
                 console.error('Lỗi:', error);
             });
     }
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const workFlowIDElement = document.getElementById('WorkFlowID');
+        const WorkFlowID = workFlowIDElement.getAttribute('data-id');
+
+        // Function to delete a stage
+        window.deleteStage = function (stageId) {
+            const token = localStorage.getItem('authToken');
+            fetch(`/api/stage/delete/${stageId}`, {
+                method: 'POST', // Thay đổi method từ POST sang DELETE
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Xóa stage thành công!'); // Thông báo thành công
+                        window.location.reload(); // Tải lại trang
+                    } else {
+                        showToast(data.error || 'Lỗi khi xóa stage.', true); // Thông báo lỗi nếu có
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Có lỗi xảy ra. Vui lòng thử lại.', true); // Thông báo lỗi chung
+                });
+        };
+
+        // Function to edit a stage
+        window.editStage = function (stageId) {
+            const editFormContainer = document.getElementById('edit-stage-form-container');
+            const stagesContainer = document.getElementById('edit-stages-container');
+
+            // Clear existing fields
+            stagesContainer.innerHTML = '';
+
+            // Fetch current stage details from the API
+            const token = localStorage.getItem('authToken');
+            fetch(`/api/stage/${stageId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+                .then(response => response.json())
+                .then(stageData => {
+                    // Render HTML using Handlebars template
+                    const stageHTML = `
+                        <div class="stage-group" data-id="${stageId}">
+                            <h3>Editing Stage</h3>
+                            <label for="stageName">Tên Stage:</label>
+                            <input type="text" id="stageName" name="stageName" value="${stageData.NameStage}" required>
+                            <label for="stageDescription">Mô Tả:</label>
+                            <input type="text" id="stageDescription" name="stageDescription" value="${stageData.DescriptionStatus}">
+                            <label for="stageRecipient">Người nhận:</label>
+                            <select id="stageRecipient" name="stageRecipient" required>
+                                <option value="" class="display-center">Chọn người nhận</option>
+                                <optgroup label="{{Group.GroupName}}">
+                                    {{#each members}}  
+                                    <option value="{{Username}}">{{Username}}</option>  
+                                    {{/each}}
+                                </optgroup>
+                            </select>
+                        </div>
+                    `;
+
+                    // Insert the rendered HTML into the container
+                    stagesContainer.insertAdjacentHTML('beforeend', stageHTML);
+                    editFormContainer.style.display = 'block';
+                    document.querySelector('.overlay').style.display = 'block'; // Show overlay
+
+                    // Handle form submission for editing
+                    document.getElementById('edit-stage-form').onsubmit = function (e) {
+                        e.preventDefault();
+                        const updatedStageName = document.getElementById('stageName').value;
+                        const updatedDescription = document.getElementById('stageDescription').value;
+                        const updatedRecipient = document.getElementById('stageRecipient').value;
+
+                        // Send the update request to your API
+                        fetch(`/api/stage/update/${stageId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                                NameStage: updatedStageName,
+                                DescriptionStatus: updatedDescription,
+                                EmailRecipient: updatedRecipient
+                            })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    showToast('Giai đoạn đã được cập nhật thành công!');
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1000);
+                                } else {
+                                    showToast('Có lỗi khi cập nhật giai đoạn.', true);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+                    };
+                })
+                .catch(error => {
+                    console.error('Error fetching stage data:', error);
+                });
+        };
+
+        // Handle cancel buttons
+        document.getElementById('cancel-button').onclick = function () {
+            document.querySelector('.form-container').style.display = 'none'; // Hide the add stage form
+            document.querySelector('.overlay').style.display = 'none'; // Hide overlay
+        };
+
+        document.getElementById('edit-cancel-button').onclick = function () {
+            const editFormContainer = document.getElementById('edit-stage-form-container');
+            editFormContainer.style.display = 'none'; // Hide edit form
+            document.querySelector('.overlay').style.display = 'none'; // Hide overlay
+        };
+    });
 </script>
