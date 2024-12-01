@@ -1,0 +1,201 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+<link rel="stylesheet" href="/css/project.css">
+
+<div class="container py-5">
+    <header class="mb-5">
+        <h1 class="text">{{Project.NameProject}}</h1>
+    </header>
+
+    <div class="row">
+        <main class="col-lg-8">
+            <img src="https://picsum.photos/600/400" style="margin: 0 auto;" alt="Urban Garden Project"
+                class="img-fluid rounded shadow-sm mb-4">
+
+            <ul class="nav nav-tabs mb-4" id="projectTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview"
+                        type="button" role="tab" aria-controls="overview" aria-selected="true">Overview</button>
+                </li>
+
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="jobs-tab" data-bs-toggle="tab" data-bs-target="#jobs" type="button"
+                        role="tab" aria-controls="jobs" aria-selected="false">Jobs</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="projectTabsContent">
+                <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                    <div class="card mb-4 border">
+                        <div class="card-body">
+                            <h5 class="card-title">Project Overview</h5>
+                            {{#if Project.InfoProject}}
+                            <p class="card-text mb-4">
+                                {{Project.InfoProject}}
+                            </p>
+                            {{else}}
+                            <h1 class="card-text mb-4">Chưa có nội dung mô tả</h1>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="jobs" role="tabpanel" aria-labelledby="jobs-tab">
+                    <div class="card border">
+                        <div class="card-body">
+                            <h5 class="card-title">Available Positions</h5>
+                            <ul class="list-group list-group-flush">
+                                {{#each Project.JobsInProject}}
+                                <li data-job-id="{{this.IDJob}}" data-project-id="{{this.IDProject}}"
+                                    class="list-group-item d-flex justify-content-between align-items-center text-sm"
+                                    style="font-weight: 500; {{#if (eq this.Status 'completed')}} background-color: #e0f7fa; {{/if}}">
+                                    <div>
+                                        <h6 class="mb-0">{{this.NameJob}}</h6>
+                                        <p class="text-muted">{{this.DescriptionJob}}</p>
+                                        <div class="deadline">
+                                            <i class="bi bi-clock me-2 text-muted"></i>
+                                            {{#if this.approximateTime}}
+                                            <p>Deadline: {{formatDate this.approximateTime}}</p>
+                                            {{else}}
+                                            <p>Deadline: Unlimited</p>
+                                            {{/if}}
+                                        </div>
+                                    </div>
+
+                                    {{#if (eq this.Status 'completed')}}
+                                    <button class="btn btn-completed disabled" aria-disabled="true">
+                                        <i class="bi bi-check-circle me-2"></i> Completed
+                                    </button>
+                                    {{else}}
+                                    {{!-- <button class="btn btn-primary btn-finish bg"
+                                        onclick="markAsCompleted('{{this.IDJob}}', '{{Project.IdProject}}')">
+                                        <i class="bi bi-check-circle me-2"></i> Finish
+                                    </button> --}}
+                                    {{/if}}
+                                </li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <aside class="col-lg-4 mt-5 mt-lg-0">
+            <div class="card border">
+                <div class="card-body">
+                    <h5 class="card-title">Project Details</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <i class="bi bi-calendar me-2 text-muted"></i>
+                            <span>Start Date: {{formatDate Project.createdAt}}</span>
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-people me-2 text-muted"></i>
+                            <span>Team: {{countMember}} members</span>
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-clock me-2 text-muted"></i>
+                            <span>Duration: Unlimited</span>
+                        </li>
+                        <li class="mb-3">
+                            <h6>Progress</h6>
+                            <div class="progress" style="height: 1.5rem; position: relative;">
+                                <div class="progress-bar bg" role="progressbar" style="width: {{Project.Progress}};"
+                                    aria-valuenow="{{Project.Progress}}" aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                                <div
+                                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold;">
+                                    {{Project.Progress}}
+                                </div>
+                            </div>
+
+                        </li>
+                        <li class="mb-3">
+                            <h6>Project Status</h6>
+                            <span class="badge " style="background-color:#28a745;font-size:0.7rem;margin-top:10px">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Active
+                            </span>
+                        </li>
+                    </ul>
+                    <button class="btn btn-primary w-100 mt-3 bg" style="display: block;">
+                        <i class="bi bi-heart me-2"></i>
+                        Support this project
+                    </button>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const finishButtons = document.querySelectorAll('.btn-finish');
+        finishButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                const jobElement = event.target.closest('.list-group-item');
+                const jobId = jobElement.getAttribute('data-job-id');
+                const projectId = jobElement.getAttribute('data-project-id');
+
+                markAsCompleted(jobId, projectId);
+            });
+        });
+    });
+
+    async function markAsCompleted(jobId, projectId) {
+        const token = localStorage.getItem('authToken');
+        try {
+            const jobResponse = await fetch(`/api/job/markJobComplete/${jobId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+            });
+
+            const jobData = await jobResponse.json();
+            if (jobData.success) {
+                const progressResponse = await fetch(`/api/project/updateProgress/${projectId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                });
+
+                const progressData = await progressResponse.json();
+                if (progressData.success) {
+                    updateJobStatusOnFrontend(jobId, progressData.progress);
+                } else {
+                    console.error('Failed to update project progress');
+                }
+            } else {
+                console.error('Failed to update job status');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function updateJobStatusOnFrontend(jobId, newProgress) {
+        const jobElement = document.querySelector(`[data-job-id="${jobId}"]`);
+
+        if (jobElement) {
+            const button = jobElement.querySelector('button');
+
+            button.classList.remove('btn-primary', 'bg');
+            button.classList.add('btn-completed', 'disabled');
+
+            button.innerHTML = '<i class="bi bi-check-circle me-2"></i> Completed';
+            button.disabled = true;
+
+            jobElement.style.backgroundColor = '#e0f7fa';
+
+            const progressBar = document.querySelector('.progress-bar');
+            progressBar.style.width = `${newProgress}%`;
+            progressBar.setAttribute('aria-valuenow', newProgress);
+            progressBar.textContent = `${newProgress}%`;
+        }
+    }
+</script>

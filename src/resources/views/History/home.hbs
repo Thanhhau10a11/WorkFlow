@@ -1,0 +1,178 @@
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Lịch sử công việc</h1>
+    </div>
+
+    <!-- Danh sách công việc -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th class="text-nowrap">STT</th>
+                <th class="text-nowrap">Tên công việc</th>
+                <th class="text-nowrap">Ngày bắt đầu</th>
+                <th class="text-nowrap">Trạng thái</th>
+                <th class="text-nowrap">Người thực hiện</th>
+                <th class="text-nowrap">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each jobs}}
+            <tr>
+                <td>{{sum @index 1}}</td>
+                <td>{{this.NameJob}}</td>
+                <td>{{formatDate this.TimeStart}}</td>
+                <td>
+                    <span class="badge 
+                    {{#if (eq this.Status 'completed')}}bg-success{{/if}}
+                    {{#if (eq this.Status 'in-progress')}}bg-primary{{/if}}
+                    {{#if (eq this.Status 'pending')}}bg-warning{{/if}}
+                    {{#if (eq this.Status 'failed')}}bg-danger{{/if}}">
+                        {{this.Status}}
+                    </span>
+                </td>
+                <td>{{this.Performer.Username}}</td>
+                <td>
+                    <button class="btn btn-info btn-sm view-history-btn" data-job-id="{{this.IDJob}}"
+                        data-bs-toggle="modal" data-bs-target="#historyModal">
+                        Xem lịch sử
+                    </button>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal hiển thị lịch sử -->
+<div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="historyModalLabel">Lịch sử công việc</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Nội dung lịch sử -->
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-nowrap">STT</th>
+                            <th class="text-nowrap">Tên công việc</th>
+                            <th class="text-nowrap">Mô tả nộp</th>
+                            <th class="text-nowrap">Tên Stage</th>
+                            <th class="text-nowrap">Mô tả hoàn</th>
+                            <th class="text-nowrap">Trạng thái</th>
+                            <th class="text-nowrap">Người duyệt</th>
+                        </tr>
+                    </thead>
+                    <tbody id="job-stage-list">
+                        <!-- Dữ liệu Job Stages sẽ được load ở đây -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Xử lý sự kiện khi bấm vào nút "Xem lịch sử"
+    document.querySelectorAll('.view-history-btn').forEach(button => {
+        button.addEventListener('click', async (event) => {
+            const jobId = event.target.getAttribute('data-job-id');
+
+            const token = localStorage.getItem('authToken');
+
+            if (!token) {
+                alert('Vui lòng đăng nhập để xem lịch sử công việc.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3000/api/job/getJobStagesByJobID/${jobId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                const result = await response.json();
+                console.log(result.data);
+                if (result.success) {
+                    const jobStages = result.data;
+
+                    const jobStageList = document.getElementById('job-stage-list');
+                    jobStageList.innerHTML = '';
+
+                    jobStages.forEach((stage, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                           <td>${index + 1}</td>
+                            <td>${stage.JobStage_Job.NameJob}</td>
+                            <td>${stage.submissionDescription ? stage.submissionDescription : 'Không có mô tả'}</td>
+                            <td>${stage.JobStage_Stage.NameStage}</td>
+                            <td>${stage.description ? stage.description : 'Không có mô tả'}</td>
+                            <td>${stage.status}</td>
+                            <td>${stage.JobStage_Stage.EmailRecipient ? stage.JobStage_Stage.EmailRecipient : 'Không có người duyệt'}</td>
+                        `;
+                        jobStageList.appendChild(row);
+                    });
+                } else {
+                    alert('Không tìm thấy lịch sử công việc.');
+                }
+            } catch (error) {
+                console.error('Error fetching job stages:', error);
+                alert('Có lỗi xảy ra khi tải lịch sử công việc.');
+            }
+        });
+    });
+</script>
+
+<style>
+    table.table-striped {
+        border-collapse: separate;
+        border-spacing: 0 8px;
+    }
+
+    .modal-content {
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        width: fit-content;
+    }
+
+    .modal-header {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .view-history-btn {
+        transition: background-color 0.3s ease;
+    }
+
+    .view-history-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .badge {
+        font-size: 0.9rem;
+    }
+
+    .text-nowrap {
+        white-space: nowrap;
+    }
+
+    .table th,
+    .table td {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .table th {
+        width: 150px;
+    }
+
+    .table td {
+        width: 150px;
+    }
+</style>

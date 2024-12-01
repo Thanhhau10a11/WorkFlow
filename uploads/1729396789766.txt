@@ -1,0 +1,2 @@
+hết phiên đăng nhập ko tự động chuyển sang trang đăng nhập
+chưa xử lý email

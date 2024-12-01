@@ -1,0 +1,190 @@
+<style>
+
+.addContainer {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  width: 100%;
+  max-width: 450px;
+}
+
+h1 {
+  color: #333;
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.input-container {
+  margin-bottom: 1rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.selected-emails {
+  margin-top: 1rem;
+}
+
+.selected-emails h2 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.email-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.email-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f0f0f0;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+}
+
+.remove-btn {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #45a049;
+}
+
+.toast {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  padding: 1rem;
+  background-color: #333;
+  color: white;
+  border-radius: 4px;
+  display: none;
+}
+
+</style>
+
+<div class="wrapper">
+  <form class="addContainer" style="height: fit-content;">
+    <h1>Thêm Thành Viên vào Nhóm</h1>
+    <div class="input-container">
+      <input type="email" id="emailInput" placeholder="Nhập địa chỉ email và nhấn Enter" aria-label="Nhập địa chỉ email">
+    </div>
+    <div class="selected-emails">
+      <ul id="emailList" class="email-list"></ul>
+    </div>
+    <button type="button" id="submitBtn" class="submit-btn bg">Thêm vào nhóm</button>
+  </form>
+</div>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const emailInput = document.getElementById('emailInput');
+    const emailList = document.getElementById('emailList');
+    const submitBtn = document.getElementById('submitBtn');
+    const toast = document.getElementById('toast');
+    let emails = [];
+
+    
+
+    function addEmail(email) {
+      if (email && !emails.includes(email)) {
+        emails.push(email);
+        const li = document.createElement('li');
+        li.className = 'email-item';
+        li.innerHTML = `
+                        <span>${email}</span>
+                        <button class="remove-btn" aria-label="Xóa ${email}">X</button>
+                    `;
+        emailList.appendChild(li);
+        emailInput.value = '';
+      } else if (emails.includes(email)) {
+        showToast('Email đã được chọn.', true);
+      }
+    }
+
+    emailInput.addEventListener('keypress', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        addEmail(emailInput.value.trim());
+      }
+    });
+
+    emailList.addEventListener('click', (event) => {
+      if (event.target.classList.contains('remove-btn')) {
+        const email = event.target.previousElementSibling.textContent;
+        emails = emails.filter(e => e !== email);
+        event.target.parentElement.remove();
+      }
+    });
+
+    submitBtn.addEventListener('click', async (event) => {
+      event.preventDefault(); 
+
+      if (emails.length === 0) {
+        showToast('Vui lòng chọn ít nhất một địa chỉ email.', true);
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('authToken');
+        const groupId = '{{GroupID}}'; 
+        const response = await fetch('/api/group/addMember', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ emails, groupId })
+        });
+
+        if (!response.ok) {
+          throw new Error('Lỗi mạng, mã trạng thái: ' + response.status);
+        }
+
+        const data = await response.json();
+        if (data.success) {
+          showToast('Thêm thành viên thành công!');
+          setTimeout(() => {
+            window.location.href = `/group/detail/${groupId}`;
+          }, 1000);
+        } else {
+          throw new Error('Có lỗi xảy ra!');
+        }
+      } catch (error) {
+        console.error('Lỗi:', error);
+        showToast('Có lỗi xảy ra: ' + error.message, true);
+      }
+    });
+
+    // Focus on input field when page loads
+    emailInput.focus();
+  });
+</script>

@@ -1,0 +1,27 @@
+<link rel="stylesheet" href="/css/workFLow.css">
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <a href="/workFLow/create" style="text-decoration: none;">
+                <div class="card add-new-card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title" style="font-size:1.25rem">+</h5>
+                        <p class="card-text" style="font-size:1rem">Thêm Workflow</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        {{#each workflows}}
+        <div class="col-md-3 mb-4">
+            <a href="/workflow/detail/{{this.IDWorkFlow}}" style="text-decoration: none;">
+                <div class="card gradient-background text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">{{this.Name}}</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {{/each}}
+    </div>
+</div>

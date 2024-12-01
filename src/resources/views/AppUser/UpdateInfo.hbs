@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Information</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/formUpdate.css">
+</head>
+<body>
+    <div class="main">
+        <form id="updateForm" action="" method="POST" class="form">
+          <h3 class="heading">Cập nhật thông tin</h3>
+          <p class="desc">Vui lòng cập nhật đầy đủ thông tin để tham gia ứng dụng</p>
+          <div class="form-group">
+              <label for="email" class="form-label">Email:</label>
+              {{#if email}}
+              <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required readonly value="{{email}}">
+              {{/if}}
+          </div>
+          <div class="form-group">
+              <label for="name" class="form-label">Name:</label>
+              <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name" required>
+          </div>
+          <div class="form-group">
+              <label for="birthday" class="form-label">Birthday:</label>
+              <input type="date" class="form-control" id="birthday" name="birthday" required>
+          </div>
+          <div class="form-group">
+              <label for="phone" class="form-label">Phone:</label>
+              <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter your phone number" required>
+          </div>
+          <div class="form-group">
+              <label for="newPassword" class="form-label">New Password:</label>
+              <input type="password" class="form-control" id="newPassword" name="newPassword" placeholder="Enter new password" minlength="8">
+          </div>
+          <div class="form-group">
+              <label for="confirmPassword" class="form-label">Confirm Password:</label>
+              <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password" minlength="8">
+          </div>
+          <button type="submit" class="btn btn-primary form-submit">Update</button>
+      </form>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('updateForm');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value;
+            const birthday = document.getElementById('birthday').value;
+            const phone = document.getElementById('phone').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            const today = new Date();
+            const selectedDate = new Date(birthday);
+            if (selectedDate >= today) {
+              alert('Birthday must be in the past');
+                return;
+            }
+
+            const phoneRegex = /^[0-9]{10,15}$/; // Validate phone number (modify as needed)
+            if (!phoneRegex.test(phone)) {
+                alert('Phone number must be between 10 and 15 digits');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/appUser/update-info?email=${encodeURIComponent(email)}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, birthday, phone, newPassword })
+                });
+
+                if (response.ok) {
+                    alert('Information updated successfully');
+                    window.location.href = '/'; // Redirect to main page
+                } else {
+                    alert('Failed to update information');
+                }
+            } catch (error) {
+                console.error('Error updating information:', error);
+                alert('Failed to update information');
+            }
+        });
+    });
+    </script>
+</body>
+</html>

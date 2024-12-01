@@ -1,0 +1,230 @@
+    /* Modal Styles */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        width: 400px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        position: relative;
+    }
+
+    .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .modal-content h2 {
+        color: var(--primary-color);
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .modal-content input,
+    .modal-content textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .modal-content .btn-create {
+        width: 100%;
+        background: linear-gradient(to right, #2F80ED, #56CCF2);
+        color: white;
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        border-radius: 4px;
+    }
+
+    .modal-content .btn-create:hover {
+        background: linear-gradient(to right, #56CCF2, #2F80ED);
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .btn-create {
+        background: linear-gradient(to right, #2F80ED, #56CCF2);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+    }
+
+    .btn-create:hover {
+        background: linear-gradient(to right, #56CCF2, #2F80ED);
+    }
+
+    .card {
+        margin-top: 10px;
+        width: 250px;
+        height: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+    }
+
+    .card-title {
+        color: #343a40;
+    }
+
+    .card-text {
+        margin-bottom: 20px;
+        color: #6c757d;
+    }
+
+.btn-create, .btn-edit, .btn-delete {
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+}
+
+/* Header Styling */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Create Button */
+.btn-create {
+    background: linear-gradient(to right, #2F80ED, #56CCF2);
+    padding: 10px 20px;
+    font-size: 1rem;
+}
+
+.btn-create:hover {
+    background: linear-gradient(to right, #56CCF2, #2F80ED);
+}
+
+/* Modal Styles */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.modal-content h2 {
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.modal-content input,
+.modal-content textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.modal-content .btn-create {
+    width: 100%;
+}
+
+.modal-content .btn-create:hover {
+    background: linear-gradient(to right, #56CCF2, #2F80ED);
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Group Card Styling */
+.group-card {
+    position: relative;
+    margin-top: 10px;
+    width: 250px;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+}
+
+.card-title {
+    color: #343a40;
+}
+
+.card-text {
+    margin-bottom: 20px;
+    color: #6c757d;
+}
+
+/* Action Buttons in Group Card */
+.action-buttons {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: none;
+    gap: 5px;
+}
+
+.group-card:hover .action-buttons {
+    display: flex;
+}
+
+.btn-edit {
+    background-color: #3498db;
+    padding: 5px 10px;
+}
+
+.btn-edit:hover {
+    background-color: #2980b9;
+}
+
+.btn-delete {
+    background-color: #e74c3c;
+    padding: 5px 10px;
+}
+
+.btn-delete:hover {
+    background-color: #c0392b;
+}

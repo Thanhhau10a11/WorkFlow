@@ -1,0 +1,330 @@
+<link rel="stylesheet" href="/css/groupDetail.css">
+
+<div class="py-4 team4" data-group-id="{{Group.GroupID}}">
+
+    <div class="container">
+        <div class="row">
+            <div class="container__project">
+                <div class="btn__createWorkFlow">
+                    <a id="createWorkFlowBtn" href="/workFLow/create/{{Group.GroupID}}"
+                        style="color: aliceblue; text-decoration:none;">Create WorkFlow</a>
+                </div>
+                <nav class="mobile-category mb-4"
+                    style="width:100%; background-color:#F8F8F0; padding:20px; border-radius:10px;">
+                    <ul class="mobile-category__list" style="width:1000px; margin:0 auto;">
+                        {{#if workflows}}
+                        {{#each workflows}}
+                        <li class="mobile-category__item">
+                            <a href="/workflow/detail/{{this.IDWorkFlow}}"
+                                class="mobile-category__link white-color">{{this.Name}}</a>
+                            <button class="edit-button" onclick="editWorkFlow({{this.IDWorkFlow}})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="delete-btn" onclick="deleteWorkFlow({{this.IDWorkFlow}})">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </li>
+                        {{/each}}
+                        {{else}}
+                        <h1 class="display-center" style="width:100%; font-weight:400;">Create your WorkFlow </h1>
+                        {{/if}}
+                    </ul>
+                </nav>
+                <div class="overlay" id="editWorkFlowModal" style="display:none;">
+                    <div class="edit-form">
+                        <h4 class="modal-title">Sửa WorkFlow</h4>
+                        <form id="editWorkFlowForm">
+                            <div class="form-group">
+                                <label for="editWorkFlowName">Tên WorkFlow</label>
+                                <input type="text" id="editWorkFlowName" class="form-control"
+                                    placeholder="Nhập tên WorkFlow" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="editWorkFlowDescription">Mô tả WorkFlow</label>
+                                <textarea id="editWorkFlowDescription" class="form-control"
+                                    placeholder="Nhập mô tả WorkFlow" required></textarea>
+                            </div>
+                            <div class="btn__container">
+                                <button type="submit" id="saveWorkFlowChangesBtn" class="btn btn-primary">Lưu thay
+                                    đổi</button>
+                                <button type="button" id="closeWorkFlowModalBtn" class="btn btn-secondary">Đóng</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            <div class="container__project">
+                <div class="btn__createProject">
+                    <button id="createProjectBtn">Create Project</button>
+                </div>
+                <nav class="mobile-category mb-4"
+                    style="width:100%; background-color:#F8F8F0; padding:20px; border-radius:10px;">
+                    <ul class="mobile-category__list" style="width:1000px; margin:0 auto;">
+                        {{#if Project}}
+                        {{#each Project}}
+                        <li class="mobile-category__item">
+                            <a href="/project/detail/{{this.IdProject}}"
+                                class="mobile-category__link white-color">{{this.NameProject}}</a>
+                            <button class="edit-button" onclick="editProject({{this.IdProject}})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="delete-btn" onclick="deleteProject({{this.IdProject}})">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </li>
+                        {{/each}}
+                        {{else}}
+                        <h1 class="display-center" style="width:100%; font-weight:400;">Create your Project </h1>
+                        {{/if}}
+                    </ul>
+                </nav>
+                <div class="overlay" id="editProjectModal" style="display:none;">
+                    <div class="edit-form">
+                        <h4 class="modal-title">Sửa Project</h4>
+                        <form id="editProjectForm">
+                            <div class="form-group">
+                                <label for="editProjectName">Tên Project</label>
+                                <input type="text" id="editProjectName" class="form-control"
+                                    placeholder="Nhập tên Project" required />
+                            </div>
+                           
+                            <div class="btn__container">
+                                <button type="submit" id="saveProjectChangesBtn" class="btn btn-primary">Lưu thay
+                                    đổi</button>
+                                <button type="button" id="closeProjectModalBtn" class="btn btn-secondary">Đóng</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-7 text-center">
+                <h3 class="mb-3 text-big">{{Group.GroupName}}</h3>
+                <h6 class="subtitle">
+                    You can rely on our amazing features list and also our customer services will be a great experience
+                    for you without doubt and in no-time
+                </h6>
+            </div>
+        </div>
+
+        <div class="overlay" id="overlay" style="display:none;">
+            <div id="projectForm">
+                <h4>Create Project</h4>
+                <input type="text" id="projectName" placeholder="Project Name" required />
+                <textarea id="projectInfo" placeholder="Project Info" required></textarea>
+                <div id="jobsContainer"></div>
+                <div class="btn__container">
+                    <button id="submitProjectBtn" class="bg">Submit Project</button>
+                    {{!-- <button id="addJobBtn" class="bg">Add Job</button> --}}
+                    <button id="closeFormBtn" class="bg-red">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-3 mb-4 locShadow mx-2">
+                <a href="#" class="add-member-link">
+                    <div class="add-member-card">
+                        <div class="add-member-image">
+                            <img src="/img/plus.png" alt="Add Member" class="img-fluid rounded-circle" />
+                        </div>
+                        <div class="add-member-text text-center">
+                            <h5 class="mt-4 font-weight-medium mb-0">Add</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {{#each members}}
+            <div class="col-lg-3 mb-4 locShadow mx-2">
+                <div class="member-card">
+                    <div class="member-image display-center">
+                        <img src="/img/user.png" alt="Member" class="img-fluid rounded-circle" />
+                    </div>
+                    <div class="member-text text-center">
+                        <h5 class="mt-4 font-weight-medium mb-0">{{this.Username}}</h5>
+                    </div>
+                    <button class="delete-button"
+                        onclick="removeMember({{../Group.GroupID}}, {{this.IDUser}})">Xóa</button>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</div>
+
+<!-- Add Member Form -->
+<div class="overlay add-member-overlay" style="display:none;"></div>
+
+<!-- Add Member Form -->
+<div class="wrapper add-member-form" style="display:none;">
+    <form class="addContainer">
+        <h1>Thêm Thành Viên vào Nhóm</h1>
+        <div class="input-container">
+            <input type="email" id="emailInput" placeholder="Nhập địa chỉ email và nhấn Enter"
+                aria-label="Nhập địa chỉ email">
+        </div>
+        <div class="selected-emails">
+            <ul id="emailList" class="email-list"></ul>
+        </div>
+        <button type="button" id="submitBtn" class="submit-btn bg">Add members</button>
+        <button type="button" id="closeMemberFormBtn" class="submit-btn bg-red">Close</button>
+    </form>
+</div>
+<script src="/js/Group_CreateProject.js"></script>
+<script src="/js/Group_AddMembers.js"></script>
+<script>
+    let currentWorkFlowId;
+    let currentProjectId;
+
+    // Lấy token từ localStorage  
+    const token = localStorage.getItem('authToken');
+
+    function editWorkFlow(workflowId) {
+        fetch(`/api/workflow/${workflowId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('editWorkFlowName').value = data.Name;
+                document.getElementById('editWorkFlowDescription').value = data.Description;
+                currentWorkFlowId = workflowId;
+                document.getElementById('editWorkFlowModal').style.display = 'block';
+            })
+            .catch(error => console.error('Lỗi khi lấy dữ liệu workflow:', error));
+    }
+
+    function editProject(projectId) {
+        fetch(`/api/project/${projectId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('editProjectName').value = data.NameProject;
+                currentProjectId = projectId;
+                document.getElementById('editProjectModal').style.display = 'block';
+            })
+            .catch(error => console.error('Lỗi khi lấy dữ liệu project:', error));
+    }
+
+    // Lưu thay đổi cho WorkFlow  
+    document.getElementById('saveWorkFlowChangesBtn').addEventListener('click', () => {
+        event.preventDefault();
+        const name = document.getElementById('editWorkFlowName').value;
+        const description = document.getElementById('editWorkFlowDescription').value;
+
+        fetch(`/api/workflow/update/${currentWorkFlowId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ Name: name, Description: description }),
+        })
+            .then(response => {
+                if (response.ok) {
+                    showToast('Thay đổi đã được lưu thành công!');
+                    setTimeout(() => {
+                        location.reload();
+                    },1000);
+                } else {
+                    showToast('Lỗi khi lưu thay đổi.', true);
+                }
+            })
+            .catch(error => console.error('Lỗi cập nhật workflow:', error));
+    });
+
+    // Lưu thay đổi cho Project  
+    document.getElementById('saveProjectChangesBtn').addEventListener('click', () => {
+        event.preventDefault();
+        const name = document.getElementById('editProjectName').value;
+
+        fetch(`/api/project/update/${currentProjectId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,  
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ NameProject: name }),
+        })
+            .then(response => {
+                if (response.ok) {
+                    showToast('Thay đổi đã được lưu thành công!');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000); 
+                } else {
+                    showToast('Lỗi khi lưu thay đổi.', true);
+                }
+            })
+            .catch(error => console.error('Lỗi cập nhật project:', error));
+    });
+
+    // Đóng modal  
+    document.getElementById('closeWorkFlowModalBtn').addEventListener('click', () => {
+        document.getElementById('editWorkFlowModal').style.display = 'none';
+    });
+
+    document.getElementById('closeProjectModalBtn').addEventListener('click', () => {
+        document.getElementById('editProjectModal').style.display = 'none';
+    });
+
+    function deleteWorkFlow(workflowId) {
+        if (confirm('Bạn có chắc chắn muốn xóa workflow này không?')) {
+            fetch(`/api/workflow/delete/${workflowId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`  
+                }
+            }).then(response => {
+                if (response.ok) {
+                    showToast('Xóa thành công !');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+
+                } else {
+                    showToast('Lỗi khi xóa workflow.', true);
+                }
+            });
+        }
+    }
+
+    function deleteProject(projectId) {
+    if (confirm('Bạn có chắc chắn muốn xóa project này không?')) {
+        fetch(`/api/project/delete/${projectId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then(response => {
+            if (response.ok) {
+                showToast("Xóa thành công!");
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else if (response.status === 403) {
+                showToast('Không thể xóa project mặc định.', true);
+            } else {
+                showToast('Lỗi khi xóa project.', true);
+            }
+        }).catch(error => {
+            console.error('Lỗi:', error);
+            showToast('Có lỗi xảy ra trong quá trình xóa project.', true);
+        });
+    }
+}
+
+</script>

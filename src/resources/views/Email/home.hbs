@@ -1,0 +1,101 @@
+<div class="container mt-5">
+  <h2 class="text-center">Cấu hình tài khoản Email</h2>
+  <form id="email-config-form">
+    <div class="mb-3">
+      <label for="email" class="form-label">Email:</label>
+      <input type="email" id="email" class="form-control" placeholder="Nhập địa chỉ email" required />
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Mật khẩu ứng dụng:</label>
+      <input type="password" id="password" class="form-control" placeholder="Nhập mật khẩu ứng dụng" required />
+    </div>
+    <div class="mb-3">
+      <label for="host" class="form-label">SMTP Host:</label>
+      <input type="text" id="host" class="form-control" placeholder="Nhập SMTP Host" value="smtp.gmail.com" required />
+    </div>
+    <div class="mb-3">
+      <label for="port" class="form-label">SMTP Port:</label>
+      <input type="number" id="port" class="form-control" placeholder="Nhập SMTP Port" value="587" required />
+    </div>
+    <div class="form-check mb-3">
+      <input type="checkbox" id="secure" class="form-check-input" />
+      <label for="secure" class="form-check-label">Sử dụng kết nối bảo mật (SSL/TLS)</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Lưu cấu hình</button>
+  </form>
+  <div id="result-message" class="mt-3"></div>
+
+  <button id="test-connection" class="btn btn-secondary mt-3">Kiểm tra kết nối</button>
+  <div id="test-message" class="mt-3"></div>
+</div>
+
+
+<script>
+  // Lắng nghe sự kiện submit form
+document.getElementById('email-config-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  // Lấy dữ liệu từ form
+  const Email = document.getElementById('email').value;
+  const Password = document.getElementById('password').value;
+  const Host = document.getElementById('host').value;
+  const Port = document.getElementById('port').value;
+  const Secure = document.getElementById('secure').checked;
+
+  // Lấy token từ localStorage hoặc sessionStorage
+  const token = localStorage.getItem('authToken'); // Thay đổi nếu bạn lưu trữ token ở nơi khác
+
+  try {
+    const response = await fetch('/api/emailConfig', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`  // Đính kèm token vào header
+      },
+      body: JSON.stringify({ Email, Password, Host, Port, Secure }),
+    });
+
+    const result = await response.json();
+    const messageDiv = document.getElementById('result-message');
+
+    if (response.ok) {
+      messageDiv.textContent = 'Cấu hình email đã được lưu thành công!';
+      messageDiv.className = 'alert alert-success';
+    } else {
+      messageDiv.textContent = `Lỗi: ${result.message}`;
+      messageDiv.className = 'alert alert-danger';
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+});
+
+// Lắng nghe sự kiện kiểm tra kết nối
+document.getElementById('test-connection').addEventListener('click', async () => {
+  // Lấy token từ localStorage hoặc sessionStorage
+  const token = localStorage.getItem('authToken');
+
+  try {
+    const response = await fetch('/api/emailConfig/test', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}` // Đính kèm token vào header
+      }
+    });
+
+    const result = await response.json();
+    const messageDiv = document.getElementById('test-message');
+
+    if (response.ok) {
+      messageDiv.textContent = 'Kết nối thành công!';
+      messageDiv.className = 'alert alert-success';
+    } else {
+      messageDiv.textContent = `Lỗi kết nối: ${result.message}`;
+      messageDiv.className = 'alert alert-danger';
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+});
+
+</script>

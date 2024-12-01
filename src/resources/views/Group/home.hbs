@@ -1,0 +1,280 @@
+<link rel="stylesheet" href="/css/homeGroup.css">
+<div class="container">
+    <div class="header">
+        <h1 class="text-big">Groups</h1>
+        <button class="btn btn-create text-small" id="openCreateGroupModal">Create New Group</button>
+    </div>
+
+    <input type="text" class="form-control mb-4" placeholder="Search groups...">
+
+    <div class="row">
+        {{#each groups}}
+        <div class="col-md-3">
+            <div class="card group-card">
+                <a style="text-decoration:none!important" href="/group/detail/{{this.GroupID}}">
+                    <div class="card-body">
+                        <h5 class="card-title text" style="margin-bottom: 20px;">{{this.GroupName}}</h5>
+                        <p class="card-text" style="margin-bottom: 30px; font-family: math;">Group for designers to collaborate on projects.</p>
+                        <p class="card-text"><small class="text-muted">{{this.memberCount}} members</small></p>
+                    </div>
+                </a>
+                <div class="action-buttons">
+                    <button class="btn btn-edit" onclick="editGroup('{{this.GroupID}}')">Edit</button>
+                    <button class="btn btn-delete" onclick="deleteGroup('{{this.GroupID}}')">Delete</button>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>
+
+<!-- Modal for Creating New Group -->
+<div id="createGroupModal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Create New Group</h2>
+        <form id="createGroupForm">
+            <div class="mb-4">
+                <label for="groupName">Group Name:</label>
+                <input type="text" id="groupName" name="GroupName" placeholder="Enter group name" required>
+            </div>
+            <div class="mb-4">
+                <label for="description">Description:</label>
+                <textarea id="description" name="Description" placeholder="Provide a short description"
+                    rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-create">Create Group</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal for Editing Group -->
+<div id="editGroupModal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close" id="closeEditModal">&times;</span>
+        <h2>Edit Group</h2>
+        <form id="editGroupForm">
+            <div class="mb-4">
+                <label for="editGroupName">Group Name:</label>
+                <input type="text" id="editGroupName" name="GroupName" placeholder="Enter group name" required>
+            </div>
+            <div class="mb-4">
+                <label for="editDescription">Description:</label>
+                <textarea id="editDescription" name="Description" placeholder="Provide a short description"
+                    rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-save bg white-color">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const openModalBtn = document.getElementById('openCreateGroupModal');
+        const createModalOverlay = document.getElementById('createGroupModal');
+        const closeCreateModalBtn = document.querySelector('.close');
+
+        // Open create group modal
+        openModalBtn.addEventListener('click', function () {
+            createModalOverlay.style.display = 'flex';
+        });
+
+        // Close create group modal
+        closeCreateModalBtn.addEventListener('click', function () {
+            createModalOverlay.style.display = 'none';
+        });
+
+        window.addEventListener('click', function (event) {
+            if (event.target === createModalOverlay) {
+                createModalOverlay.style.display = 'none';
+            }
+        });
+    });
+
+    //create group
+     document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('createGroupForm');
+        const groupNameInput = document.getElementById('groupName');
+        const descriptionInput = document.getElementById('description');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            let isValid = true;
+
+            if (groupNameInput.value.trim() === '') {
+                groupNameInput.style.borderColor = 'var(--error-color)';
+                isValid = false;
+            } else {
+                groupNameInput.style.borderColor = '#bdc3c7';
+            }
+
+            if (descriptionInput.value.trim() === '') {
+
+            } else {
+                descriptionInput.style.borderColor = '#bdc3c7';
+            }
+
+            if (isValid) {
+                const formData = {
+                    GroupName: groupNameInput.value,
+                    description: descriptionInput.value
+                };
+
+                const token = localStorage.getItem('authToken');
+
+                fetch('/group/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+
+                    },
+                    body: JSON.stringify(formData)
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            return response.json().then(err => {
+                                // Xử lý lỗi từ server  
+                                if (response.status === 403) {
+                                    throw new Error(err.error || 'Có lỗi xảy ra!'); // Xử lý lỗi không có quyền truy cập  
+                                }
+                                throw new Error(err.message || 'Có lỗi xảy ra!'); // Xử lý các lỗi khác  
+                            });
+                        }
+                    })
+                    .then(data => {
+                        showToast('Group created successfully!');
+                        setTimeout(() => {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                            }
+                            form.reset();
+                        }, 1000);
+                    })
+                    .catch(error => {
+                        showToast('Error: ' + error.message, true);
+                    });
+            } else {
+                showToast('Please fill in all required fields.', true);
+            }
+        });
+
+        [groupNameInput, descriptionInput].forEach(input => {
+            input.addEventListener('focus', function () {
+                this.style.borderColor = 'var(--primary-color)';
+            });
+
+            input.addEventListener('blur', function () {
+                this.style.borderColor = '#bdc3c7';
+            });
+        });
+    });
+
+    function editGroup(groupId) {
+        const token = localStorage.getItem('authToken');
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+        };
+
+        fetch(`/api/group/${groupId}`, {
+            method: 'GET', 
+            headers: headers 
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                  
+                    document.getElementById('editGroupName').value = data.GroupName;
+                    document.getElementById('editDescription').value = data.Description;
+
+                    const editModalOverlay = document.getElementById('editGroupModal');
+                    editModalOverlay.style.display = 'flex';
+
+                    const editForm = document.getElementById('editGroupForm');
+                    editForm.setAttribute('data-id', groupId);
+                }
+            })
+            .catch(error => {
+                showToast('Error: ' + error.message, true);
+            });
+    }
+
+
+    // Handle edit form submission
+    document.getElementById('editGroupForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const groupId = this.getAttribute('data-id');
+        const updatedData = {
+            GroupName: document.getElementById('editGroupName').value,
+            Description: document.getElementById('editDescription').value
+        };
+
+        const token = localStorage.getItem('authToken');
+
+        fetch(`/api/group/update/${groupId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(updatedData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    showToast('Group updated successfully!');
+                    setTimeout(() => {
+                        window.location.reload(); 
+                    }, 1000);
+                } else {
+                    return response.json().then(err => {
+                        throw new Error(err.message || 'Error updating group.');
+                    });
+                }
+            })
+            .catch(error => {
+                showToast('Error: ' + error.message, true);
+            });
+    });
+
+    // Close the edit modal
+    document.getElementById('closeEditModal').addEventListener('click', function () {
+        document.getElementById('editGroupModal').style.display = 'none';
+    });
+
+    window.addEventListener('click', function (event) {
+        const editModalOverlay = document.getElementById('editGroupModal');
+        if (event.target === editModalOverlay) {
+            editModalOverlay.style.display = 'none';
+        }
+    });
+
+
+    function deleteGroup(groupId) {
+    const token = localStorage.getItem('authToken');
+    if (confirm('Are you sure you want to delete this group?')) {
+        fetch(`/api/group/delete/${groupId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    // Nếu phản hồi không ok (không phải 2xx), ném lỗi
+                    throw new Error(`${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                showToast('Group deleted successfully!');
+                setTimeout(() => location.reload(), 1000);
+            })
+            .catch(error => showToast( error.message, true));
+    }
+}
+</script>
