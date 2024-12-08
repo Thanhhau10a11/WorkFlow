@@ -159,22 +159,7 @@
                         localStorage.setItem('IDUser',data.IDUser);
                         const token = localStorage.getItem('authToken');
                         const DOMAIN = localStorage.getItem('DOMAIN');;
-                        fetch(`${DOMAIN}`, {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': 'Bearer ' + token,
-                            }
-                        })
-                            .then(response => {
-                                if (response.ok) {
-                                    window.location.href = '/';
-                                } else {
-                                    errorMessage.textContent = 'Login failed. Please try again.';
-                                }
-                            })
-                            .catch(error => {
-                                errorMessage.textContent = 'An error occurred: ' + error.message;
-                            });
+                        window.location.href = '/?token=' + encodeURIComponent(token);
                     } else {
                         errorMessage.textContent = data.message || 'Login failed';
                     }

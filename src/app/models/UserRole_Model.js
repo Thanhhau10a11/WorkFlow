@@ -4,7 +4,7 @@ const sequelize = require('../../config/db');
 const AppUser = require('./User_Model');
 const Role = require('./Role_Model');
 
-const UserRole = sequelize.define('UserRole', {
+const UserRole = sequelize.define('userrole', {
     IDUser: {
         type: DataTypes.INTEGER,
         references: {
@@ -20,7 +20,7 @@ const UserRole = sequelize.define('UserRole', {
         }
     }
 }, {
-    tableName: 'UserRoles',
+    tableName: 'userroles',
     timestamps: false
 });
 

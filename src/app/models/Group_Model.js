@@ -2,7 +2,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
 
-const Group = sequelize.define('Group', {
+const Group = sequelize.define('group', {
   GroupID: {
     type: DataTypes.INTEGER,
     autoIncrement: true,

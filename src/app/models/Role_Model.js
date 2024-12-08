@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
 
-const Role = sequelize.define('Role', {
+const Role = sequelize.define('role', {
     RoleID: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -13,7 +13,7 @@ const Role = sequelize.define('Role', {
         allowNull: false
     }
 }, {
-    tableName: 'Roles',
+    tableName: 'roles',
     timestamps: false
 });
 

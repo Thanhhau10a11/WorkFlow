@@ -35,7 +35,9 @@ const Role = require('../app/models/Role_Model'); // Điều chỉnh đường d
 
 async function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    // const token = authHeader && authHeader.split(' ')[1];
+    const token = (authHeader && authHeader.split(' ')[1]) || req.query.token;
+    console.log(token)
 
     if (!token) {
         return res.redirect('/login');
@@ -60,8 +62,16 @@ async function authenticateToken(req, res, next) {
             IDUser: user.IDUser,
             Name: user.Name,
             Username: user.Username,
-            roles: user.Roles.map(role => role.RoleName) 
+            roles: user.Roles.map(role => role.RoleName) ,
+            Token : token
         };
+
+         // Lưu thông tin vào cookie
+         res.cookie('userData', JSON.stringify(req.user), {
+            httpOnly: true,  // Không cho phép truy cập từ JavaScript
+            secure: process.env.NODE_ENV === 'production',  // Chỉ gửi qua HTTPS
+            maxAge: 3600000  // Cookie hết hạn sau 1 giờ
+        });
 
         next();
     } catch (err) {

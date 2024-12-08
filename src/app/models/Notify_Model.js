@@ -2,7 +2,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
 
-const Notify = sequelize.define('Notify', {
+const Notify = sequelize.define('notify', {
   IDNotify: {
     type: DataTypes.INTEGER,
     autoIncrement: true,

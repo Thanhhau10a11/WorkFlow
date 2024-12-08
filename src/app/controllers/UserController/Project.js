@@ -3,8 +3,9 @@ const axios = require('axios');
 
 class ProjectController {
     async detail(req,res){
+        
         const ProjectID= req.params.ProjectID;
-        const token = req.session.user.token;
+        const token =req.cookies.user_info ? JSON.parse(req.cookies.user_info).token : null;
         const headers = {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -26,8 +27,9 @@ class ProjectController {
 
     async createProject(req, res) {
         try {
-            const token = req.session.user.token; 
-            const IDCreator = req.session.user.IDUser; 
+            
+            const token = req.cookies.user_info ? JSON.parse(req.cookies.user_info).token : null; 
+            const IDCreator = req.cookies.user_info ? JSON.parse(req.cookies.user_info).IDUser : null; 
             const GroupID = req.params.GroupID; 
             const { NameProject, Progress, InfoProject, jobs } = req.body; 
             if (!NameProject || !GroupID || !IDCreator) {

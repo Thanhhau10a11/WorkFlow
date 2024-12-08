@@ -4,7 +4,7 @@ const sequelize = require('../../config/db');
 const AppUser = require('./User_Model');
 const Group = require('./Group_Model');
 
-const GroupMember = sequelize.define('GroupMember', {
+const GroupMember = sequelize.define('groupmember', {
   IDUser: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -37,7 +37,7 @@ const GroupMember = sequelize.define('GroupMember', {
     allowNull: false
   }
 }, {
-  tableName: 'GroupMember',
+  tableName: 'groupmember',
   timestamps: false,
   indexes: [
     {

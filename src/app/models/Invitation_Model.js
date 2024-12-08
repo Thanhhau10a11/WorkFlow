@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db'); // Đảm bảo đường dẫn đúng với cấu hình của bạn
 
-const Invitation = sequelize.define('Invitation', {
+const Invitation = sequelize.define('invitation', {
   ID: {
     type: DataTypes.INTEGER,
     autoIncrement: true,

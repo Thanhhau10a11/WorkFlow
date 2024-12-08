@@ -2,7 +2,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
 
-const Stage = sequelize.define('Stage', {
+const Stage = sequelize.define('stage', {
   IdStage: {
     type: DataTypes.INTEGER,
     autoIncrement: true,

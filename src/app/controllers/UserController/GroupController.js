@@ -1,23 +1,10 @@
 const axios = require('axios');
 const { Group, GroupMember } = require('../../models/index');
 class GroupController {
-    // async index(req, res) {
-    //     const token = req.session.user.token
-    //     const IDUser = req.session.user.IDUser
-    //     const response = await axios.get(`${process.env.DOMAIN}/api/group/get/${IDUser}`, {
-    //         headers: {
-    //             'Authorization': `Bearer ${token}`,
-    //         }
-    //     });
-    //     const groups = response.data
-    //     res.render('Group/home', {
-    //         groups,
-    //         layout: 'main.hbs'
-    //     });
-    // }
     async index(req, res) {  
-        const token = req.session.user.token;  
-        const IDUser = req.session.user.IDUser;  
+        
+        const token = req.cookies.user_info ? JSON.parse(req.cookies.user_info).token : null;
+        const IDUser = req.cookies.user_info ? JSON.parse(req.cookies.user_info).IDUser : null;  
         try {  
             const response = await axios.get(`${process.env.DOMAIN}/api/group/get/${IDUser}`, {  
                 headers: {  
@@ -61,14 +48,14 @@ class GroupController {
         try {
             
             const GroupName = req.body.GroupName
-            const IDUser = req.session.user.IDUser
+            const IDUser = req.cookies.user_info ? JSON.parse(req.cookies.user_info).IDUser : null
 
             const groupData = {
                 groupName: GroupName,
                 IDUser: IDUser,
             }
 
-            const token = req.session.user.token
+            const token = req.cookies.user_info ? JSON.parse(req.cookies.user_info).token : null
             const headers = {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -86,9 +73,10 @@ class GroupController {
         }
     }
     async detail(req, res) {
+        
         const GroupID = req.params.id
-        const token = req.session.user.token
-        const IDUser = req.session.user.IDUser
+        const token = req.cookies.user_info ? JSON.parse(req.cookies.user_info).token : null
+        const IDUser = req.cookies.user_info ? JSON.parse(req.cookies.user_info).IDUser : null
         const headers = {
             Authorization: `Bearer ${token}`
         };
@@ -125,7 +113,8 @@ class GroupController {
     async removeMember(req, res) {
         const { GroupID, IDUser } = req.params;
         try {
-            const token = req.session.user.token;
+            
+            const token = req.cookies.user_info ? JSON.parse(req.cookies.user_info).token : null;
 
             const headers = {
                 Authorization: `Bearer ${token}`

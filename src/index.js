@@ -10,38 +10,12 @@ const port = 3000;
 
 const { sequelize } = require('./app/models/index');
 
-// Cài đặt session-store với connect-session-sequelize  
-const session = require('express-session');
-const SequelizeStore = require('connect-session-sequelize')(session.Store);
-
-// Tạo session store với Sequelize  
-const sessionStore = new SequelizeStore({
-  db: sequelize,
-  checkExpirationInterval: 15 * 60 * 1000, // Kiểm tra và xóa session cũ mỗi 15 phút  
-  expiration: 24 * 60 * 60 * 1000 // Thời gian sống của session (24 giờ)  
-});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(morgan('combined'));
 
-// Cấu hình session  
-app.use(session({
-  store: sessionStore,
-  secret: process.env.JWT_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: { maxAge: 10800000 }  // Thời gian sống của cookie session 3 giờ  
-}));
-
-sequelize.sync()
-  .then(() => {
-    console.log('Models synchronized with the database');
-    return sessionStore.sync(); // Đồng bộ bảng session  
-  })
-  .then(() => console.log('Session store synchronized with the database'))
-  .catch(err => console.error('Unable to synchronize the database:', err));
 
 // Sử dụng bodyParser và cookieParser middleware  
 const bodyParser = require('body-parser');

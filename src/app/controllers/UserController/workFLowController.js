@@ -4,8 +4,9 @@ class WorkFlowController {
     async index(req, res) {
         try {
 
-            const IDUser = req.session.user.IDUser
-            const token = req.session.user.token
+           
+            const IDUser = req.cookies.user_info ? JSON.parse(req.cookies.user_info).IDUser : null
+            const token = req.cookies.user_info ? JSON.parse(req.cookies.user_info).token : null
             const headers = {
                 'Authorization': `Bearer ${token}`
             }
@@ -19,9 +20,10 @@ class WorkFlowController {
     }
 
     async createWorkFLow(req, res) {
+       
         const GroupID = req.params.GroupID;
-        const token = req.session.user.token
-        const IDUser = req.session.user.IDUser
+        const token = req.cookies.user_info ? JSON.parse(req.cookies.user_info).token : null
+        const IDUser = req.cookies.user_info ? JSON.parse(req.cookies.user_info).IDUser : null
         const headers = {
             'Authorization': `Bearer ${token}`
         }
@@ -36,7 +38,8 @@ class WorkFlowController {
     }
     async detailWorkFlow(req, res) {
         const IDWorkFlow = req.params.id;
-        const token = req.session.user.token;
+       
+        const token = req.cookies.user_info ? JSON.parse(req.cookies.user_info).token : null;
 
         try {
             const headers = {
@@ -86,7 +89,8 @@ class WorkFlowController {
             }
 
             // Lay du lieu nguoi dung trong nhom
-            const IDUser = req.session.user.IDUser
+           
+            const IDUser = req.cookies.user_info ? JSON.parse(req.cookies.user_info).token : null
             // const responseGroups = await axios.get(`${process.env.DOMAIN}/api/group/getDetailAllGroup/${IDUser}`, { headers })
             // const groups = responseGroups.data
             const responseMember = await axios.get(`${process.env.DOMAIN}/api/group/getMember/${GroupID}`, { headers });

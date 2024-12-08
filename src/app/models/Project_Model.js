@@ -3,7 +3,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
 const Group = require('./Group_Model')
 
-const Project = sequelize.define('Project', {
+const Project = sequelize.define('project', {
   IdProject: {
     type: DataTypes.INTEGER,
     autoIncrement: true,

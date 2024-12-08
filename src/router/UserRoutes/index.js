@@ -16,14 +16,14 @@ const historyRouter = require('./history.js');
 
 
 // Sử dụng các router
-router.use('/workFlow', checkLogin, workFLowRouter)
-router.use('/group', checkLogin, groupRouter);
+router.use('/workFlow',checkLogin,  workFLowRouter)
+router.use('/group',checkLogin,  groupRouter);
 router.use('/appUser', AppUserRouter);
-router.use('/', checkLogin, homeRouter);
-router.use('/job', checkLogin, jobRouter);
-router.use('/project', checkLogin, projectRouter);
-router.use('/configEmail', checkLogin, configEmailRouter);
-router.use('/history', checkLogin, historyRouter);
+router.use('/',checkLogin, homeRouter);
+router.use('/job',checkLogin,  jobRouter);
+router.use('/project',checkLogin,  projectRouter);
+router.use('/configEmail',checkLogin,  configEmailRouter);
+router.use('/history',checkLogin,  historyRouter);
 
 
 module.exports = router;

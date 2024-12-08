@@ -1,144 +1,135 @@
-<!-- views/createWorkflow.hbs -->
-<div class="app-body-main-content">
-    <div class="container">
-        <div class="form-container">
-            <h2>Tạo mới Workflow cho Nhóm: {{Group.GroupName}}</h2>
-            <form id="workflowForm">
-                <input type="hidden" id="groupId" value="{{Group.GroupID}}">
+ <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
 
-                <div class="form-group">
-                    <label for="workflowName" class="required">Tên Workflow <span class="required-star">*</span></label>
-                    <input type="text" class="form-control" id="workflowName" placeholder="Nhập tên workflow" required>
-                </div>
-                <div class="form-group">
-                    <label for="workflowDescription">Mô tả Workflow</label>
-                    <input type="text" class="form-control" id="workflowDescription" placeholder="Nhập mô tả">
-                </div>
-                <h5>Stages</h5>
-                <div id="stagesContainer"></div>
-                <div class="btn-container">
-                    <button type="button" class="btn btn-secondary" id="addStageBtn">Thêm Stage</button>
-                    <button type="button" class="btn btn-primary bg" id="saveWorkflowBtn">Lưu Workflow</button>
-                </div>
-            </form>
+        .form-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        .form-container h2 {
+            margin-bottom: 1.5rem;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+            margin: 15px 0;
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .required-star {
+            color: #dc3545;
+            margin-left: 4px;
+        }
+
+        .stage {
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stage h6 {
+            margin-bottom: 1rem;
+            color: #495057;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -0.5rem;
+            margin-left: -0.5rem;
+        }
+
+        .form-row > .col {
+            flex: 1;
+            padding: 0 0.5rem;
+        }
+
+        .show-recipient {
+            margin-right: 0.5rem;
+        }
+
+        .recipient-field {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-body-main-content">
+        <div class="container">
+            <div class="form-container">
+                <h2>Tạo mới Workflow cho Nhóm: {{Group.GroupName}}</h2>
+                <form id="workflowForm">
+                    <input type="hidden" id="groupId" value="{{Group.GroupID}}">
+
+                    <div class="form-group">
+                        <label for="workflowName" class="required">Tên Workflow <span class="required-star">*</span></label>
+                        <input type="text" class="form-control" id="workflowName" placeholder="Nhập tên workflow" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="workflowDescription">Mô tả Workflow</label>
+                        <textarea class="form-control" id="workflowDescription" placeholder="Nhập mô tả" rows="3"></textarea>
+                    </div>
+                    <h5>Stages</h5>
+                    <div id="stagesContainer"></div>
+                    <div class="btn-container">
+                        <button type="button" class="btn btn-secondary" id="addStageBtn">Thêm Stage</button>
+                        <button type="button" class="btn btn-primary" id="saveWorkflowBtn">Lưu Workflow</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-
-
-<style>
-    .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
-        margin: 0 auto;
-    }
-
-    .form-container {
-        max-width: 800px;
-        width: 100%;
-        padding: 20px;
-        background-color: #ffffff;
-        border: 1px solid #ced4da;
-        border-radius: 5px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .form-container h2 {
-        margin-bottom: 20px;
-    }
-
-    .form-group {
-        margin-bottom: 15px;
-    }
-
-    .form-row {
-        display: flex;
-        flex-wrap: wrap;
-        margin-bottom: 15px;
-    }
-
-    .form-row .col {
-        flex: 1;
-        margin-right: 15px;
-    }
-
-    .form-row .col:last-child {
-        margin-right: 0;
-    }
-
-    .btn-container {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 20px;
-    }
-
-    .btn-primary,
-    .btn-secondary {
-        margin-right: 10px;
-    }
-
-    .required-star {
-        color: red;
-        font-size: 1.2rem;
-        margin-left: 5px;
-    }
-
-    .required {
-        font-weight: bold;
-    }
-
-    .stage {
-        border: 1px solid #ced4da;
-        border-radius: 5px;
-        padding: 15px;
-        margin-bottom: 20px;
-        background-color: #ffffff;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .job {
-        border: 1px solid #ced4da;
-        border-radius: 5px;
-        padding: 15px;
-        margin-bottom: 10px;
-        background-color: #f8f9fa;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .recipient-field {
-        display: none;
-    }
-
-    .stageRecipient {
-        border-radius: 0.25rem;
-        border: 1px solid #ced4da;
-        background-color: #ffffff;
-        padding: 0.375rem 0.75rem;
-        font-size: 1rem;
-        line-height: 1.5;
-        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    }
-
-    .stageRecipient:focus {
-        border-color: #80bdff;
-        outline: 0;
-        box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
-    }
-
-    .stageRecipient option {
-        padding: 0.5rem;
-    }
-
-    .stageRecipient optgroup {
-        font-weight: bold;
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #e9ecef;
-        padding: 0.25rem 0;
-    }
-</style>
 
 <script>
     $(document).ready(function () {

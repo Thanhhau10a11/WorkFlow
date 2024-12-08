@@ -107,88 +107,6 @@ class JobCOntroller {
     }
   }
 
-  // tao job cho group
-  // async createJobForGroup(req, res) {
-
-  //   const { GroupID, NameJob, IDWorkFlow, IDProject, approximateTime, IDUserPerform, jobData } = req.body;
-  //   console.log("Request body:", req.body);
-
-  //   try {
-  //     const group = await Group.findByPk(GroupID);
-
-  //     const workflow = await Workflow.findByPk(IDWorkFlow);
-
-  //     const project = await Project.findByPk(IDProject);
-
-  //     // if (!group || !workflow || !project) {
-  //     if (!group || !workflow) {
-  //       return res.status(400).json({ message: 'Group, WorkFlow, or Project not found.' });
-  //     }
-
-  //     const newJob = await Job.create({
-  //       ...jobData,
-  //       NameJob: NameJob,
-  //       approximateTime: approximateTime,
-  //       GroupID: GroupID,
-  //       IDWorkFlow,
-  //       IDProject,
-  //       IDUserPerform: IDUserPerform,
-  //       IDCreator: req.user.id,
-  //       TimeStart: new Date()
-  //     });
-
-
-  //     const firstStage = await Stage.findOne({
-  //       where: { IDWorkFlow: IDWorkFlow },
-  //       previousStage: null // Sắp xếp theo thứ tự của stage
-  //     });
-  //     // Tạo bản ghi JobStage cho Stage đầu tiên
-  //     console.log("firstStage", firstStage)
-  //     const newJobStage = await JobStage.create({
-  //       IDJob: newJob.IDJob,
-  //       IDStage: firstStage.IdStage,
-  //     });
-  //     console.log("newJobStage", newJobStage)
-
-
-  //     const user = await AppUser.findOne({ where: { IDUser: IDUserPerform } });
-
-  //     if (user) {
-  //       const IDRecipient = user.IDUser;
-
-  //       // Gửi email thông báo
-  //       const invitationUrl = `${process.env.DOMAIN}/api/email/sendEmailNoti`;
-  //       axios.post(invitationUrl, {
-  //         email: user.Username,
-  //         type: 'job',
-  //         username: user.Username,
-  //         jobName: NameJob,
-  //       }, {
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           'Authorization': `Bearer ${req.headers['authorization'].split(' ')[1]}`,
-  //         },
-  //       });
-
-  //       // Gửi thông báo qua socket
-  //       const notificationTitle = `Bạn đã nhận được một job mới: ${NameJob}`;
-  //       const notificationMessage = `Bạn đã được nhận Job "${NameJob}" trong workflow "${workflow.Name}".`;
-  //       await sendNotification(IDRecipient, notificationTitle, notificationMessage, req.app.locals.io);
-  //     } else {
-  //       console.error(`Không tìm thấy người dùng với email: ${recipientEmail}`);
-  //     }
-
-  //     //return res.status(201).json(newJob);
-  //     return res.status(201).json({
-  //       message: 'Job được tạo và gửi vào Stage đầu tiên.',
-  //       job: newJob,
-  //       jobStage: newJobStage,
-  //     });
-  //   } catch (error) {
-  //     console.error('Error creating job:', error);
-  //     return res.status(500).json({ message: error.message });
-  //   }
-  // }
   async createJobForGroup(req, res) {
     const { GroupID, NameJob, IDWorkFlow, IDProject, approximateTime, IDUserPerform, jobData } = req.body;
     console.log("Request body:", req.body);
@@ -733,80 +651,6 @@ class JobCOntroller {
     }
   }
 
-
-  //Lay job<->stage da phan quyenn
-  // async getJobsForRecipient(req, res) {
-  //   const userId = req.user.IDUser;
-  //   const userRoles = req.user.roles;
-  //   try {
-  //       let jobs;
-  //       const isAdmin = userRoles.includes('admin');
-  //       if (isAdmin) {
-  //           jobs = await JobStage.findAll({
-  //               where: {
-  //                   status: 'pending'
-  //               },
-  //               include: [
-  //                   {
-  //                       model: Job,
-  //                       as: 'JobStage_Job',
-  //                       include: [
-  //                           {
-  //                               model: AppUser, 
-  //                               as: 'Performer', 
-  //                               attributes: ['IDUser', 'Username'], 
-  //                           }
-  //                       ]
-  //                   },
-  //                   {
-  //                       model: Stage,
-  //                       as: 'JobStage_Stage',
-  //                   }
-  //               ],
-  //           });
-  //       } else {
-  //           const stages = await Stage.findAll({
-  //               where: {
-  //                   IDRecipient: userId,
-  //               },
-  //           });
-
-  //           if (stages.length === 0) {
-  //               return res.status(404).json({ message: 'Không tìm thấy stage nào cho người dùng này' });
-  //           }
-
-  //           const stageIds = stages.map(stage => stage.IdStage);
-  //           jobs = await JobStage.findAll({
-  //               where: {
-  //                   IDStage: stageIds,
-  //                   status: 'pending'
-  //               },
-  //               include: [
-  //                   {
-  //                       model: Job,
-  //                       as: 'JobStage_Job',
-  //                       include: [
-  //                           {
-  //                               model: AppUser, 
-  //                               as: 'Performer', 
-  //                               attributes: ['IDUser', 'Username'], 
-  //                           }
-  //                       ]
-  //                   },
-  //                   {
-  //                       model: Stage,
-  //                       as: 'JobStage_Stage',
-  //                   }
-  //               ],
-  //           });
-  //       }
-
-  //       return res.status(200).json(jobs);
-  //   } catch (error) {
-  //       console.error('Lỗi khi lấy danh sách job:', error);
-  //       return res.status(500).json({ message: error.message });
-  //   }
-  // }
   async getJobsForRecipient(req, res) {
     const userId = req.user.IDUser;
     const userRoles = req.user.roles;
@@ -945,50 +789,39 @@ class JobCOntroller {
 
   async getAllDetailJobs(req, res) {
     try {
-      const userRoles = req.user.roles;
-      const userId = req.user.IDUser;
-      const isAdmin = userRoles.includes('admin');
-      const isUser = userRoles.includes('user');
-
-      let jobs;
-
-      if (isAdmin) {
+      const { roles: userRoles, IDUser: userId } = req.user;
+      let jobs = [];
+  
+      // Kiểm tra vai trò người dùng
+      if (userRoles.includes('admin')) {
         jobs = await Job.findAll({
           include: [
             {
-              model: AppUser,  // Liên kết với bảng AppUser để lấy thông tin người nhận công việc
-              as: 'Performer',      // Đảm bảo sử dụng alias phù hợp, giả sử alias này là 'User'
-              attributes: ['Username'], // Chỉ lấy trường 'Username'
-            }
+              model: AppUser,
+              as: 'Performer',
+              attributes: ['Username'],
+            },
           ],
-          order: [['TimeStart', 'DESC']],  // Sắp xếp theo ngày bắt đầu từ mới nhất
+          order: [['TimeStart', 'DESC']],
         });
-      }
-
-      if (isUser) {
+      } else if (userRoles.includes('user')) {
         jobs = await Job.findAll({
           where: { IDUserPerform: userId },
           include: [
             {
-              model: AppUser,  // Liên kết với bảng AppUser để lấy thông tin người nhận công việc
-              as: 'Performer',      // Đảm bảo alias tương ứng
-              attributes: ['Username'], // Chỉ lấy trường 'Username'
-            }
+              model: AppUser,
+              as: 'Performer',
+              attributes: ['Username'],
+            },
           ],
-          order: [['TimeStart', 'DESC']],  // Sắp xếp theo ngày bắt đầu từ mới nhất
+          order: [['TimeStart', 'DESC']],
         });
       }
-
-      if (!jobs || jobs.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: 'Không có công việc nào được tìm thấy.',
-        });
-      }
-
+  
+      // Trả về mảng trống nếu không có dữ liệu
       return res.status(200).json({
         success: true,
-        data: jobs,  // Trả về dữ liệu công việc đã bao gồm thông tin người nhận
+        data: jobs || [],
       });
     } catch (error) {
       console.error('Error fetching jobs:', error);
@@ -998,6 +831,7 @@ class JobCOntroller {
       });
     }
   }
+  
 
   // API để lấy các record JobStage theo IDJob
   async getJobStagesByID(req, res) {

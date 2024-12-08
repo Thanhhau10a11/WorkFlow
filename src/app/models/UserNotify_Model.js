@@ -4,7 +4,7 @@ const AppUser = require('../models/User_Model');
 const Notify = require('../models/Notify_Model'); 
 const sequelize = require('../../config/db');
 
-const UserNotify = sequelize.define('UserNotify', {
+const UserNotify = sequelize.define('usernotify', {
   IDUser: {
     type: DataTypes.INTEGER,
     primaryKey: true,

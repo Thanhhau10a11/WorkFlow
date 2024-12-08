@@ -2,7 +2,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
 
-const JobDates = sequelize.define('JobDates', {
+const JobDates = sequelize.define('jobdates', {
   IDJob: {
     type: DataTypes.INTEGER,
     primaryKey: true

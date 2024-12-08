@@ -3,6 +3,7 @@
         <h1 class="h3">Lịch sử công việc</h1>
     </div>
 
+
     <!-- Danh sách công việc -->
     <table class="table table-striped">
         <thead>
@@ -76,56 +77,75 @@
 
 <script>
     // Xử lý sự kiện khi bấm vào nút "Xem lịch sử"
-    document.querySelectorAll('.view-history-btn').forEach(button => {
-        button.addEventListener('click', async (event) => {
-            const jobId = event.target.getAttribute('data-job-id');
+document.querySelectorAll('.view-history-btn').forEach(button => {
+    button.addEventListener('click', async (event) => {
+        const jobId = event.target.getAttribute('data-job-id');
 
-            const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('authToken');
 
-            if (!token) {
-                alert('Vui lòng đăng nhập để xem lịch sử công việc.');
-                return;
+        if (!token) {
+            alert('Vui lòng đăng nhập để xem lịch sử công việc.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:3000/api/job/getJobStagesByJobID/${jobId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Không thể kết nối tới server.');
             }
 
-            try {
-                const response = await fetch(`http://localhost:3000/api/job/getJobStagesByJobID/${jobId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
+            const result = await response.json();
+
+            if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+                const jobStages = result.data;
+                const jobStageList = document.getElementById('job-stage-list');
+
+                // Xóa nội dung cũ
+                jobStageList.innerHTML = '';
+
+                // Hiển thị từng stage
+                jobStages.forEach((stage, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${stage.JobStage_Job.NameJob}</td>
+                        <td>${stage.submissionDescription || 'Không có mô tả'}</td>
+                        <td>${stage.JobStage_Stage.NameStage}</td>
+                        <td>${stage.description || 'Không có mô tả'}</td>
+                        <td>
+                            <span class="badge 
+                            ${stage.status === 'completed' ? 'bg-success' : 
+                            stage.status === 'in-progress' ? 'bg-primary' : 
+                            stage.status === 'pending' ? 'bg-warning' : 
+                            'bg-danger'}">
+                                ${stage.status}
+                            </span>
+                        </td>
+                        <td>${stage.JobStage_Stage.EmailRecipient || 'Không có người duyệt'}</td>
+                    `;
+                    jobStageList.appendChild(row);
                 });
-
-                const result = await response.json();
-                console.log(result.data);
-                if (result.success) {
-                    const jobStages = result.data;
-
-                    const jobStageList = document.getElementById('job-stage-list');
-                    jobStageList.innerHTML = '';
-
-                    jobStages.forEach((stage, index) => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                           <td>${index + 1}</td>
-                            <td>${stage.JobStage_Job.NameJob}</td>
-                            <td>${stage.submissionDescription ? stage.submissionDescription : 'Không có mô tả'}</td>
-                            <td>${stage.JobStage_Stage.NameStage}</td>
-                            <td>${stage.description ? stage.description : 'Không có mô tả'}</td>
-                            <td>${stage.status}</td>
-                            <td>${stage.JobStage_Stage.EmailRecipient ? stage.JobStage_Stage.EmailRecipient : 'Không có người duyệt'}</td>
-                        `;
-                        jobStageList.appendChild(row);
-                    });
-                } else {
-                    alert('Không tìm thấy lịch sử công việc.');
-                }
-            } catch (error) {
-                console.error('Error fetching job stages:', error);
-                alert('Có lỗi xảy ra khi tải lịch sử công việc.');
+            } else {
+                document.getElementById('job-stage-list').innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">Không có lịch sử công việc nào.</td>
+                    </tr>
+                `;
             }
-        });
+        } catch (error) {
+            console.error('Error fetching job stages:', error);
+            alert('Có lỗi xảy ra khi tải lịch sử công việc.');
+        }
     });
+});
+
 </script>
 
 <style>

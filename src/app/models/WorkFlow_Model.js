@@ -21,7 +21,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
 
-const Workflow = sequelize.define('Workflow', {
+const Workflow = sequelize.define('workflow', {
   IDWorkFlow: {
     type: DataTypes.INTEGER,
     autoIncrement: true,

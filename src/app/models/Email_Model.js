@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
 
-const EmailConfig = sequelize.define('EmailConfig', {
+const EmailConfig = sequelize.define('emailconfig', {
   EmailID: {
     type: DataTypes.INTEGER,
     autoIncrement: true,

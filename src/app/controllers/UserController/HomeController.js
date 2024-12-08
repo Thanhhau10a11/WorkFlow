@@ -2,7 +2,7 @@ const axios = require('axios');
 class HomeController {
     async index(req, res) {
         try {
-            const token = req.session.user.token;
+            const token = req.cookies.user_info ? JSON.parse(req.cookies.user_info).token : null;
             const response = await axios.get(`${process.env.DOMAIN}/api/common/getJobStatistics`, {
                 headers: {  
                     'Authorization': `Bearer ${token}`,  

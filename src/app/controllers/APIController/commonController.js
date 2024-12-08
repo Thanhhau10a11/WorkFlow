@@ -7,11 +7,10 @@ class CommonController {
         const userId = req.user.IDUser; // Lấy ID người dùng từ middleware
         const userRoles = req.user.roles; // Lấy danh sách roles của người dùng
         const isAdmin = userRoles.includes('admin'); // Kiểm tra người dùng có phải admin không
-        console.log(userId,userRoles,isAdmin);
         try {
           // **Đếm số công việc dựa trên trạng thái**
           const [completedCount, inProgressCount, pendingCount] = await Promise.all([
-            JobStage.count({ where: { status: 'completed' } }),
+            Job.count({ where: { status: 'completed' } }),
             JobStage.count({ where: { status: 'processing' } }),
             JobStage.count({ where: { status: 'pending' } }),
           ]);

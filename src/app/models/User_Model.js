@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
 
-const AppUser = sequelize.define('AppUser', {
+const AppUser = sequelize.define('appuser', {
   IDUser: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -21,7 +21,7 @@ const AppUser = sequelize.define('AppUser', {
   },
   Password: DataTypes.STRING
 }, {
-  tableName: 'AppUser',
+  tableName: 'appuser',
   timestamps: false
 });
 

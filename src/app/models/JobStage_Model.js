@@ -3,7 +3,7 @@ const sequelize = require('../../config/db');
 const Job = require('./Job_Model');
 const Stage = require('./Stage_Model');
 
-const JobStage = sequelize.define('JobStage', {
+const JobStage = sequelize.define('jobstage', {
   ID: {
     type: DataTypes.INTEGER,
     allowNull: false,
