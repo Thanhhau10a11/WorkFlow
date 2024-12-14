@@ -4,6 +4,7 @@ const { getNextStage, getPreviousStage, checkIfStageAssigned } = require('../../
 const updateProjectProgress = require('../../../util/updateProjectProgress');
 const axios = require('axios');
 const { sendNotification, sendJobCount, sendJobStageCount } = require('../../../util/notifyService');
+require('dotenv').config();
 
 
 

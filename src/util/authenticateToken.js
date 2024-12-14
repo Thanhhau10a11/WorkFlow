@@ -32,6 +32,8 @@
 const jwt = require('jsonwebtoken');
 const AppUser = require('../app/models/User_Model'); // Điều chỉnh đường dẫn nếu cần
 const Role = require('../app/models/Role_Model'); // Điều chỉnh đường dẫn nếu cần
+require('dotenv').config();
+
 
 async function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];

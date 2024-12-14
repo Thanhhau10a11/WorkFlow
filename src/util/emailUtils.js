@@ -26,6 +26,8 @@
 // };
 
 const createTransporter = require('../config/nodemailer/transporter');
+require('dotenv').config();
+
 
 // Hàm gửi email
 async function sendEmail(to, subject, text) {

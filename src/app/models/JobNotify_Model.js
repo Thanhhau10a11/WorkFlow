@@ -2,7 +2,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
 
-const JobNotify = sequelize.define('jjobnotify', {
+const JobNotify = sequelize.define('jobnotify', {
   IDJob: {
     type: DataTypes.INTEGER,
     primaryKey: true

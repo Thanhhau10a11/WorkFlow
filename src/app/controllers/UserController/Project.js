@@ -1,5 +1,7 @@
 const { Group, Project, Job } = require('../../models/index');
 const axios = require('axios');
+require('dotenv').config();
+
 
 class ProjectController {
     async detail(req,res){

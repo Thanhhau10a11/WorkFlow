@@ -7,6 +7,8 @@ const Sequelize = require('sequelize')
 const { Op } = require('sequelize');
 const {sendNotification} = require('../../../util/notifyService');
 const checkUser = require('../../../util/checkInGroup');
+require('dotenv').config();
+
 
 const crypto = require('crypto');
 
@@ -96,7 +98,7 @@ class GroupController {
       const groups = await Group.findAll({
         attributes: {
           include: [
-            [Sequelize.literal(`(SELECT COUNT(*) FROM GroupMember WHERE GroupMember.GroupID = Group.GroupID)`), 'memberCount'],
+            [Sequelize.literal(`(SELECT COUNT(*) FROM groupmember WHERE groupmember.GroupID = group.GroupID)`), 'memberCount'],
           ],
         },
         where: {

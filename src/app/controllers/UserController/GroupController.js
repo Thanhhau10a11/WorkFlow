@@ -1,5 +1,7 @@
 const axios = require('axios');
 const { Group, GroupMember } = require('../../models/index');
+require('dotenv').config();
+
 class GroupController {
     async index(req, res) {  
         

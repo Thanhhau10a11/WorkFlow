@@ -7,6 +7,8 @@ const Group = require('../../models/Group_Model');
 const nodemailer = require('nodemailer');
 const {sendNotification} = require('../../../util/notifyService');
 const axios = require('axios');
+require('dotenv').config();
+
 
 class workFlowController {
     async getALl(req, res) {

@@ -5,6 +5,7 @@ const { Invitation, AppUser, Workflow, Stage, Group, GroupMember } = require('..
 const bcrypt = require('bcryptjs');
 const { sendEmail } = require('../../../util/emailUtils')
 const jwt = require('jsonwebtoken')
+require('dotenv').config();
 
 const sendEmailNoti = require('../../../util/mailServices')
 
